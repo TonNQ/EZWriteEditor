@@ -15,7 +15,7 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: globals.browser
     },
     plugins: {
       prettier: prettierPlugin,
@@ -23,21 +23,17 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       import: importPlugin,
       'jsx-a11y': jsxA11y,
-      '@typescript-eslint': tseslint.plugin,
+      '@typescript-eslint': tseslint.plugin
     },
     settings: {
       react: {
-        version: 'detect',
+        version: 'detect'
       },
       'import/resolver': {
-        node: {
-          paths: [path.resolve()],
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        },
         alias: {
-          map: [['@', './src']],
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        },
+          map: [['@', path.resolve(__dirname, 'src')]],
+          extensions: ['.js', '.jsx', '.ts', '.tsx']
+        }
       }
     },
     rules: {
@@ -58,8 +54,8 @@ export default tseslint.config(
           useTabs: false,
           singleQuote: true,
           printWidth: 120,
-          jsxSingleQuote: true,
-        },
+          jsxSingleQuote: true
+        }
       ],
       'object-shorthand': 'off',
       'object-curly-spacing': ['warn', 'always'],
@@ -90,13 +86,9 @@ export default tseslint.config(
       'simple-import-sort/imports': [
         'warn',
         {
-          groups: [
-            ['^react', '^next', '^@?\w'],
-            ['^@/'],
-            ['^\.'],
-          ],
-        },
-      ],
-    },
+          groups: [['^react', '^next', '^@?\w'], ['^@/'], ['^\.']]
+        }
+      ]
+    }
   }
 )

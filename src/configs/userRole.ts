@@ -1,0 +1,6 @@
+export const USER_ROLE = {
+  STUDENT: 'STUDENT',
+  TEACHER: 'TEACHER',
+  ADMIN: 'ADMIN',
+  GUEST: 'GUEST'
+}
