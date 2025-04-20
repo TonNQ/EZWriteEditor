@@ -1,9 +1,9 @@
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/react'
 import { Editor } from '@tiptap/react'
 import { useEffect, useRef, useState } from 'react'
-import { cn } from '../../libs/tailwind/utils'
-import BaseButton from '../Extensions/BaseButton'
-import FilledChevronDown from '../Icons/FilledChevronDown'
+import { cn } from '../../../libs/tailwind/utils'
+import FilledChevronDown from '../../Icons/FilledChevronDown'
+import BaseButton from '../BaseButton'
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6
 type HeadingOption = {

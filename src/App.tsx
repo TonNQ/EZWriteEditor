@@ -5,7 +5,7 @@ import TipTapEditor from './components/TiptapEditor'
 function App() {
   return (
     <>
-      {/* <TextEditor /> */}
+      <TextEditor />
       <TipTapEditor />
     </>
   )

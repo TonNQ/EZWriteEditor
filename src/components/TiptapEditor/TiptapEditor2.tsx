@@ -7,10 +7,10 @@ import StarterKit from '@tiptap/starter-kit'
 import FontSize from '../../extensions/FontSize'
 import BoldButton from '../Extensions/BoldButton'
 import FontSizeButton from '../Extensions/FontSizeButton'
+import HeadingButton from '../Extensions/HeadingButton'
 import ItalicButton from '../Extensions/ItalicButton'
 import StrikeButton from '../Extensions/StrikeButton'
 import UnderlineButton from '../Extensions/UnderlineButton'
-import HeadingButton from '../HeadingButton'
 import './styles.css'
 
 const MenuBar = () => {

@@ -9,6 +9,7 @@ import {
   MoreMark,
   SearchAndReplace,
   Strike,
+  TextAlign,
   Underline
 } from 'reactjs-tiptap-editor/extension-bundle'
 
@@ -41,12 +42,12 @@ const extensions = [
   // Highlight,
   // BulletList,
   // OrderedList,
-  // TextAlign.configure({
-  //   types: ['heading', 'paragraph'],
-  //   spacer: true,
-  //   alignments: ['left', 'center', 'right', 'justify'],
-  //   defaultAlignment: 'left'
-  // }),
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+    spacer: true,
+    alignments: ['left', 'center', 'right', 'justify'],
+    defaultAlignment: 'left'
+  }),
   // Indent,
   // LineHeight,
   // Image.configure({
