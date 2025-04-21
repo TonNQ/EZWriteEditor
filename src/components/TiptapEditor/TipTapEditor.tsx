@@ -17,6 +17,7 @@ import SearchReplaceButton from '../Extensions/SearchReplaceButton'
 import StrikeButton from '../Extensions/StrikeButton'
 import TextAlignButton from '../Extensions/TextAlignButton/TextAlignButton'
 import UnderlineButton from '../Extensions/UnderlineButton'
+import Suggestions from '../Suggestions/Suggestions'
 import './styles.css'
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
@@ -60,7 +61,8 @@ export default function TipTapEditor() {
     KeepHeadingOnEnter,
     SearchAndReplace.configure(),
     TextAlign.configure({
-      types: ['heading', 'paragraph']
+      types: ['heading', 'paragraph'],
+      defaultAlignment: 'left'
     })
   ]
 
@@ -80,11 +82,18 @@ Difficult words: bubble wrap (plastic with bubbles for protecting things), top s
   return (
     <div className='min-h-screen bg-gray-50'>
       <MenuBar editor={editor} />
-      <main className='mx-auto max-w-5xl px-4 py-8'>
-        <div className='min-h-[calc(100vh-12rem)] rounded-lg border border-gray-200 bg-white p-8 shadow-sm'>
-          <EditorContent editor={editor} className='prose max-w-none' />
+      <div className='mx-auto max-w-[100rem] px-4 py-8'>
+        <div className='flex gap-8'>
+          <div className='flex-1'>
+            <div className='h-[80vh] min-h-[calc(100vh-12rem)] rounded-lg border border-gray-200 bg-white p-8 shadow-sm'>
+              <EditorContent editor={editor} className='prose max-w-none' />
+            </div>
+          </div>
+          <div className='sticky top-24 h-fit'>
+            <Suggestions editor={editor} />
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
