@@ -1,3 +1,3 @@
 export const CONFIG = {
-    BASE_URL: 'https://dutact-appserver.orangecoast-3558f3a9.southeastasia.azurecontainerapps.io',
-  }
+    BASE_URL: 'http://127.0.0.1:8000/api',
+}

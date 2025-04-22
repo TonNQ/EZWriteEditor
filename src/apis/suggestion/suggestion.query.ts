@@ -4,16 +4,19 @@ import { queryFetch } from '../../config/queryClient'
 
 const SUGGESTION_URL = 'http://127.0.0.1:8000/api/suggest'
 
-export const getSuggestions = (userInput: string, options?: UseQueryOptions<string[], ApiError>) => {
+export const getSuggestions = (
+  userInput: string,
+  options?: UseQueryOptions<string[], ApiError>
+) => {
   return useQuery<string[], ApiError>({
-    queryKey: ['getstrings', userInput],
-    queryFn: async () => {
+    queryKey: ['getSuggestions', userInput],
+    queryFn: async ({ signal }) => {
       const response = await queryFetch<string[]>({
-        url: `${SUGGESTION_URL}/?user_input=${encodeURIComponent(userInput)}`
+        url: `${SUGGESTION_URL}/?user_input=${encodeURIComponent(userInput)}`,
+        signal
       })
-      console.log('response', response)
       return response
     },
     ...options
   })
-} 
+}

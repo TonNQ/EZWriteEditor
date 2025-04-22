@@ -66,13 +66,7 @@ export default function TipTapEditor() {
     })
   ]
 
-  const content = `People play with bubble wrap. They love it. An artist turns bubble wrap into art. He colours the bubbles.
-
-The artist has his special method. It is top secret. He uses computers, syringes and other tools. He makes some of the tools.
-
-The idea came from a security guard. The artist also had some bubble wrap. The man will show the pictures on the 7th of May in New York.
-
-Difficult words: bubble wrap (plastic with bubbles for protecting things), top secret (no one knows except the man), syringe (thing for taking somebody's blood), tool (something which is used for making something).`
+  const content = ``
 
   const editor = useEditor({
     extensions,

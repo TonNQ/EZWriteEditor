@@ -109,9 +109,6 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
     if (!editor) return
 
     const { state } = editor
-    const { doc } = state
-    const lastTwoNodes = doc.content.content.slice(-2)
-    const previousSentences = lastTwoNodes.map(node => node.textContent).join(' ')
     const currentSelection = editor.state.selection.$head.parent.textContent
     
     // Check if current selection ends with a sentence-ending punctuation
@@ -119,10 +116,10 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
     
     if (!hasEndingPunctuation) {
       setCurrentIncompleteSentence(currentSelection)
-      setUserInput(`${previousSentences} ${currentSelection}`.trim())
+      setUserInput(currentSelection.trim())
     } else {
       setCurrentIncompleteSentence('')
-      setUserInput(`${previousSentences} ${currentSelection}`.trim())
+      setUserInput(currentSelection.trim())
     }
   }, [editor])
 
@@ -196,6 +193,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
   // Reset hasApplied when userInput changes
   useEffect(() => {
+    console.log('userInput', userInput)
     setHasApplied(false)
   }, [userInput])
 

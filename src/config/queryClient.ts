@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import { QueryClient } from '@tanstack/react-query'
-import { QueryFetchOptions, ApiError, MutationFetchOptions } from 'src/types/client.type'
+import { QueryFetchOptions, ApiError, MutationFetchOptions } from '../types/client.type'
 import { CONFIG } from '../constants/config'
 import { ERROR_MESSAGE } from '../constants/message'
 
@@ -22,9 +22,15 @@ export function setupToken(token?: string): void {
   }
 }
 
-export async function queryFetch<T>({ url, inputParams, client: queryClient }: QueryFetchOptions): Promise<T> {
+export async function queryFetch<T>({
+  url,
+  inputParams,
+  client: queryClient,
+  signal
+}: QueryFetchOptions): Promise<T> {
   let params = ''
   queryClient = queryClient ?? client
+
   if (inputParams) {
     params = qs.stringify(inputParams)
   }
@@ -32,17 +38,24 @@ export async function queryFetch<T>({ url, inputParams, client: queryClient }: Q
   return new Promise(async (resolve, reject) => {
     try {
       let fetchUrl = url
-
       if (params) {
         fetchUrl += '?' + params
       }
 
-      const res = await queryClient.get(fetchUrl)
+      const res = await queryClient.get(fetchUrl, {
+        signal
+      })
+
       console.log('res', res)
       const json = res.data.result
 
       resolve(json)
     } catch (error: any) {
+      // Nếu bị abort thì throw lại để react-query biết
+      if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+        return reject(new DOMException('Request was aborted', 'AbortError'))
+      }
+
       reject({
         status: error.response?.data.status,
         message:

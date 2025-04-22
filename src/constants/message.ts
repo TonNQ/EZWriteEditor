@@ -6,9 +6,9 @@ export const ERROR_MESSAGE = {
     IMAGE_SIZE_EXCEEDS_LIMIT: 'Dung lượng ảnh tải lên của bạn quá lớn. Vui lòng chỉ chọn ảnh có kích thước nhỏ hơn 5MB',
     INVALID_PASSWORD: 'Mật khẩu hiện tại không đúng',
     username_already_exists: 'Tên tài khoản đã tồn tại'
-  }
-  
-  export const SUCCESS_MESSAGE = {
+}
+
+export const SUCCESS_MESSAGE = {
     LOGIN: 'Đăng nhập thành công',
     CREATE_EVENT: 'Tạo sự kiện thành công. Vui lòng chờ Phòng Công tác Sinh viên duyệt sự kiện.',
     DELETE_EVENT: 'Xóa sự kiện thành công',
@@ -28,4 +28,4 @@ export const ERROR_MESSAGE = {
     REJECT_PARTICIPATION: 'Đã xác nhận không tham gia',
     CONFIRM_PARTICIPATION: 'Đã xác nhận tham gia',
     CREATE_ORGANIZER_ACCOUNT: 'Tạo tài khoản tổ chức thành công'
-  }
+}
