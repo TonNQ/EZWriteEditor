@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { Editor } from '@tiptap/react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
+import useDebounce from '../../hooks/useDebounce'
+import sentencesApi from '../../services/sentences.api'
 import SuggestionIcon from '../Icons/SuggestionIcon'
 import SuggestedSentence from './SuggestedSentence'
-import useDebounce from '../../hooks/useDebounce'
-import { searchApi, suggestApi } from '../../services/api'
 
 interface SuggestionsProps {
   editor: Editor | null
@@ -44,7 +45,13 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
     try {
       setSearchResults([])
       setSuggestResults([])
-      const { data } = await searchApi(query, 'ezwrite_demo_21042025', searchAbortControllerRef.current.signal)
+      const { data } = await sentencesApi.search(
+        {
+          q: query,
+          index: ELASTIC_SEARCH_INDEX
+        },
+        searchAbortControllerRef.current.signal
+      )
       setSearchResults(data)
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
@@ -73,8 +80,12 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
     setIsLoadingSuggest(true)
     try {
-      const { data } = await suggestApi(input, suggestAbortControllerRef.current.signal)
-      console.log('data', data)
+      const { data } = await sentencesApi.suggest(
+        {
+          user_input: input
+        },
+        suggestAbortControllerRef.current.signal
+      )
       setSuggestResults(data)
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
@@ -100,7 +111,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
       const timer = setTimeout(() => {
         fetchSuggestResults(debouncedUserInput)
       }, 1000) // Delay to prioritize search results
-      
+
       return () => clearTimeout(timer)
     }
   }, [debouncedUserInput, isApplying, hasApplied, fetchSuggestResults])
@@ -110,10 +121,10 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
     const { state } = editor
     const currentSelection = editor.state.selection.$head.parent.textContent
-    
+
     // Check if current selection ends with a sentence-ending punctuation
     const hasEndingPunctuation = /[.!?]$/.test(currentSelection)
-    
+
     if (!hasEndingPunctuation) {
       setCurrentIncompleteSentence(currentSelection)
       setUserInput(currentSelection.trim())
@@ -167,7 +178,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         const paragraph = $from.parent
         const paragraphStart = $from.start()
         const paragraphEnd = $to.end()
-        
+
         editor
           .chain()
           .focus()
@@ -178,11 +189,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
           .run()
       } else {
         // Append the suggestion to the end
-        editor
-          .chain()
-          .focus()
-          .insertContent(`\n${suggestion}`)
-          .run()
+        editor.chain().focus().insertContent(`\n${suggestion}`).run()
       }
     } catch (error) {
       console.error('Error applying suggestion:', error)
@@ -198,27 +205,23 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   }, [userInput])
 
   return (
-    <div className="overflow-y-auto max-h-[80vh] w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-4 flex items-center space-x-2">
+    <div className='max-h-[80vh] w-80 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm'>
+      <div className='mb-4 flex items-center space-x-2'>
         <SuggestionIcon />
-        <h2 className="text-lg font-semibold text-gray-800">Suggestions</h2>
+        <h2 className='text-lg font-semibold text-gray-800'>Suggestions</h2>
       </div>
 
-      <div className="space-y-2">
+      <div className='space-y-2'>
         {/* Hiển thị loading nếu đang loading cả 2 và chưa có gì */}
         {isLoadingSearch && searchResults.length === 0 && (
-          <p className="text-sm text-gray-500">Loading search suggestions...</p>
+          <p className='text-sm text-gray-500'>Loading search suggestions...</p>
         )}
 
         {/* Đang loading suggest */}
-        {isLoadingSuggest && (
-          <p className="text-sm text-gray-500">Loading additional suggestions...</p>
-        )}
+        {isLoadingSuggest && <p className='text-sm text-gray-500'>Loading additional suggestions...</p>}
 
         {allSuggestions.length > 0 && (
-          <p className="mb-4 text-sm text-gray-500">
-            Press Tab to apply the first suggestion
-          </p>
+          <p className='mb-4 text-sm text-gray-500'>Press Tab to apply the first suggestion</p>
         )}
 
         {/* Hiển thị combined suggestions */}
@@ -237,12 +240,11 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
         {/* Không có suggestion nào hết */}
         {!isLoadingSearch && !isLoadingSuggest && allSuggestions.length === 0 && (
-          <p className="text-sm text-gray-500">No suggestions available</p>
+          <p className='text-sm text-gray-500'>No suggestions available</p>
         )}
       </div>
-
     </div>
   )
 }
 
-export default Suggestions 
+export default Suggestions

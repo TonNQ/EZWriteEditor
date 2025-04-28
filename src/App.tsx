@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import TextEditor from './components/TextEditor'
-import TipTapEditor from './components/TiptapEditor'
-import RequestInterceptor from './config/RequestInterceptor'
-import ResponseInterceptor from './config/ResponseInterceptor'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './App.css'
+import useRouteElements from './routes/useRouteElements'
+import { checkAuthOnLoad } from './store/auth/auth.slice'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,12 +18,26 @@ const queryClient = new QueryClient({
 })
 
 function App() {
+  const dispatch = useDispatch()
+  const routeElements = useRouteElements()
+  const { pathname } = useLocation()
+
+  // Check authentication on app load
+  useEffect(() => {
+    dispatch(checkAuthOnLoad())
+  }, [dispatch])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [pathname])
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* <TextEditor /> */}
-      <RequestInterceptor />
-      <ResponseInterceptor />
-      <TipTapEditor />
+      {/* <RequestInterceptor />
+      <ResponseInterceptor /> */}
+      {/* <TipTapEditor /> */}
+      {routeElements}
       <ToastContainer />
     </QueryClientProvider>
   )
