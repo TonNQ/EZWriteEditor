@@ -1,9 +1,7 @@
 // import { Book, ChevronDown, FileText, LogOut, Settings, SettingsIcon, User } from 'lucide-react'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { AppDispatch } from '../../store'
 import { getInitialFromName, getRandomDarkColor } from '../../utils/helpers'
 import ChevronDown from '../Icons/ChevronDown'
 import Dictionary from '../Icons/Dictionary'
@@ -20,7 +18,6 @@ interface TabBarProps {
 const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
   const tabs = [

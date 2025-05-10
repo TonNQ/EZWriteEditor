@@ -30,9 +30,6 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
   const debouncedUserInput = useDebounce(userInput, 500)
 
-  // Combine results from both APIs
-  const allSuggestions: Array<Sentence | string> = [...suggestResults, ...searchResults]
-
   const fetchSearchResults = useCallback(async (query: string) => {
     if (!query) {
       setSearchResults([])
@@ -124,7 +121,6 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   const updateUserInput = useCallback(() => {
     if (!editor) return
 
-    const { state } = editor
     const currentSelection = editor.state.selection.$head.parent.textContent
 
     // Check if current selection ends with a sentence-ending punctuation
@@ -186,7 +182,6 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
       if (currentIncompleteSentence) {
         // Replace only the incomplete sentence
-        const paragraph = $from.parent
         const paragraphStart = $from.start()
         const paragraphEnd = $to.end()
         console.log('state', { state, selection, $from, $to, paragraphStart, paragraphEnd })

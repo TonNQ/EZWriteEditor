@@ -113,7 +113,8 @@ class Http {
 
         // Handle other errors
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
-          const errorMessage = error.response?.data?.message || error.message
+          // TODO: handle error message
+          // const errorMessage = error.response?.data?.message || error.message
           // toast.error(errorMessage)
         }
 

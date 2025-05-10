@@ -64,7 +64,7 @@ const extensions = [
 const DEFAULT = ''
 
 const TextEditor = () => {
-  const [content, setContent] = useState(DEFAULT)
+  const [_content, setContent] = useState(DEFAULT)
   const contentRef = useRef(DEFAULT) // giữ nội dung hiện tại mà không gây re-render
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
 
@@ -84,7 +84,7 @@ const TextEditor = () => {
   return (
     <RichTextEditor
       toolbar={{
-        render: (props, toolbarItems, dom, containerDom) => {
+        render: (_props, _toolbarItems, dom, containerDom) => {
           return containerDom(dom)
         }
       }}

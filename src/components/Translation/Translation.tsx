@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
-import translateInstance from '../../services/translation.api'
-import Translate from '../Icons/Translate'
-import { cn } from '../../libs/tailwind/utils'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
 import useDebounce from '../../hooks/useDebounce'
+import { cn } from '../../libs/tailwind/utils'
+import translateInstance from '../../services/translation.api'
+import { RootState } from '../../store'
+import Translate from '../Icons/Translate'
 
 const Translation = () => {
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
   const [direction, setDirection] = useState<'en-vi' | 'vi-en'>('en-vi')
   const [inputText, setInputText] = useState('')
   const [outputText, setOutputText] = useState('')
-  const [isTranslating, setIsTranslating] = useState(false)
+  const [_isTranslating, setIsTranslating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const debouncedInputText = useDebounce(inputText, 500)
@@ -28,36 +28,16 @@ const Translation = () => {
     setError(null)
   }
 
-  const translateText = async (text: string, dir: 'en-vi' | 'vi-en') => {
-    if (!text.trim()) {
-      setOutputText('')
-      return
-    }
-
-    setIsTranslating(true)
-    try {
-      const [from, to] = dir === 'en-vi' ? ['en', 'vi'] : ['vi', 'en']
-      const res = await translateInstance.translate({ text, source_lang: from, target_lang: to })
-      setOutputText(res.data.translated_text)
-    } catch (err) {
-      console.error('Translation error:', err)
-      setError('Failed to translate. Please try again.')
-      setOutputText('')
-    } finally {
-      setIsTranslating(false)
-    }
-  }
-
   useEffect(() => {
     const translate = async () => {
       if (!debouncedInputText.trim()) {
         setOutputText('')
         return
       }
-  
+
       setIsTranslating(true)
       setError(null)
-  
+
       try {
         const [from, to] = direction === 'en-vi' ? ['en', 'vi'] : ['vi', 'en']
         const res = await translateInstance.translate({
@@ -74,7 +54,7 @@ const Translation = () => {
         setIsTranslating(false)
       }
     }
-  
+
     translate()
   }, [debouncedInputText, direction])
 
@@ -93,10 +73,12 @@ const Translation = () => {
   }
 
   return (
-    <div className={cn('w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
-      'max-h-[calc(50vh-76px)]': isOpenSuggestion,
-      'max-h-[calc(100vh-132px)]': !isOpenSuggestion
-    })}>
+    <div
+      className={cn('w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
+        'max-h-[calc(50vh-76px)]': isOpenSuggestion,
+        'max-h-[calc(100vh-132px)]': !isOpenSuggestion
+      })}
+    >
       <div className='mb-4 flex items-center space-x-2'>
         <Translate className='text-yellow-500' />
         <h2 className='text-base font-semibold text-gray-800'>Translation</h2>

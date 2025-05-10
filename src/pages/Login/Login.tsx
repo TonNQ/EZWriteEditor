@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import CheckFill from '../../components/Icons/CheckFill'
+import Button from '../../components/Button'
 import Input from '../../components/Input'
 import { cn } from '../../libs/tailwind/utils'
 import { path } from '../../routes/path'
@@ -11,7 +11,6 @@ import { AppDispatch, RootState } from '../../store'
 import { loginThunk, resetAuthState } from '../../store/auth/auth.slice'
 import { setFormErrors } from '../../utils/formError'
 import { authSchema, AuthSchemaType } from '../../utils/rules'
-import Button from '../../components/Button'
 
 type FormData = Pick<AuthSchemaType, 'email' | 'password'>
 const loginSchema = authSchema.pick(['email', 'password'])

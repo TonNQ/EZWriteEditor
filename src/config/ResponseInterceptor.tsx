@@ -1,17 +1,15 @@
+import { HttpStatusCode } from 'axios'
 import { useEffect, useRef } from 'react'
 import { toast } from 'react-toastify'
-import { HttpStatusCode } from 'axios'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { ERROR_MESSAGE } from '../constants/message'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { client } from './queryClient'
 // import { path } from 'src/routes/path'
 
-
 const ResponseInterceptor = () => {
   const [_, setAccessToken] = useLocalStorage<string>('access_token', '')
-//   const location = useLocation()
-//   const navigate = useNavigate()
+  //   const location = useLocation()
+  //   const navigate = useNavigate()
   const interceptorId = useRef<any>(undefined)
 
   useEffect(() => {

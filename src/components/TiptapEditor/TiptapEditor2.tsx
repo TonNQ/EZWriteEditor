@@ -5,12 +5,6 @@ import Underline from '@tiptap/extension-underline'
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import FontSize from '../../extensions/FontSize'
-import BoldButton from '../Extensions/BoldButton'
-import FontSizeButton from '../Extensions/FontSizeButton'
-import HeadingButton from '../Extensions/HeadingButton'
-import ItalicButton from '../Extensions/ItalicButton'
-import StrikeButton from '../Extensions/StrikeButton'
-import UnderlineButton from '../Extensions/UnderlineButton'
 import './styles.css'
 
 const MenuBar = () => {
@@ -23,12 +17,12 @@ const MenuBar = () => {
   return (
     <div className='control-group'>
       <div className='button-group'>
-        <BoldButton />
+        {/* <BoldButton />
         <ItalicButton />
         <UnderlineButton />
         <StrikeButton />
         <HeadingButton />
-        <FontSizeButton />
+        <FontSizeButton /> */}
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={editor.isActive('bulletList') ? 'is-active' : ''}

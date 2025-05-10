@@ -6,7 +6,7 @@ interface Props {
 }
 
 const AuthLayout = ({ children }: Props) => {
-  const [isHiddenImage, setIsHiddenImage] = useState<boolean>(false)
+  const [_isHiddenImage, setIsHiddenImage] = useState<boolean>(false)
 
   useEffect(() => {
     const checkScreenWidth = () => {

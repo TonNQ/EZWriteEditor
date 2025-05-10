@@ -46,10 +46,6 @@ const FontSizeButton = ({ editor }: FontSizeButtonProps) => {
 
   if (!editor) return null
 
-  const isActive = (size: string) => {
-    return editor.isActive('textStyle', { fontSize: size })
-  }
-
   const handleSelectFontSize = (option: FontSizeOption) => {
     console.log(option.size)
     editor.chain().focus().setFontSize(option.size).run()
