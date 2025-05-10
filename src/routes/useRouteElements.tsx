@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import TipTapEditor from '../components/TiptapEditor'
 import AuthLayout from '../layouts/AuthLayout'
+import MainLayout from '../layouts/MainLayout'
 import Login from '../pages/Login'
 import PageNotFound from '../pages/PageNotFound'
 import Register from '../pages/Register'
@@ -26,7 +27,11 @@ const useRouteElements = () => {
       children: [
         {
           path: path.home,
-          element: <TipTapEditor />
+          element: (
+            <MainLayout>
+              <TipTapEditor />
+            </MainLayout>
+          )
         }
       ]
     },

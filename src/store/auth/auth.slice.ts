@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { HttpStatusCode } from 'axios'
 import authInstance, { AuthResponse, LoginBody, RegisterBody } from '../../services/auth.api'
 import { ApiResponse } from '../../types/common.type'
+import http from '../../utils/api'
 import { AuthState } from './types'
 
 // initial state
@@ -13,7 +14,10 @@ const initialState: AuthState = {
   registerError: null,
 
   loginInProgress: false,
-  loginError: null
+  loginError: null,
+
+  logoutInProgress: false,
+  logoutError: null
 }
 
 // Thunk register
@@ -50,9 +54,15 @@ export const loginThunk = createAsyncThunk<ApiResponse<AuthResponse>, LoginBody>
       const response = await authInstance.login(body)
       // Check for successful response (200 OK)
       if (response.status === HttpStatusCode.Ok && response.data) {
+        const accessToken = response.data.access
         // Save access token to localStorage
-        if (response.data.access) {
-          localStorage.setItem('access_token', response.data.access)
+        if (accessToken) {
+          localStorage.setItem('access_token', accessToken)
+          http.setTokens(accessToken)
+        }
+        const user = response.data.user 
+        if (user) {
+          localStorage.setItem('profile', JSON.stringify(user))
         }
         return response
       }
@@ -67,6 +77,23 @@ export const loginThunk = createAsyncThunk<ApiResponse<AuthResponse>, LoginBody>
     }
   }
 )
+
+// Thunk logout
+export const logoutThunk = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
+  try {
+    const response = await authInstance.logout()
+    if (response.status === HttpStatusCode.Ok) {
+      localStorage.removeItem('access_token')
+      return response
+    }
+    return rejectWithValue(response.errors || 'Logout failed')
+  } catch (error: any) {
+    if (error.response?.data?.errors) {
+      return rejectWithValue(error.response.data)
+    }
+    return rejectWithValue('Something went wrong')
+  }
+})
 
 // authSlice
 const authSlice = createSlice({
@@ -117,6 +144,20 @@ const authSlice = createSlice({
         state.loginInProgress = false
         // Store the entire error response for field-specific errors
         state.loginError = action.payload as any
+      })
+      // Logout cases
+      .addCase(logoutThunk.pending, (state) => {
+        state.logoutInProgress = true
+        state.logoutError = null
+      })
+      .addCase(logoutThunk.fulfilled, (state) => {
+        state.logoutInProgress = false
+        state.isAuthenticated = false
+        state.logoutError = null
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        state.logoutInProgress = false
+        state.logoutError = action.payload as string
       })
   }
 })

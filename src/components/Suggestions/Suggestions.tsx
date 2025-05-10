@@ -1,9 +1,14 @@
 import { Editor } from '@tiptap/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
 import useDebounce from '../../hooks/useDebounce'
-import sentencesApi from '../../services/sentences.api'
-import SuggestionIcon from '../Icons/SuggestionIcon'
+import { cn } from '../../libs/tailwind/utils'
+import sentencesInstance from '../../services/sentences.api'
+import { RootState } from '../../store'
+import { Sentence } from '../../types/sentence.type'
+import { getLastClosestSentences } from '../../utils/sentence'
+import Suggestion from '../Icons/Suggestion'
 import SuggestedSentence from './SuggestedSentence'
 
 interface SuggestionsProps {
@@ -11,11 +16,12 @@ interface SuggestionsProps {
 }
 
 const Suggestions = ({ editor }: SuggestionsProps) => {
+  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
   const [userInput, setUserInput] = useState('')
   const [isApplying, setIsApplying] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
   const [currentIncompleteSentence, setCurrentIncompleteSentence] = useState('')
-  const [searchResults, setSearchResults] = useState<string[]>([])
+  const [searchResults, setSearchResults] = useState<Sentence[]>([])
   const [suggestResults, setSuggestResults] = useState<string[]>([])
   const [isLoadingSearch, setIsLoadingSearch] = useState(false)
   const [isLoadingSuggest, setIsLoadingSuggest] = useState(false)
@@ -25,7 +31,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   const debouncedUserInput = useDebounce(userInput, 500)
 
   // Combine results from both APIs
-  const allSuggestions = [...suggestResults, ...searchResults]
+  const allSuggestions: Array<Sentence | string> = [...suggestResults, ...searchResults]
 
   const fetchSearchResults = useCallback(async (query: string) => {
     if (!query) {
@@ -45,7 +51,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
     try {
       setSearchResults([])
       setSuggestResults([])
-      const { data } = await sentencesApi.search(
+      const { data } = await sentencesInstance.search(
         {
           q: query,
           index: ELASTIC_SEARCH_INDEX
@@ -80,7 +86,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
     setIsLoadingSuggest(true)
     try {
-      const { data } = await sentencesApi.suggest(
+      const { data } = await sentencesInstance.suggest(
         {
           user_input: input
         },
@@ -101,18 +107,17 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   // Fetch search results first (faster API)
   useEffect(() => {
     if (debouncedUserInput && !isApplying && !hasApplied) {
-      fetchSearchResults(debouncedUserInput)
+      fetchSearchResults(getLastClosestSentences(debouncedUserInput))
     }
   }, [debouncedUserInput, isApplying, hasApplied, fetchSearchResults])
 
   // Fetch suggest results after a delay (slower API)
   useEffect(() => {
     if (debouncedUserInput && !isApplying && !hasApplied) {
-      const timer = setTimeout(() => {
-        fetchSuggestResults(debouncedUserInput)
-      }, 1000) // Delay to prioritize search results
-
-      return () => clearTimeout(timer)
+      // const timer = setTimeout(() => {
+      fetchSuggestResults(getLastClosestSentences(debouncedUserInput))
+      // }, 1000) // Delay to prioritize search results
+      // return () => clearTimeout(timer)
     }
   }, [debouncedUserInput, isApplying, hasApplied, fetchSuggestResults])
 
@@ -152,15 +157,21 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab' && allSuggestions.length > 0 && !isApplying && !hasApplied) {
+      if (e.key === 'Tab' && !isApplying && !hasApplied) {
         e.preventDefault()
-        handleApply(allSuggestions[0])
+
+        const firstSuggestion =
+          suggestResults.length > 0 ? suggestResults[0] : searchResults.length > 0 ? searchResults[0].content : null
+
+        if (firstSuggestion) {
+          handleApply(firstSuggestion)
+        }
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [allSuggestions, isApplying, hasApplied])
+  }, [suggestResults, searchResults, isApplying, hasApplied])
 
   const handleApply = async (suggestion: string) => {
     if (!editor || isApplying || hasApplied) return
@@ -178,18 +189,33 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         const paragraph = $from.parent
         const paragraphStart = $from.start()
         const paragraphEnd = $to.end()
-
+        console.log('state', { state, selection, $from, $to, paragraphStart, paragraphEnd })
         editor
           .chain()
           .focus()
-          .command(({ tr }) => {
-            tr.replaceWith(paragraphStart, paragraphEnd, state.schema.text(suggestion))
+          .command(({ tr, state }) => {
+            const paragraph = $from.parent
+            const paragraphStart = $from.start()
+            const paragraphText = paragraph.textContent
+          
+            // Tách câu bằng regex
+            const sentenceRegex = /[^.!?]+[.!?]?/g
+            const sentences = [...paragraphText.matchAll(sentenceRegex)].map(m => m[0])
+            
+            if (sentences.length === 0) return false
+          
+            const lastSentence = sentences[sentences.length - 1]
+            const startOffset = paragraphText.lastIndexOf(lastSentence)
+            const fromPos = paragraphStart + startOffset
+            const toPos = fromPos + lastSentence.length
+          
+            tr.replaceWith(fromPos, toPos, state.schema.text(suggestion))
             return true
           })
           .run()
       } else {
         // Append the suggestion to the end
-        editor.chain().focus().insertContent(`\n${suggestion}`).run()
+        editor.chain().focus().insertContent(` ${suggestion}`).run()
       }
     } catch (error) {
       console.error('Error applying suggestion:', error)
@@ -205,41 +231,50 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   }, [userInput])
 
   return (
-    <div className='max-h-[80vh] w-80 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm'>
+    <div
+      className={cn('w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
+        'max-h-[calc(50vh-76px)]': isOpenTranslation,
+        'max-h-[calc(100vh-132px)]': !isOpenTranslation
+      })}
+    >
       <div className='mb-4 flex items-center space-x-2'>
-        <SuggestionIcon />
-        <h2 className='text-lg font-semibold text-gray-800'>Suggestions</h2>
+        <Suggestion />
+        <h2 className='text-base font-semibold text-gray-800'>Suggestions</h2>
       </div>
 
-      <div className='space-y-2'>
+      <div className='space-y-1'>
         {/* Hiển thị loading nếu đang loading cả 2 và chưa có gì */}
         {isLoadingSearch && searchResults.length === 0 && (
-          <p className='text-sm text-gray-500'>Loading search suggestions...</p>
+          <p className='text-xs text-gray-500'>Loading search suggestions...</p>
         )}
 
-        {/* Đang loading suggest */}
-        {isLoadingSuggest && <p className='text-sm text-gray-500'>Loading additional suggestions...</p>}
+        {isLoadingSuggest && <p className='text-xs text-gray-500'>Loading additional suggestions...</p>}
 
-        {allSuggestions.length > 0 && (
-          <p className='mb-4 text-sm text-gray-500'>Press Tab to apply the first suggestion</p>
+        {(suggestResults.length > 0 || searchResults.length > 0) && (
+          <p className='mb-4 text-xs text-gray-500'>Press Tab to apply the first suggestion</p>
         )}
 
-        {/* Hiển thị combined suggestions */}
-        {allSuggestions.length > 0 && (
-          <>
-            {allSuggestions.map((suggestion, index) => (
-              <SuggestedSentence
-                key={index}
-                sentence={suggestion}
-                onApply={() => handleApply(suggestion)}
-                disabled={isApplying || hasApplied}
-              />
-            ))}
-          </>
-        )}
+        {suggestResults.map((suggestion, index) => (
+          <SuggestedSentence
+            key={`suggest-${index}`}
+            sentence={suggestion}
+            onApply={() => handleApply(suggestion)}
+            disabled={isApplying || hasApplied}
+            isSearch={false}
+          />
+        ))}
 
-        {/* Không có suggestion nào hết */}
-        {!isLoadingSearch && !isLoadingSuggest && allSuggestions.length === 0 && (
+        {searchResults.map((sentence, index) => (
+          <SuggestedSentence
+            key={`search-${index}`}
+            sentence={sentence.content}
+            onApply={() => handleApply(sentence.content)}
+            disabled={isApplying || hasApplied}
+            isSearch={true}
+          />
+        ))}
+
+        {!isLoadingSearch && !isLoadingSuggest && suggestResults.length === 0 && searchResults.length === 0 && (
           <p className='text-sm text-gray-500'>No suggestions available</p>
         )}
       </div>

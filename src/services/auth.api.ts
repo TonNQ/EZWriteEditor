@@ -20,6 +20,10 @@ export interface AuthResponse {
   user: User
 }
 
+export interface LogoutResponse {
+  success: boolean
+}
+
 export const loginApi = async (body: LoginBody, signal?: AbortSignal): Promise<ApiResponse<AuthResponse>> => {
   try {
     const response = await http.post<AuthResponse>({
@@ -58,9 +62,28 @@ export const registerApi = async (body: RegisterBody, signal?: AbortSignal): Pro
   }
 }
 
+export const logoutApi = async (signal?: AbortSignal): Promise<ApiResponse<LogoutResponse>> => {
+  try {
+    const response = await http.post<LogoutResponse>({
+      url: '/auth/api/logout/',
+      key: 'logout',
+      signal
+    })
+
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data
+    }
+  } catch (error) {
+    console.error('Logout API error:', error)
+    return error as ApiResponse<LogoutResponse>
+  }
+}
+
 const authInstance = {
   login: loginApi,
-  register: registerApi
+  register: registerApi,
+  logout: logoutApi
 }
 
 export default authInstance

@@ -1,21 +1,35 @@
 @import 'tailwindcss';
 
+@layer utilities {
+  .text-gray-default {
+    @apply text-[#686868];
+  }
+}
+
+#root {
+  min-height: 100vh;
+}
+
 :root {
+  .prose {
+    height: 100%;
+  }
+
   .tiptap {
     display: flex;
     flex-direction: column;
     margin: 1em 0;
   }
-      
+
   .ProseMirror {
     outline: none !important;
-    padding: 1em 2px;
+    height: 100%;
   }
-      
+
   .ProseMirror .search-result {
     background-color: rgba(255, 217, 0, 0.5);
   }
-      
+
   .ProseMirror .search-result-current {
     background-color: rgba(13, 255, 0, 0.5);
   }

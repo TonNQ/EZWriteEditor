@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import Button from '../../components/Button'
+import CheckFill from '../../components/Icons/CheckFill'
 import Input from '../../components/Input'
 import { cn } from '../../libs/tailwind/utils'
 import { path } from '../../routes/path'
@@ -11,6 +11,7 @@ import { AppDispatch, RootState } from '../../store'
 import { loginThunk, resetAuthState } from '../../store/auth/auth.slice'
 import { setFormErrors } from '../../utils/formError'
 import { authSchema, AuthSchemaType } from '../../utils/rules'
+import Button from '../../components/Button'
 
 type FormData = Pick<AuthSchemaType, 'email' | 'password'>
 const loginSchema = authSchema.pick(['email', 'password'])
@@ -46,7 +47,7 @@ const Login = () => {
 
   return (
     <div className='flex w-full min-w-[400px] flex-col'>
-      <h1 className='text-left text-3xl font-semibold tracking-wide text-blue-900 uppercase'>Login</h1>
+      <h1 className='text-center text-4xl font-bold tracking-wide text-blue-900 uppercase'>Login</h1>
       <div className='text-semantic-cancelled mt-4 min-h-[15px] text-sm leading-[15px] font-semibold'>
         {typeof loginError === 'string' ? loginError : null}
       </div>
@@ -59,6 +60,16 @@ const Login = () => {
           placeholder='Enter your password'
           labelName='Password'
         />
+        {/* <div className='mt-4 flex justify-center'>
+          <CheckFill
+            onClick={onSubmit}
+            className={cn('h-10 w-10 cursor-pointer rounded-md transition-colors', {
+              'cursor-not-allowed bg-gray-400': loginInProgress,
+              'bg-blue-800/90 hover:bg-blue-800': !loginInProgress
+            })}
+            disabled={loginInProgress}
+          />
+        </div> */}
         <Button
           title='Login'
           type='submit'

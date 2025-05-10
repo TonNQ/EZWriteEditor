@@ -1,5 +1,4 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, HttpStatusCode } from 'axios'
-import { toast } from 'react-toastify'
 import { ERROR_MESSAGE } from '../constants/message'
 import { ApiResponse, AuthTokens } from '../types/common.type'
 
@@ -40,15 +39,15 @@ class Http {
   private abortControllers: Map<string, AbortController>
 
   constructor() {
-    this.accessToken = localStorage.getItem('accessToken') || ''
-    this.refreshToken = localStorage.getItem('refreshToken') || ''
+    this.accessToken = localStorage.getItem('access_token') || ''
+    this.refreshToken = localStorage.getItem('refresh_token') || ''
     this.isRefreshing = false
     this.refreshSubscribers = []
     this.abortControllers = new Map()
 
     this.instance = axios.create({
       baseURL: BASE_URL,
-      timeout: 10000,
+      timeout: 30000,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -115,7 +114,7 @@ class Http {
         // Handle other errors
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           const errorMessage = error.response?.data?.message || error.message
-          toast.error(errorMessage)
+          // toast.error(errorMessage)
         }
 
         return Promise.reject(handleApiError(error))
@@ -137,8 +136,8 @@ class Http {
   private onRefreshSuccess(tokens: AuthTokens) {
     this.accessToken = tokens.accessToken
     this.refreshToken = tokens.refreshToken
-    localStorage.setItem('accessToken', tokens.accessToken)
-    localStorage.setItem('refreshToken', tokens.refreshToken)
+    localStorage.setItem('access_token', tokens.accessToken)
+    localStorage.setItem('refresh_token', tokens.refreshToken)
 
     // Retry all queued requests
     this.refreshSubscribers.forEach((callback) => callback(tokens.accessToken))
@@ -152,8 +151,8 @@ class Http {
   private handleLogout() {
     this.accessToken = ''
     this.refreshToken = ''
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     // Redirect to login page or show login modal
     window.location.href = '/login'
   }
@@ -203,6 +202,11 @@ class Http {
     return `${url}${url.includes('?') ? '&' : '?'}${queryString}`
   }
 
+  public setTokens(token: string) {
+    this.accessToken = token
+    localStorage.setItem('access_token', token)
+  }
+
   // HTTP methods with abort support and query params
   async get<T>({
     url,
@@ -221,31 +225,37 @@ class Http {
     body,
     params,
     ...config
-  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<ApiResponse<T>> {
+  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<
+    ApiResponse<T>
+  > {
     const fullUrl = this.buildUrl(url, params)
     const response = await this.instance.post<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
     return response.data
   }
-  
+
   async put<T>({
     url,
     key,
     body,
     params,
     ...config
-  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<ApiResponse<T>> {
+  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<
+    ApiResponse<T>
+  > {
     const fullUrl = this.buildUrl(url, params)
     const response = await this.instance.put<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
     return response.data
   }
-  
+
   async patch<T>({
     url,
     key,
     body,
     params,
     ...config
-  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<ApiResponse<T>> {
+  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<
+    ApiResponse<T>
+  > {
     const fullUrl = this.buildUrl(url, params)
     const response = await this.instance.patch<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
     return response.data

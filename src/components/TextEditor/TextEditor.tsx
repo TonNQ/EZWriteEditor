@@ -30,7 +30,7 @@ const extensions = [
   SearchAndReplace,
   // FormatPainter.configure({ spacer: true }),
   // Clear,
-  // FontFamily,
+// FontFamily,
   Heading.configure({ spacer: true }),
   FontSize,
   Bold,

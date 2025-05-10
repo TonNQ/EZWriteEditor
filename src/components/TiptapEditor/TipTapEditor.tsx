@@ -6,19 +6,25 @@ import TextStyle from '@tiptap/extension-text-style'
 import Underline from '@tiptap/extension-underline'
 import { type Editor, EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import { useSelector } from 'react-redux'
 import FontSize from '../../extensions/FontSize'
 import KeepHeadingOnEnter from '../../extensions/KeepHeadingOnEnter'
+import { RootState } from '../../store'
 import BoldButton from '../Extensions/BoldButton'
 import FontSizeButton from '../Extensions/FontSizeButton'
 import HeadingButton from '../Extensions/HeadingButton'
 import HistoryButton from '../Extensions/HistoryButton'
 import ItalicButton from '../Extensions/ItalicButton'
+import PrintButton from '../Extensions/PrintButton'
 import SearchReplaceButton from '../Extensions/SearchReplaceButton'
 import StrikeButton from '../Extensions/StrikeButton'
+import SuggestionButton from '../Extensions/SuggestionButton'
 import TextAlignButton from '../Extensions/TextAlignButton/TextAlignButton'
+import TranslateButton from '../Extensions/TranslateButton'
 import UnderlineButton from '../Extensions/UnderlineButton'
 import Suggestions from '../Suggestions/Suggestions'
 import './styles.css'
+import Translation from '../Translation'
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -26,9 +32,9 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   }
 
   return (
-    <div className='sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm'>
-      <div className='mx-auto max-w-5xl px-4'>
-        <div className='flex h-12 items-center justify-between space-x-4'>
+    <div className='z-50 h-[48px] w-full border-b border-gray-200 bg-white shadow-sm'>
+      <div className='mx-auto h-full max-w-5xl px-4'>
+        <div className='flex h-full items-center justify-between space-x-4'>
           <div className='flex items-center space-x-1'>
             <BoldButton editor={editor} />
             <ItalicButton editor={editor} />
@@ -41,6 +47,9 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             <HistoryButton editor={editor} />
             <SearchReplaceButton editor={editor} />
             <TextAlignButton editor={editor} />
+            <PrintButton editor={editor} />
+            <SuggestionButton />
+            <TranslateButton />
           </div>
         </div>
       </div>
@@ -49,6 +58,9 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 }
 
 export default function TipTapEditor() {
+  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
+  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
+
   const extensions = [
     Underline,
     TextStyle.configure({ mergeNestedSpanStyles: true }),
@@ -74,18 +86,29 @@ export default function TipTapEditor() {
   })
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='flex h-full w-full flex-col bg-gray-50'>
       <MenuBar editor={editor} />
-      <div className='mx-auto max-w-[100rem] px-4 py-8'>
-        <div className='flex gap-8'>
+      <div className='mx-auto w-full max-w-[100rem] flex-1 overflow-auto p-4'>
+        <div className='flex min-h-full gap-4'>
           <div className='flex-1'>
-            <div className='h-[80vh] min-h-[calc(100vh-12rem)] rounded-lg border border-gray-200 bg-white p-8 shadow-sm'>
+            <div className='h-full rounded-lg border border-gray-200 bg-white px-8 py-4 shadow-sm'>
               <EditorContent editor={editor} className='prose max-w-none' />
             </div>
           </div>
-          <div className='sticky top-24 h-fit'>
-            <Suggestions editor={editor} />
-          </div>
+          {(isOpenSuggestion || isOpenTranslation) && (
+            <div className='flex max-h-[calc(100vh-132px)] w-72 flex-col gap-4'>
+              {isOpenSuggestion && (
+                <div className='sticky top-0 h-fit'>
+                  <Suggestions editor={editor} />
+                </div>
+              )}
+              {isOpenTranslation && (
+                <div className='sticky top-0 h-fit'>
+                  <Translation />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

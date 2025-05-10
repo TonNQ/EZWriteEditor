@@ -47,7 +47,7 @@ const Register = () => {
 
   return (
     <div className='flex w-full min-w-[400px] flex-col'>
-      <h1 className='text-left text-3xl font-semibold tracking-wide text-blue-900 uppercase'>Register</h1>
+      <h1 className='text-center text-4xl font-bold tracking-wide text-blue-900 uppercase'>Register</h1>
       {/* <p className='text-neutral-5 mt-1 text-sm tracking-wide'>để trở thành thành viên mới của cộng đồng chúng tôi</p> */}
       <div className='text-semantic-cancelled mt-4 min-h-[15px] text-sm leading-[15px] font-semibold'>
         {typeof registerError === 'string' ? registerError : null}
