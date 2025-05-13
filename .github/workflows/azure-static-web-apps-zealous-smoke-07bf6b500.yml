@@ -16,7 +16,7 @@ jobs:
     name: Build and Deploy Job
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4 # Updated to v4
+        uses: actions/checkout@v4
         with:
           submodules: true
           lfs: false
@@ -24,19 +24,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'npm'
+          cache: 'yarn'  # Changed cache to yarn
       - name: Install Dependencies
-        run: npm ci
+        run: yarn install # Changed to yarn install
       - name: Build Application
-        run: npm run build
+        run: yarn build   # Changed to yarn build
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
         uses: azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }} # Use the general token
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           app_location: "/"
           api_location: ""
-          output_location: "dist" # Changed to 'dist' which is the default for vite
-          action: "upload" # Explicitly set the action
-
+          output_location: "dist"
+          action: "upload"
