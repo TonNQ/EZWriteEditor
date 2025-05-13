@@ -40,3 +40,4 @@ jobs:
           api_location: ""
           output_location: "dist"
           action: "upload"
+          skip_app_build: true
