@@ -34,7 +34,7 @@ jobs:
         id: builddeploy
         uses: azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_<GENERATED_HOSTNAME> }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_ZEALOUS_SMOKE_07BF6B500 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           app_location: "/"
           api_location: ""
