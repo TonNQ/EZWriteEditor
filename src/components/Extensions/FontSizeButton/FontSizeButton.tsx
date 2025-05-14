@@ -58,7 +58,6 @@ const FontSizeButton = ({ editor }: FontSizeButtonProps) => {
 
     const updateFontSizeState = () => {
       const attrs = editor.getAttributes('fontSize')
-      console.log('attrs', attrs)
       const currentFontSize = attrs.fontSize
       const matched = fontSizeOptions.find((opt) => opt.size === currentFontSize)
 
@@ -104,8 +103,8 @@ const FontSizeButton = ({ editor }: FontSizeButtonProps) => {
         <BaseButton
           onClick={() => setOpen((prev) => !prev)}
           isActive={open}
-          customClass={cn('border-neutral-400 bg-white px-3 py-1', {
-            'bg-gray-100': open
+          customClass={cn('border-neutral-400 px-3 py-1', {
+            'bg-gray-200': open
           })}
         >
           <div className='flex items-center gap-1'>

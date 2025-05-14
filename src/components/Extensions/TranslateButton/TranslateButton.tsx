@@ -14,7 +14,7 @@ const TranslateButton = () => {
 
   return (
     <BaseButton onClick={toggleOpenTranslation} isActive={isOpenTranslation}>
-      <Translate width={20} height={20} className='text-gray-default' />
+      <Translate width={18} height={18} className='text-gray-default' />
     </BaseButton>
   )
 }

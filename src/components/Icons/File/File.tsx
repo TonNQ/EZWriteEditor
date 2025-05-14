@@ -4,7 +4,7 @@ interface FileProps {
   className?: string
 }
 
-const File = ({ width = 20, height = 20, className = 'text-gray-600' }: FileProps) => {
+const File = ({ width = 18, height = 18, className = 'text-gray-600' }: FileProps) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

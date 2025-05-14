@@ -4,7 +4,7 @@ interface DictionaryProps {
   className?: string
 }
 
-const Dictionary = ({ width = 20, height = 20, className = 'text-gray-600' }: DictionaryProps) => {
+const Dictionary = ({ width = 18, height = 18, className = 'text-gray-600' }: DictionaryProps) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

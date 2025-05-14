@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import TabBar from '../../components/TabBar'
 
 interface MainLayoutProps {
@@ -6,15 +6,18 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const [activeTab, setActiveTab] = useState('compose')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const currentPath = location.pathname.replace('/', '') || 'compose'
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab)
+    navigate(`/${tab}`)
   }
+
   return (
     <div className='relative h-[100vh] w-[100vw]'>
-      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
-      <div className='relative h-[calc(100vh-52px)] max-h-[calc(100vh-52px)]'>{children}</div>
+      <TabBar activeTab={currentPath} onTabChange={handleTabChange} />
+      <div className='relative h-[calc(100vh-48px)] max-h-[calc(100vh-48px)] overflow-auto bg-white'>{children}</div>
     </div>
   )
 }

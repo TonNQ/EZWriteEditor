@@ -4,7 +4,7 @@ interface PrintProps {
   className?: string
 }
 
-const Print = ({ width = 24, height = 24, className = 'text-gray-default' }: PrintProps) => {
+const Print = ({ width = 18, height = 18, className = 'text-gray-default' }: PrintProps) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

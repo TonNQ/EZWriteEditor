@@ -14,7 +14,7 @@ const SuggestionButton = () => {
 
   return (
     <BaseButton onClick={toggleOpenSuggestion} isActive={isOpenSuggestion}>
-      <Suggestion width={20} height={20} className='text-gray-default' />
+      <Suggestion width={18} height={18} className='text-gray-default' />
     </BaseButton>
   )
 }

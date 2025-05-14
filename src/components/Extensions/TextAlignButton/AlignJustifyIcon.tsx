@@ -3,7 +3,7 @@ interface AlignJustifyIconProps {
   height?: number
 }
 
-const AlignJustifyIcon = ({ width = 20, height = 20 }: AlignJustifyIconProps) => {
+const AlignJustifyIcon = ({ width = 18, height = 18 }: AlignJustifyIconProps) => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24'>
       <g fill='none'>

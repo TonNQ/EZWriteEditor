@@ -3,7 +3,7 @@ interface LogOutProps {
   height?: number
 }
 
-const LogOut = ({ width = 20, height = 20 }: LogOutProps) => {
+const LogOut = ({ width = 18, height = 18 }: LogOutProps) => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24'>
       <path

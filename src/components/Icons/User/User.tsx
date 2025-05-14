@@ -3,7 +3,7 @@ interface UserProps {
   height?: number
 }
 
-const User = ({ width = 20, height = 20 }: UserProps) => {
+const User = ({ width = 18, height = 18 }: UserProps) => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 32 32'>
       <path
