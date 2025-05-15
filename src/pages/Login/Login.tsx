@@ -32,6 +32,7 @@ const Login = () => {
   }, [dispatch])
 
   useEffect(() => {
+    console.log('loginError', loginError)
     setFormErrors(loginError, setError)
   }, [loginError, setError])
 
@@ -47,8 +48,8 @@ const Login = () => {
   return (
     <div className='flex w-full min-w-[400px] flex-col'>
       <h1 className='text-center text-4xl font-bold tracking-wide text-blue-900 uppercase'>Login</h1>
-      <div className='text-semantic-cancelled mt-4 min-h-[15px] text-sm leading-[15px] font-semibold'>
-        {typeof loginError === 'string' ? loginError : null}
+      <div className='text-red-500 mt-4 min-h-[15px] text-sm leading-[15px] font-semibold'>
+        {typeof loginError?.detail === 'string' ? loginError?.detail : null}
       </div>
       <form action='' className='mt-4' onSubmit={onSubmit}>
         <Input name='email' control={control} type='text' placeholder='Enter your email' labelName='Email' />

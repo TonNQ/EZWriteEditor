@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, HttpStatusCode } from 'axios'
 import { ERROR_MESSAGE } from '../constants/message'
-import { ApiResponse, AuthTokens } from '../types/common.type'
+import { ApiResponse, AuthTokens, RefreshTokenResponse } from '../types/common.type'
 
 // Constants
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -9,7 +9,7 @@ export const handleApiError = (error: unknown): ApiResponse<any> => {
   if (error instanceof Error && error.name === 'AbortError') {
     return {
       data: [],
-      errors: { request: ['Request aborted'] },
+      errors: { request: 'Request aborted' },
       status: 499
     }
   }
@@ -25,7 +25,7 @@ export const handleApiError = (error: unknown): ApiResponse<any> => {
 
   return {
     data: [],
-    errors: { request: [error instanceof Error ? error.message : 'Unknown error'] },
+    errors: { request: error instanceof Error ? error.message : 'Unknown error' },
     status: 500
   }
 }
@@ -77,29 +77,40 @@ class Http {
       },
       async (error: AxiosError<ApiResponse>) => {
         const originalRequest = error.config
-
+        console.log('error', error)
         // Handle token expiration
         if (
           error.response?.status === HttpStatusCode.Unauthorized &&
-          error.response?.data?.message === ERROR_MESSAGE.TOKEN_EXPIRED_MESSAGE &&
-          !this.isRefreshing
+          error.response?.data?.message === ERROR_MESSAGE.TOKEN_EXPIRED_MESSAGE
         ) {
-          this.isRefreshing = true
+          if (!this.isRefreshing) {
+            this.isRefreshing = true
 
-          try {
-            const tokens = await this.refreshAccessToken()
-            this.onRefreshSuccess(tokens)
+            try {
+              const tokens = await this.refreshAccessToken()
+              this.onRefreshSuccess(tokens)
 
-            // Retry the original request
-            if (originalRequest) {
-              originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`
-              return this.instance(originalRequest)
+              // Retry the original failed request
+              if (originalRequest) {
+                originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`
+                return this.instance(originalRequest)
+              }
+            } catch (refreshError) {
+              this.onRefreshFailure()
+              return Promise.reject(refreshError)
+            } finally {
+              this.isRefreshing = false
             }
-          } catch (refreshError) {
-            this.onRefreshFailure()
-            return Promise.reject(refreshError)
-          } finally {
-            this.isRefreshing = false
+          } else {
+            // If refresh is already happening, queue the failed request
+            return new Promise((resolve) => {
+              this.refreshSubscribers.push((token: string) => {
+                if (originalRequest) {
+                  originalRequest.headers.Authorization = `Bearer ${token}`
+                  resolve(this.instance(originalRequest))
+                }
+              })
+            })
           }
         }
 
@@ -108,7 +119,7 @@ class Http {
           error.response?.status === HttpStatusCode.Unauthorized &&
           error.response?.data?.message === ERROR_MESSAGE.REFRESH_TOKEN_EXPIRED_MESSAGE
         ) {
-          this.handleLogout()
+          // this.handleLogout()
         }
 
         // Handle other errors
@@ -125,11 +136,22 @@ class Http {
 
   private async refreshAccessToken(): Promise<AuthTokens> {
     try {
-      const response = await axios.post<ApiResponse<AuthTokens>>(`${BASE_URL}/auth/refresh`, {
-        refreshToken: this.refreshToken
-      })
-      return response.data.data
+      const response = await axios.post<ApiResponse<RefreshTokenResponse>>(
+        `${BASE_URL}/auth/api/token/refresh/`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      return {
+        accessToken: response.data.data.access,
+        refreshToken: this.refreshToken // Keep the existing refresh token since it's managed by cookies
+      }
     } catch (error) {
+      console.log('Refresh token API error:', error)
       throw error
     }
   }
@@ -146,14 +168,13 @@ class Http {
   }
 
   private onRefreshFailure() {
-    this.handleLogout()
+    // this.handleLogout()
   }
 
   private handleLogout() {
     this.accessToken = ''
     this.refreshToken = ''
     localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
     // Redirect to login page or show login modal
     window.location.href = '/login'
   }

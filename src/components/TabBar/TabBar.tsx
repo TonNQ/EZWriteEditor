@@ -1,7 +1,10 @@
 // import { Book, ChevronDown, FileText, LogOut, Settings, SettingsIcon, User } from 'lucide-react'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { AppDispatch } from '../../store'
+import { logoutThunk } from '../../store/auth/auth.slice'
 import { getInitialFromName, getRandomDarkColor } from '../../utils/helpers'
 import ChevronDown from '../Icons/ChevronDown'
 import Dictionary from '../Icons/Dictionary'
@@ -19,6 +22,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>()
 
   const tabs = [
     { id: 'compose', label: 'Soạn thảo', icon: File },
@@ -49,9 +53,9 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
 
   const handleLogout = async () => {
     try {
-      navigate('/login')
+      await dispatch(logoutThunk()).unwrap()
       localStorage.removeItem('access_token')
-      // await dispatch(logoutThunk()).unwrap()
+      navigate('/login')
     } catch (error) {
       console.error('Logout failed:', error)
     }

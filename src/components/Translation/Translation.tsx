@@ -74,7 +74,7 @@ const Translation = () => {
 
   return (
     <div
-      className={cn('w-72 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
+      className={cn('w-80 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
         'max-h-[calc(50vh-76px)]': isOpenSuggestion,
         'max-h-[calc(100vh-132px)]': !isOpenSuggestion
       })}

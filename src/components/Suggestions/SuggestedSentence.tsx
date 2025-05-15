@@ -1,16 +1,24 @@
+import { HttpStatusCode } from 'axios'
 import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
 import { cn } from '../../libs/tailwind/utils'
+import feedbackInstance from '../../services/feedback.api'
+import { updateSentenceInSearchResults } from '../../store/suggestion/suggestion.slice'
+import { Sentence } from '../../types/sentence.type'
 import CheckFill from '../Icons/CheckFill'
 import FeedbackOutline from '../Icons/FeedbackOutline'
 
 interface SuggestedSentenceProps {
-  sentence: string
+  sentence: string | Sentence
   onApply: () => void
   disabled?: boolean
   isSearch?: boolean
 }
 
 const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = true }: SuggestedSentenceProps) => {
+  const dispatch = useDispatch()
   const [showFeedbackPopup, setShowFeedbackPopup] = useState(false)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const [hoveredRating, setHoveredRating] = useState<number | null>(null)
@@ -40,6 +48,9 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
   const handleFeedbackClick = () => {
     if (!disabled) {
       setShowFeedbackPopup(true)
+      if (isSearch && (sentence as Sentence).isVoted) {
+        setSelectedRating((sentence as Sentence).userRating)
+      }
     }
   }
 
@@ -47,14 +58,78 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
     setSelectedRating(rating)
   }
 
-  const handleSubmit = () => {
-    // Here you would typically send the feedback to your backend
-    console.log(`Submitted rating: ${selectedRating}`)
+  const handleSubmit = async () => {
+    if (!selectedRating || !isSearch) return
+
+    try {
+      let response
+      const sentenceId = (sentence as Sentence).sentence_id
+      if ((sentence as Sentence).isVoted) {
+        response = await feedbackInstance.updateVote({
+          sentence_id: sentenceId,
+          index_name: ELASTIC_SEARCH_INDEX,
+          rating: selectedRating
+        })
+      } else {
+        response = await feedbackInstance.vote({
+          sentence_id: sentenceId,
+          index_name: ELASTIC_SEARCH_INDEX,
+          rating: selectedRating
+        })
+      }
+
+      if (response.status === HttpStatusCode.Created || response.status === HttpStatusCode.Ok) {
+        toast.success('Thank you for your feedback!')
+        const updatedSentence: Sentence = {
+          ...(sentence as Sentence),
+          ...(response.data as Partial<Sentence>),
+          userRating: selectedRating,
+          isVoted: true
+        }
+        dispatch(updateSentenceInSearchResults(updatedSentence))
+      } else {
+        toast.error('Failed to submit feedback. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error)
+      toast.error('Failed to submit feedback. Please try again.')
+    }
+
     setShowFeedbackPopup(false)
     setSelectedRating(null)
   }
 
   const handleCancel = () => {
+    setShowFeedbackPopup(false)
+    setSelectedRating(null)
+  }
+
+  const handleRemoveVote = async () => {
+    if (!isSearch || !(sentence as Sentence).isVoted) return
+
+    try {
+      const response = await feedbackInstance.removeVote({
+        sentence_id: (sentence as Sentence).sentence_id,
+        index_name: ELASTIC_SEARCH_INDEX
+      })
+
+      if (response.status === HttpStatusCode.Ok || response.status === HttpStatusCode.NoContent) {
+        toast.success('Your vote has been removed.')
+        const updatedSentence: Sentence = {
+          ...(sentence as Sentence),
+          ...(response.data as Partial<Sentence>),
+          isVoted: false,
+          userRating: 0
+        }
+        dispatch(updateSentenceInSearchResults(updatedSentence))
+      } else {
+        toast.error('Failed to remove vote. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error removing vote:', error)
+      toast.error('Failed to remove vote. Please try again.')
+    }
+
     setShowFeedbackPopup(false)
     setSelectedRating(null)
   }
@@ -93,14 +168,56 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
     }
   }
 
+  const getRatingTextColor = (rating: number) => {
+    if (rating < 1.5) {
+      return 'text-red-500/90 hover:text-red-500'
+    } else if (rating < 2.5) {
+      return 'text-orange-500/90 hover:text-orange-500'
+    } else if (rating < 3.5) {
+      return 'text-yellow-500/90 hover:text-yellow-500'
+    } else if (rating < 4.5) {
+      return 'text-lime-500/90 hover:text-lime-500'
+    } else {
+      return 'text-green-500/90 hover:text-green-500'
+    }
+  }
+
+  const getRatingBackgroundColor = (rating: number) => {
+    if (rating < 1.5) {
+      return 'bg-red-500'
+    } else if (rating < 2.5) {
+      return 'bg-orange-500'
+    } else if (rating < 3.5) {
+      return 'bg-yellow-500'
+    } else if (rating < 4.5) {
+      return 'bg-lime-500'
+    } else {
+      return 'bg-green-500'
+    }
+  }
+
+  const ratingTextColor = (sentence as Sentence).isVoted ? getRatingTextColor((sentence as Sentence).userRating) : ''
+
   return (
     <div
       className={cn('flex items-center justify-between rounded-lg border border-gray-200 p-2 hover:bg-gray-50', {
         'bg-blue-50 hover:bg-blue-100': !isSearch
       })}
     >
-      <p className='text-left text-xs text-gray-700'>{sentence}</p>
+      <p className='text-left text-xs text-gray-700'>
+        {isSearch ? (sentence as Sentence).content : (sentence as string)}
+      </p>
       <div className='ml-4 flex items-center'>
+        {isSearch && (sentence as Sentence).rating > 0 && (
+          <div
+            className={cn(
+              'rounded-full px-2 py-1 text-xs text-white',
+              getRatingBackgroundColor((sentence as Sentence).rating)
+            )}
+          >
+            {(sentence as Sentence).rating}
+          </div>
+        )}
         {isSearch && (
           <div className='relative' ref={iconRef}>
             <FeedbackOutline
@@ -108,7 +225,8 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
               height={20}
               className={cn('rounded-full', {
                 'cursor-not-allowed text-gray-400': disabled,
-                'cursor-pointer text-blue-400 hover:text-blue-500': !disabled
+                'cursor-pointer text-blue-400 hover:text-blue-500': !disabled,
+                [ratingTextColor]: (sentence as Sentence).isVoted
               })}
               onClick={handleFeedbackClick}
             />
@@ -163,16 +281,28 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
                   >
                     Cancel
                   </button>
-                  <button
-                    className={cn(
-                      'cursor-pointer rounded px-3 py-1 text-xs text-white',
-                      selectedRating ? 'bg-blue-500 hover:bg-blue-600' : 'cursor-not-allowed bg-gray-300'
+                  <div className='flex items-center space-x-2'>
+                    {(sentence as Sentence).isVoted && isSearch && (
+                      <button
+                        className='cursor-pointer rounded px-3 py-1 text-xs text-red-600 hover:bg-red-100'
+                        onClick={handleRemoveVote}
+                      >
+                        Remove
+                      </button>
                     )}
-                    onClick={handleSubmit}
-                    disabled={!selectedRating}
-                  >
-                    Submit
-                  </button>
+                    <button
+                      className={cn(
+                        'cursor-pointer rounded px-3 py-1 text-xs text-white',
+                        selectedRating ? 'bg-blue-500 hover:bg-blue-600' : 'cursor-not-allowed bg-gray-300'
+                      )}
+                      onClick={handleSubmit}
+                      disabled={
+                        !selectedRating && !(isSearch && (sentence as Sentence).isVoted && selectedRating === null)
+                      }
+                    >
+                      {isSearch && (sentence as Sentence).isVoted ? 'Update' : 'Submit'}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
