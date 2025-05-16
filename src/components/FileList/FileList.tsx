@@ -1,12 +1,12 @@
-import { FileItem } from '../../pages/FileManagement/FileManagement'
+import { MarkdownFile } from '../../types/markdownFile.type'
 import FileListItem from '../FileListItem'
 import File from '../Icons/File'
 
 interface FileListProps {
-  files: FileItem[]
-  onFileSelect: (file: FileItem) => void
-  onFileDelete: (fileId: string) => void
-  selectedFileId?: string
+  files: MarkdownFile[]
+  onFileSelect: (file: MarkdownFile) => void
+  onFileDelete: (fileId: number) => void
+  selectedFileId?: number
 }
 
 export function FileList({ files, onFileSelect, onFileDelete, selectedFileId }: FileListProps) {
@@ -25,7 +25,7 @@ export function FileList({ files, onFileSelect, onFileDelete, selectedFileId }: 
       <div className='grid grid-cols-12 bg-gray-200 p-3 text-sm font-medium text-gray-500'>
         <div className='col-span-6 text-left'>Name</div>
         <div className='col-span-3 text-left'>Last Modified</div>
-        <div className='col-span-2 text-left'>Size</div>
+        <div className='col-span-2 text-left'>Versions</div>
         <div className='col-span-1 text-left'></div>
       </div>
       <div className='divide-y divide-gray-300'>

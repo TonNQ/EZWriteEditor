@@ -1,107 +1,66 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import FileDetails from '../../components/FileDetails'
 import FileList from '../../components/FileList'
 import Search from '../../components/Icons/Search/Search'
-
-export type FileItem = {
-  id: string
-  name: string
-  type: string
-  size: number
-  lastModified: Date
-  url: string
-}
+import { AppDispatch, RootState } from '../../store'
+import { fetchMarkdownFiles } from '../../store/slices/markdownFiles.slice'
+import { MarkdownFile } from '../../types/markdownFile.type'
 
 const FileManagement = () => {
-  const [files, setFiles] = useState<FileItem[]>([])
-  const [selectedFile, setSelectedFile] = useState<FileItem | null>(null)
+  const dispatch = useDispatch<AppDispatch>()
+  const { files: markdownFiles, loading, error } = useSelector((state: RootState) => state.markdownFiles)
+  const [selectedFile, setSelectedFile] = useState<MarkdownFile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'date' | 'size'>('date')
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
-  // Simulate fetching files from an API
   useEffect(() => {
-    // This would be replaced with an actual API call
-    const mockFiles: FileItem[] = [
-      {
-        id: '1',
-        name: 'Project Proposal.pdf',
-        type: 'application/pdf',
-        size: 2500000,
-        lastModified: new Date(2023, 5, 15),
-        url: '/files/project-proposal.pdf'
-      },
-      {
-        id: '2',
-        name: 'Meeting Notes.docx',
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        size: 150000,
-        lastModified: new Date(2023, 6, 20),
-        url: '/files/meeting-notes.docx'
-      },
-      {
-        id: '3',
-        name: 'Budget.xlsx',
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        size: 500000,
-        lastModified: new Date(2023, 7, 5),
-        url: '/files/budget.xlsx'
-      },
-      {
-        id: '4',
-        name: 'Team Photo.jpg',
-        type: 'image/jpeg',
-        size: 3500000,
-        lastModified: new Date(2023, 8, 10),
-        url: '/files/team-photo.jpg'
-      },
-      {
-        id: '5',
-        name: 'Presentation.pptx',
-        type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        size: 4200000,
-        lastModified: new Date(2023, 9, 25),
-        url: '/files/presentation.pptx'
-      }
-    ]
-    setFiles(mockFiles)
-  }, [])
+    dispatch(fetchMarkdownFiles())
+  }, [dispatch])
 
-  const handleFileSelect = (file: FileItem) => {
+  const handleFileSelect = (file: MarkdownFile) => {
     setSelectedFile(file)
     setIsDetailsOpen(true)
   }
 
-  const handleFileUpload = (newFile: FileItem) => {
-    setFiles((prevFiles) => [...prevFiles, newFile])
+  const handleFileUpload = (newFile: MarkdownFile) => {
+    // This will be implemented when we add file upload functionality
   }
 
-  const handleFileDelete = (fileId: string) => {
-    setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId))
+  const handleFileDelete = (fileId: number) => {
+    // This will be implemented when we add file delete functionality
     if (selectedFile?.id === fileId) {
       setSelectedFile(null)
       setIsDetailsOpen(false)
     }
   }
 
-  const filteredFiles = files.filter((file) => file.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredFiles = markdownFiles.filter((file) => file.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
   const sortedFiles = [...filteredFiles].sort((a, b) => {
     if (sortBy === 'name') {
-      return a.name.localeCompare(b.name)
+      return a.title.localeCompare(b.title)
     } else if (sortBy === 'date') {
-      return b.lastModified.getTime() - a.lastModified.getTime()
+      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
     } else {
-      return b.size - a.size
+      return b.version_count - a.version_count
     }
   })
+
+  if (loading) {
+    return <div className='flex h-full items-center justify-center'>Loading...</div>
+  }
+
+  if (error) {
+    return <div className='flex h-full items-center justify-center text-red-500'>{error}</div>
+  }
 
   return (
     <div className='flex h-full'>
       <div className={`flex-1 p-6 ${isDetailsOpen ? 'w-2/3' : 'w-full'}`}>
         <div className='mb-6 flex items-center justify-between'>
           <h1 className='text-2xl font-bold'>My Files</h1>
-          {/* <FileUploader onFileUpload={handleFileUpload} /> */}
         </div>
 
         <div className='mb-6 flex items-center space-x-4'>

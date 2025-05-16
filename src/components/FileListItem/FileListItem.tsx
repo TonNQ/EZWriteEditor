@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { FileItem } from '../../pages/FileManagement/FileManagement'
-import { formatDate, formatFileSize } from '../../utils/helpers'
+import { MarkdownFile } from '../../types/markdownFile.type'
+import { formatDate } from '../../utils/helpers'
 import Button from '../Button'
 import Delete from '../Icons/Delete'
 import File from '../Icons/File'
 import MoreVertical from '../Icons/MoreVertical'
 
 interface FileListItemProps {
-  file: FileItem
+  file: MarkdownFile
   isSelected: boolean
-  onSelect: (file: FileItem) => void
-  onDelete: (fileId: string) => void
+  onSelect: (file: MarkdownFile) => void
+  onDelete: (fileId: number) => void
 }
 
 const FileListItem = ({ file, isSelected, onSelect, onDelete }: FileListItemProps) => {
@@ -37,34 +37,37 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete }: FileListItemProp
     >
       <div className='col-span-6 flex items-center space-x-3'>
         <File className='text-gray-400' />
-        <span className='truncate'>{file.name}</span>
+        <span className='truncate'>{file.title}</span>
       </div>
-      <div className='col-span-3 text-left text-sm text-gray-500'>{formatDate(file.lastModified)}</div>
-      <div className='col-span-2 text-left text-sm text-gray-500'>{formatFileSize(file.size)}</div>
-      <div
-        className='relative col-span-1 flex justify-end text-left'
-        onClick={(e) => e.stopPropagation()}
-        ref={menuRef}
-      >
-        <button
-          onClick={() => setMenuOpen((prev) => !prev)}
-          className='rounded p-1 hover:cursor-pointer hover:bg-gray-200'
+      <div className='col-span-3 text-left text-sm text-gray-500'>{formatDate(new Date(file.updated_at))}</div>
+      <div className='col-span-2 text-left text-sm text-gray-500'>{file.version_count}</div>
+      <div className='col-span-1 text-right'>
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={(e) => {
+            e.stopPropagation()
+            setMenuOpen(!menuOpen)
+          }}
         >
-          <MoreVertical />
-        </button>
-
+          <MoreVertical className='h-5 w-5 text-gray-500' />
+        </Button>
         {menuOpen && (
-          <div className='absolute top-full right-0 z-10 mt-1 w-32 rounded-md border border-gray-200 bg-white shadow-lg'>
-            <Button
-              title='Delete'
-              onClick={() => {
+          <div
+            ref={menuRef}
+            className='ring-opacity-5 absolute right-4 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black'
+          >
+            <button
+              className='flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100'
+              onClick={(e) => {
+                e.stopPropagation()
                 onDelete(file.id)
                 setMenuOpen(false)
               }}
-              iconComponent={<Delete className='mr-2' />}
-              className='flex w-full items-center px-3 py-2 text-sm font-normal text-red-600 hover:cursor-pointer hover:bg-gray-100'
-              classTitle='font-normal'
-            />
+            >
+              <Delete className='mr-2 h-4 w-4' />
+              Delete
+            </button>
           </div>
         )}
       </div>
