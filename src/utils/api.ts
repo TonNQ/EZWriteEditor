@@ -119,7 +119,7 @@ class Http {
           error.response?.status === HttpStatusCode.Unauthorized &&
           error.response?.data?.message === ERROR_MESSAGE.REFRESH_TOKEN_EXPIRED_MESSAGE
         ) {
-          // this.handleLogout()
+          this.handleLogout()
         }
 
         // Handle other errors
@@ -168,7 +168,7 @@ class Http {
   }
 
   private onRefreshFailure() {
-    // this.handleLogout()
+    this.handleLogout()
   }
 
   private handleLogout() {
@@ -176,7 +176,7 @@ class Http {
     this.refreshToken = ''
     localStorage.removeItem('access_token')
     // Redirect to login page or show login modal
-    window.location.href = '/login'
+    // window.location.href = '/login'
   }
 
   // Cancel a specific request by its key
