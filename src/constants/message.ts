@@ -6,7 +6,7 @@ export const ERROR_MESSAGE = {
   IMAGE_SIZE_EXCEEDS_LIMIT: 'Dung lượng ảnh tải lên của bạn quá lớn. Vui lòng chỉ chọn ảnh có kích thước nhỏ hơn 5MB',
   INVALID_PASSWORD: 'Mật khẩu hiện tại không đúng',
   username_already_exists: 'Tên tài khoản đã tồn tại',
-  TOKEN_EXPIRED_MESSAGE: 'Token has expired',
+  TOKEN_EXPIRED_MESSAGE: 'Authentication required',
   REFRESH_TOKEN_EXPIRED_MESSAGE: 'Refresh token has expired'
 }
 

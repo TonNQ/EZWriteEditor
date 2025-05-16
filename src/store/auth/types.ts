@@ -4,7 +4,7 @@ export interface AuthState {
   registerInProgress: boolean
   registerError: string | Record<string, string[]> | { errors: Record<string, string[]> } | null
   loginInProgress: boolean
-  loginError: string | null
+  loginError: Record<string, string> | null
   logoutInProgress: boolean
   logoutError: string | null
 }

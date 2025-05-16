@@ -96,7 +96,7 @@ export default function TipTapEditor() {
             </div>
           </div>
           {(isOpenSuggestion || isOpenTranslation) && (
-            <div className='flex max-h-[calc(100vh-132px)] w-72 flex-col gap-4'>
+            <div className='flex max-h-[calc(100vh-132px)] w-80 flex-col gap-4'>
               {isOpenSuggestion && (
                 <div className='sticky top-0 h-fit'>
                   <Suggestions editor={editor} />

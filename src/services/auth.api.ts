@@ -24,6 +24,10 @@ export interface LogoutResponse {
   success: boolean
 }
 
+export interface RefreshTokenResponse {
+  access: string
+}
+
 export const loginApi = async (body: LoginBody, signal?: AbortSignal): Promise<ApiResponse<AuthResponse>> => {
   try {
     const response = await http.post<AuthResponse>({
@@ -77,6 +81,23 @@ export const logoutApi = async (signal?: AbortSignal): Promise<ApiResponse<Logou
   } catch (error) {
     console.error('Logout API error:', error)
     return error as ApiResponse<LogoutResponse>
+  }
+}
+
+export const refreshToken = async (signal?: AbortSignal): Promise<ApiResponse<RefreshTokenResponse>> => {
+  try {
+    const response = await http.post<RefreshTokenResponse>({
+      url: '/auth/api/refresh/',
+      key: 'refresh',
+      signal
+    })
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data
+    }
+  } catch (error) {
+    console.log('Refresh token API error:', error)
+    return error as ApiResponse<RefreshTokenResponse>
   }
 }
 
