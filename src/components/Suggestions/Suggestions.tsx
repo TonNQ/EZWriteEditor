@@ -23,6 +23,7 @@ interface SuggestionsProps {
 const Suggestions = ({ editor }: SuggestionsProps) => {
   const dispatch = useDispatch()
   const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
+  const currentLanguage = useSelector((state: RootState) => state.editor.language)
   const { searchResults, suggestResults, isLoadingSearch, isLoadingSuggest } = useSelector(
     (state: RootState) => state.suggestion
   )
@@ -56,7 +57,8 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         const { data } = await sentencesInstance.search(
           {
             q: query,
-            index: ELASTIC_SEARCH_INDEX
+            index: ELASTIC_SEARCH_INDEX,
+            lang: currentLanguage
           },
           searchAbortControllerRef.current.signal
         )
@@ -69,7 +71,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         dispatch(setStoreSearchResults({ results: [], isLoading: false }))
       }
     },
-    [dispatch]
+    [dispatch, currentLanguage]
   )
 
   const fetchSuggestResults = useCallback(
@@ -88,7 +90,8 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
       try {
         const { data } = await sentencesInstance.suggest(
           {
-            user_input: input
+            user_input: input,
+            lang: currentLanguage
           },
           suggestAbortControllerRef.current.signal
         )
@@ -101,7 +104,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         dispatch(setStoreSuggestResults({ results: [], isLoading: false }))
       }
     },
-    [dispatch]
+    [dispatch, currentLanguage]
   )
 
   // Fetch search results first (faster API)
@@ -204,7 +207,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
             const fromPos = paragraphStart + startOffset
             const toPos = fromPos + lastSentence.length
 
-            tr.replaceWith(fromPos, toPos, state.schema.text(suggestion))
+            tr.replaceWith(fromPos, toPos, state.schema.text(` ${suggestion}`))
             return true
           })
           .run()
