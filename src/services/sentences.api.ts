@@ -1,16 +1,17 @@
 import { HttpStatusCode } from 'axios'
-import { ELASTIC_SEARCH_INDEX } from '../constants/common'
 import { ApiResponse } from '../types/common.type'
-import http from '../utils/api'
 import { Sentence } from '../types/sentence.type'
+import http from '../utils/api'
 
 interface SearchParams {
   index?: string
   q: string
+  lang?: string
 }
 
 interface SuggestParams {
   user_input: string
+  lang?: string
 }
 
 const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<ApiResponse<Sentence[]>> => {
@@ -18,10 +19,7 @@ const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<Ap
     const response = await http.get<{ results: Sentence[] }>({
       url: '/api/search/',
       key: 'search',
-      params: {
-        index: params.index || ELASTIC_SEARCH_INDEX,
-        q: params.q
-      },
+      params,
       signal
     })
     console.log('response', response)

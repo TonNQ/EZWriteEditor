@@ -15,6 +15,7 @@ import FontSizeButton from '../Extensions/FontSizeButton'
 import HeadingButton from '../Extensions/HeadingButton'
 import HistoryButton from '../Extensions/HistoryButton'
 import ItalicButton from '../Extensions/ItalicButton'
+import LanguageButton from '../Extensions/LanguageButton'
 import PrintButton from '../Extensions/PrintButton'
 import SearchReplaceButton from '../Extensions/SearchReplaceButton'
 import StrikeButton from '../Extensions/StrikeButton'
@@ -23,8 +24,8 @@ import TextAlignButton from '../Extensions/TextAlignButton/TextAlignButton'
 import TranslateButton from '../Extensions/TranslateButton'
 import UnderlineButton from '../Extensions/UnderlineButton'
 import Suggestions from '../Suggestions/Suggestions'
-import './styles.css'
 import Translation from '../Translation'
+import './styles.css'
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) {
@@ -48,6 +49,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             <SearchReplaceButton editor={editor} />
             <TextAlignButton editor={editor} />
             <PrintButton editor={editor} />
+            <LanguageButton />
             <SuggestionButton />
             <TranslateButton />
           </div>
