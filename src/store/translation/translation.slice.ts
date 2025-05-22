@@ -13,9 +13,12 @@ const translationSlice = createSlice({
   reducers: {
     setIsOpenTranslation(state, action: PayloadAction<boolean>) {
       state.isOpenTranslation = action.payload
+    },
+    resetTranslationState(state) {
+      state = initialState
     }
   }
 })
 
-export const { setIsOpenTranslation } = translationSlice.actions
+export const { setIsOpenTranslation, resetTranslationState } = translationSlice.actions
 export default translationSlice.reducer

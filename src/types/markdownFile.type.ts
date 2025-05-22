@@ -6,6 +6,7 @@ export interface MarkdownFile {
   updated_at: string
   latest_version: MarkdownVersion
   version_count: number
+  content?: string
 }
 
 export interface MarkdownVersion {

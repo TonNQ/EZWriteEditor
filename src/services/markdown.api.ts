@@ -1,4 +1,6 @@
 import { HttpStatusCode } from 'axios'
+import { toast } from 'react-toastify'
+import { SUCCESS_MESSAGE } from '../constants/message'
 import { ApiResponse } from '../types/common.type'
 import {
   CreateMarkdownFileBody,
@@ -38,6 +40,7 @@ const createMarkdownFile = async (
       body,
       signal
     })
+    toast.success(SUCCESS_MESSAGE.SAVE_MARKDOWN_FILE)
 
     return {
       status: response.status || HttpStatusCode.Ok,

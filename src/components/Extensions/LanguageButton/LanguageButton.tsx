@@ -70,7 +70,7 @@ const LanguageButton = () => {
         <BaseButton
           onClick={() => setOpen((prev) => !prev)}
           isActive={open}
-          customClass={cn('border-neutral-400 bg-white px-3 py-1', {
+          customClass={cn('border-neutral-400 px-3 py-1', {
             'bg-gray-100': open
           })}
         >

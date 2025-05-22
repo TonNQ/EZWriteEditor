@@ -6,8 +6,9 @@ import TextStyle from '@tiptap/extension-text-style'
 import Underline from '@tiptap/extension-underline'
 import { type Editor, EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import BaseButton from '../../components/Extensions/BaseButton'
 import BoldButton from '../../components/Extensions/BoldButton'
 import FontSizeButton from '../../components/Extensions/FontSizeButton'
@@ -15,6 +16,7 @@ import HeadingButton from '../../components/Extensions/HeadingButton'
 import HistoryButton from '../../components/Extensions/HistoryButton'
 import ImportDocxButton from '../../components/Extensions/ImportDocxButton'
 import ItalicButton from '../../components/Extensions/ItalicButton'
+import LanguageButton from '../../components/Extensions/LanguageButton'
 import PrintButton from '../../components/Extensions/PrintButton'
 import SaveFileButton from '../../components/Extensions/SaveFileButton'
 import SearchReplaceButton from '../../components/Extensions/SearchReplaceButton'
@@ -32,14 +34,22 @@ import Translation from '../../components/Translation'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
 import FontSize from '../../extensions/FontSize'
 import KeepHeadingOnEnter from '../../extensions/KeepHeadingOnEnter'
+import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
+import { setTitle } from '../../store/editor/editor.slice'
 import './styles.css'
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
   const [isOpen, setIsOpen] = useState<boolean>(true)
+  const dispatch = useDispatch()
+  const title = useSelector((state: RootState) => state.editor.title)
 
   if (!editor) {
     return null
+  }
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setTitle(e.target.value))
   }
 
   return (
@@ -49,6 +59,8 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           <div className='flex items-center'>
             <Document width={28} height={28} />
             <input
+              value={title}
+              onChange={handleTitleChange}
               placeholder='Untitled'
               className='ml-2 w-full border-none bg-transparent text-base font-medium text-gray-500 placeholder-gray-400 outline-none'
             />
@@ -62,6 +74,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
         <div className='flex flex-row items-center gap-1'>
           <ImportDocxButton editor={editor} />
           <SaveFileButton editor={editor} />
+          <PrintButton editor={editor} />
           <VerticalSeparate />
           <BoldButton editor={editor} />
           <ItalicButton editor={editor} />
@@ -77,7 +90,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           <VerticalSeparate />
           <TextAlignButton editor={editor} />
           <VerticalSeparate />
-          <PrintButton editor={editor} />
+          <LanguageButton />
           <VerticalSeparate />
           <SuggestionButton />
           <TranslateButton />
@@ -124,8 +137,10 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 }
 
 export default function TipTapEditor() {
+  const { id } = useParams()
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
   const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
+  const dispatch = useDispatch()
 
   const extensions = [
     Underline,
@@ -144,12 +159,30 @@ export default function TipTapEditor() {
     })
   ]
 
-  const content = ``
-
   const editor = useEditor({
     extensions,
-    content
+    content: ''
   })
+
+  useEffect(() => {
+    const fetchMarkdownFile = async () => {
+      if (id) {
+        try {
+          const response = await markdownInstance.getMarkdownFileById(id)
+          if (response.data) {
+            dispatch(setTitle(response.data.title))
+            if (editor) {
+              editor.commands.setContent(response.data.content || '')
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching markdown file:', error)
+        }
+      }
+    }
+
+    fetchMarkdownFile()
+  }, [id, editor, dispatch])
 
   return (
     <div className='flex h-full w-full flex-col bg-gray-50'>

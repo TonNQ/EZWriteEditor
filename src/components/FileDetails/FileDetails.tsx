@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom'
+import { getEditorPage } from '../../routes/path'
 import { MarkdownFile } from '../../types/markdownFile.type'
 import { formatDate } from '../../utils/helpers'
 import Button from '../Button'
+import BaseButton from '../Extensions/BaseButton'
 import Close from '../Icons/Close'
 import Delete from '../Icons/Delete'
-import Download from '../Icons/Download'
 import Edit from '../Icons/Edit'
 
 interface FileDetailsProps {
@@ -13,11 +15,19 @@ interface FileDetailsProps {
 }
 
 const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
+  const navigate = useNavigate()
+
+  const navigateToEditFilePage = () => {
+    navigate(getEditorPage(file.id.toString()))
+  }
+
   return (
     <div className='flex h-full flex-col p-6'>
       <div className='mb-6 flex items-center justify-between'>
-        <h2 className='text-xl font-semibold'>File Details</h2>
-        <Button title='' onClick={onClose} classButton='p-1 hover:bg-gray-100 rounded-full' iconComponent={<Close />} />
+        <h2 className='flex-1 text-left text-xl font-semibold'>File Details</h2>
+        <BaseButton onClick={onClose} customClass='p-1 hover:bg-gray-50 rounded-full w-fit'>
+          <Close />
+        </BaseButton>
       </div>
 
       <div className='mb-6 space-y-4'>
@@ -50,17 +60,17 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
       <div className='mt-auto space-y-3'>
         <Button
           title='Edit'
-          onClick={() => window.open(`/editor/${file.id}`, '_blank')}
+          onClick={navigateToEditFilePage}
           classButton='w-full border border-gray-200 rounded-lg hover:bg-gray-50'
           iconComponent={<Edit />}
         />
 
-        <Button
+        {/* <Button
           title='Download'
           onClick={() => window.open(file.latest_version.download_url, '_blank')}
           classButton='w-full border border-gray-200 rounded-lg hover:bg-gray-50'
           iconComponent={<Download />}
-        />
+        /> */}
 
         <Button
           title='Delete'

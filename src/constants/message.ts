@@ -29,5 +29,6 @@ export const SUCCESS_MESSAGE = {
   CHANGE_PASSWORD: 'Thay đổi mật khẩu thành công',
   REJECT_PARTICIPATION: 'Đã xác nhận không tham gia',
   CONFIRM_PARTICIPATION: 'Đã xác nhận tham gia',
-  CREATE_ORGANIZER_ACCOUNT: 'Tạo tài khoản tổ chức thành công'
+  CREATE_ORGANIZER_ACCOUNT: 'Tạo tài khoản tổ chức thành công',
+  SAVE_MARKDOWN_FILE: 'Lưu file thành công'
 }

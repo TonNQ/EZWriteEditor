@@ -49,6 +49,22 @@ const useRouteElements = () => {
               <TipTapEditor />
             </MainLayout>
           )
+        },
+        {
+          path: path.composeNewFile,
+          element: (
+            <MainLayout>
+              <TipTapEditor />
+            </MainLayout>
+          )
+        },
+        {
+          path: path.editor,
+          element: (
+            <MainLayout>
+              <TipTapEditor />
+            </MainLayout>
+          )
         }
       ]
     },

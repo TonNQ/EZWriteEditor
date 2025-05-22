@@ -68,7 +68,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
       <div className='flex h-full'>
         {tabs.map((tab) => {
           const Icon = tab.icon
-          const isActive = activeTab === tab.id
+          const isActive = activeTab.startsWith(tab.id)
 
           return (
             <button

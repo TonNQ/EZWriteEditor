@@ -42,6 +42,9 @@ const suggestionSlice = createSlice({
       if (index !== -1) {
         state.searchResults[index] = action.payload
       }
+    },
+    resetSuggestionState(state) {
+      state = initialState
     }
   }
 })
@@ -52,7 +55,8 @@ export const {
   setSuggestResults,
   setIsLoadingSearch,
   setIsLoadingSuggest,
-  updateSentenceInSearchResults
+  updateSentenceInSearchResults,
+  resetSuggestionState
 } = suggestionSlice.actions
 
 export default suggestionSlice.reducer
