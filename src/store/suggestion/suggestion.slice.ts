@@ -44,7 +44,7 @@ const suggestionSlice = createSlice({
       }
     },
     resetSuggestionState(state) {
-      state = initialState
+      Object.assign(state, initialState)
     }
   }
 })

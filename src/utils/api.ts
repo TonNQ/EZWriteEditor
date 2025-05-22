@@ -30,6 +30,10 @@ export const handleApiError = (error: unknown): ApiResponse<any> => {
   }
 }
 
+interface GetConfig extends AxiosRequestConfig {
+  standardResponse?: boolean
+}
+
 class Http {
   instance: AxiosInstance
   private accessToken: string
@@ -229,16 +233,20 @@ class Http {
     localStorage.setItem('access_token', token)
   }
 
-  // HTTP methods with abort support and query params
   async get<T>({
     url,
     key,
     params,
+    standardResponse = true,
     ...config
-  }: { url: string; key: string; params?: Record<string, any> } & AxiosRequestConfig): Promise<ApiResponse<T>> {
+  }: { url: string; key: string; params?: Record<string, any> } & GetConfig): Promise<ApiResponse<T> | T> {
     const fullUrl = this.buildUrl(url, params)
-    const response = await this.instance.get<ApiResponse<T>>(fullUrl, this.createRequestConfig(key, config))
-    return response.data
+    const response = await this.instance.get<T>(fullUrl, this.createRequestConfig(key, config))
+
+    if (standardResponse) {
+      return response.data as ApiResponse<T>
+    }
+    return response.data as T
   }
 
   async post<T>({

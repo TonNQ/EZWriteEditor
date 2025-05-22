@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { MarkdownFile } from '../../types/markdownFile.type'
 import { formatDate } from '../../utils/helpers'
-import Button from '../Button'
 import Delete from '../Icons/Delete'
 import File from '../Icons/File'
-import MoreVertical from '../Icons/MoreVertical'
 
 interface FileListItemProps {
   file: MarkdownFile
@@ -42,7 +40,7 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete }: FileListItemProp
       <div className='col-span-3 text-left text-sm text-gray-500'>{formatDate(new Date(file.updated_at))}</div>
       <div className='col-span-2 text-left text-sm text-gray-500'>{file.version_count}</div>
       <div className='col-span-1 text-right'>
-        <Button
+        {/* <Button
           variant='ghost'
           size='sm'
           onClick={(e) => {
@@ -51,7 +49,7 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete }: FileListItemProp
           }}
         >
           <MoreVertical className='h-5 w-5 text-gray-500' />
-        </Button>
+        </Button> */}
         {menuOpen && (
           <div
             ref={menuRef}

@@ -16,12 +16,12 @@ interface SuggestParams {
 
 const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<ApiResponse<Sentence[]>> => {
   try {
-    const response = await http.get<{ results: Sentence[] }>({
+    const response = (await http.get<{ results: Sentence[] }>({
       url: '/api/search/',
       key: 'search',
       params,
       signal
-    })
+    })) as ApiResponse<{ results: Sentence[] }>
     console.log('response', response)
 
     return {
@@ -36,12 +36,12 @@ const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<Ap
 
 const suggestApi = async (params: SuggestParams, signal?: AbortSignal): Promise<ApiResponse<string[]>> => {
   try {
-    const response = await http.get<{ results: string[] }>({
+    const response = (await http.get<{ results: string[] }>({
       url: '/api/suggest/',
       key: 'suggest',
       params,
       signal
-    })
+    })) as ApiResponse<{ results: string[] }>
     console.log('data', response.data)
 
     return {

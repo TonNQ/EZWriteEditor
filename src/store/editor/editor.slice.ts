@@ -19,7 +19,7 @@ const editorSlice = createSlice({
       state.title = action.payload
     },
     resetEditorState(state) {
-      state = initialState
+      Object.assign(state, initialState)
     }
   }
 })

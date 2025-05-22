@@ -61,7 +61,7 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
         <Button
           title='Edit'
           onClick={navigateToEditFilePage}
-          classButton='w-full border border-gray-200 rounded-lg hover:bg-gray-50'
+          classButton='w-full border border-gray-200 rounded-lg hover:cursor-pointer hover:bg-gray-50'
           iconComponent={<Edit />}
         />
 
@@ -75,7 +75,7 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
         <Button
           title='Delete'
           onClick={() => onDelete(file.id)}
-          classButton='w-full border border-red-500 bg-red-500/90 text-white hover:bg-red-500'
+          classButton='w-full border border-red-500 bg-red-500/90 rounded-lg text-white hover:cursor-pointer hover:bg-red-500'
           iconComponent={<Delete className='text-white' />}
         />
       </div>

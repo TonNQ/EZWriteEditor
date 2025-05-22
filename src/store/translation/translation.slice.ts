@@ -15,7 +15,7 @@ const translationSlice = createSlice({
       state.isOpenTranslation = action.payload
     },
     resetTranslationState(state) {
-      state = initialState
+      Object.assign(state, initialState)
     }
   }
 })

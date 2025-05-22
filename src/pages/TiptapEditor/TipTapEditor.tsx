@@ -23,6 +23,7 @@ import SearchReplaceButton from '../../components/Extensions/SearchReplaceButton
 import StrikeButton from '../../components/Extensions/StrikeButton'
 import SuggestionButton from '../../components/Extensions/SuggestionButton'
 import TextAlignButton from '../../components/Extensions/TextAlignButton/TextAlignButton'
+import TextToSpeechButton from '../../components/Extensions/TextToSpeechButton'
 import TranslateButton from '../../components/Extensions/TranslateButton'
 import UnderlineButton from '../../components/Extensions/UnderlineButton'
 import ChevronDown from '../../components/Icons/ChevronDown'
@@ -30,6 +31,7 @@ import ChevronUp from '../../components/Icons/ChevronUp'
 import Document from '../../components/Icons/Document'
 import History from '../../components/Icons/History'
 import Suggestions from '../../components/Suggestions/Suggestions'
+import TextToSpeechComp from '../../components/TextToSpeechComp'
 import Translation from '../../components/Translation'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
 import FontSize from '../../extensions/FontSize'
@@ -37,6 +39,7 @@ import KeepHeadingOnEnter from '../../extensions/KeepHeadingOnEnter'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
 import { setTitle } from '../../store/editor/editor.slice'
+import { resetAllStore } from '../../store/resetStore'
 import './styles.css'
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
@@ -94,6 +97,7 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
           <VerticalSeparate />
           <SuggestionButton />
           <TranslateButton />
+          <TextToSpeechButton />
         </div>
         <div className='flex items-center gap-1'>
           <VerticalSeparate />
@@ -138,9 +142,10 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
 
 export default function TipTapEditor() {
   const { id } = useParams()
+  const dispatch = useDispatch()
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
   const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
-  const dispatch = useDispatch()
+  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
 
   const extensions = [
     Underline,
@@ -163,6 +168,10 @@ export default function TipTapEditor() {
     extensions,
     content: ''
   })
+
+  useEffect(() => {
+    resetAllStore()
+  }, [])
 
   useEffect(() => {
     const fetchMarkdownFile = async () => {
@@ -204,6 +213,11 @@ export default function TipTapEditor() {
               {isOpenTranslation && (
                 <div className='sticky top-0 h-fit'>
                   <Translation />
+                </div>
+              )}
+              {isOpenTextToSpeech && (
+                <div className='sticky top-0 h-fit'>
+                  <TextToSpeechComp editor={editor} />
                 </div>
               )}
             </div>
