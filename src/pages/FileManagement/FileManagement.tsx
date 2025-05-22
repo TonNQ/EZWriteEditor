@@ -14,10 +14,10 @@ import { MarkdownFile } from '../../types/markdownFile.type'
 const FileManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const { files: markdownFiles, loading, error } = useSelector((state: RootState) => state.markdownFiles)
+  const { files: markdownFiles, error } = useSelector((state: RootState) => state.markdownFiles)
   const [selectedFile, setSelectedFile] = useState<MarkdownFile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState<'name' | 'date' | 'size'>('date')
+  const [sortBy, _setSortBy] = useState<'name' | 'date' | 'size'>('date')
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
   useEffect(() => {
@@ -27,10 +27,6 @@ const FileManagement = () => {
   const handleFileSelect = (file: MarkdownFile) => {
     setSelectedFile(file)
     setIsDetailsOpen(true)
-  }
-
-  const handleFileUpload = (newFile: MarkdownFile) => {
-    // This will be implemented when we add file upload functionality
   }
 
   const handleFileDelete = (fileId: number) => {

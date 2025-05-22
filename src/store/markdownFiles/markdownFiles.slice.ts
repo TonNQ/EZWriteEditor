@@ -17,21 +17,24 @@ export const fetchMarkdownFiles = createAsyncThunk('markdownFiles/fetchAll', asy
   }
 })
 
-export const deleteMarkdownFile = createAsyncThunk('markdownFiles/delete', async (fileId: string, { rejectWithValue }) => {
-  try {
-    const response = await markdownInstance.deleteMarkdownFile(fileId)
-    return response.data
-  } catch (error) {
-    return rejectWithValue('Failed to delete markdown file')
+export const deleteMarkdownFile = createAsyncThunk(
+  'markdownFiles/delete',
+  async (fileId: string, { rejectWithValue }) => {
+    try {
+      const response = await markdownInstance.deleteMarkdownFile(fileId)
+      return response.data
+    } catch (error) {
+      return rejectWithValue('Failed to delete markdown file')
+    }
   }
-})
+)
 
 const markdownFilesSlice = createSlice({
   name: 'markdownFiles',
   initialState,
   reducers: {
     resetMarkdownFilesState(state) {
-      state = initialState
+      Object.assign(state, initialState)
     }
   },
   extraReducers: (builder) => {

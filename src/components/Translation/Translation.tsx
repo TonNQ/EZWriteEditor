@@ -8,6 +8,7 @@ import Translate from '../Icons/Translate'
 
 const Translation = () => {
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
+  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
   const [direction, setDirection] = useState<'en-vi' | 'vi-en'>('en-vi')
   const [inputText, setInputText] = useState('')
   const [outputText, setOutputText] = useState('')
@@ -75,8 +76,9 @@ const Translation = () => {
   return (
     <div
       className={cn('w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
-        'max-h-[calc(50vh-76px)]': isOpenSuggestion,
-        'max-h-[calc(100vh-132px)]': !isOpenSuggestion
+        'max-h-[calc(33vh-44px)]': isOpenSuggestion && isOpenTextToSpeech,
+        'max-h-[calc(50vh-76px)]': isOpenSuggestion !== isOpenTextToSpeech,
+        'max-h-[calc(100vh-132px)]': !isOpenSuggestion && !isOpenTextToSpeech
       })}
     >
       <div className='mb-4 flex items-center space-x-2'>

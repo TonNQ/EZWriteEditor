@@ -13,11 +13,11 @@ import http from '../utils/api'
 
 const getAllMarkdownFiles = async (signal?: AbortSignal): Promise<ApiResponse<MarkdownFile[]>> => {
   try {
-    const response = await http.get<MarkdownFile[]>({
+    const response = (await http.get<MarkdownFile[]>({
       url: '/api/markdown/files/',
       key: 'get-all-markdown-files',
       signal
-    })
+    })) as ApiResponse<MarkdownFile[]>
 
     return {
       status: response.status || HttpStatusCode.Ok,
@@ -34,12 +34,12 @@ const createMarkdownFile = async (
   signal?: AbortSignal
 ): Promise<ApiResponse<MarkdownFile>> => {
   try {
-    const response = await http.post<MarkdownFile>({
+    const response = (await http.post<MarkdownFile>({
       url: '/api/markdown/files/',
       key: 'create-markdown-file',
       body,
       signal
-    })
+    })) as ApiResponse<MarkdownFile>
     toast.success(SUCCESS_MESSAGE.SAVE_MARKDOWN_FILE)
 
     return {
@@ -54,11 +54,11 @@ const createMarkdownFile = async (
 
 const getMarkdownFileById = async (id: string, signal?: AbortSignal): Promise<ApiResponse<MarkdownFile>> => {
   try {
-    const response = await http.get<MarkdownFile>({
+    const response = (await http.get<MarkdownFile>({
       url: `/api/markdown/files/${id}/`,
       key: 'get-markdown-file-by-id',
       signal
-    })
+    })) as ApiResponse<MarkdownFile>
 
     return {
       status: response.status || HttpStatusCode.Ok,
@@ -116,11 +116,11 @@ const getLatestContentOfMarkdownFile = async (
   signal?: AbortSignal
 ): Promise<ApiResponse<MarkdownVersion>> => {
   try {
-    const response = await http.get<MarkdownVersion>({
+    const response = (await http.get<MarkdownVersion>({
       url: `/api/markdown/files/${id}/latest-content/`,
       key: 'get-latest-content-of-markdown-file',
       signal
-    })
+    })) as ApiResponse<MarkdownVersion>
 
     return {
       status: response.status || HttpStatusCode.Ok,
@@ -137,12 +137,12 @@ const getAllVersionsOfMarkdownFile = async (
   signal?: AbortSignal
 ): Promise<ApiResponse<MarkdownVersion[]>> => {
   try {
-    const response = await http.get<MarkdownVersion[]>({
+    const response = (await http.get<MarkdownVersion[]>({
       url: `/api/markdown/files/${id}/versions/`,
 
       key: 'get-all-versions-of-markdown-file',
       signal
-    })
+    })) as ApiResponse<MarkdownVersion[]>
 
     return {
       status: response.status || HttpStatusCode.Ok,
@@ -183,14 +183,14 @@ const getVersionContentOfMarkdownFile = async (
   signal?: AbortSignal
 ): Promise<ApiResponse<MarkdownVersion>> => {
   try {
-    const response = await http.get<MarkdownVersion>({
+    const response = (await http.get<MarkdownVersion>({
       url: `/api/markdown/files/${id}/version_content/`,
       params: {
         version_id: versionId
       },
       key: 'get-version-content-of-markdown-file',
       signal
-    })
+    })) as ApiResponse<MarkdownVersion>
 
     return {
       status: response.status || HttpStatusCode.Ok,
