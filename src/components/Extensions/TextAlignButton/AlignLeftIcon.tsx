@@ -3,7 +3,7 @@ interface AlignLeftIconProps {
   height?: number
 }
 
-const AlignLeftIcon = ({ width = 20, height = 20 }: AlignLeftIconProps) => {
+const AlignLeftIcon = ({ width = 18, height = 18 }: AlignLeftIconProps) => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24'>
       <g fill='none'>

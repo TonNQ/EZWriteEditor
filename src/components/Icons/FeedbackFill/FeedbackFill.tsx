@@ -4,7 +4,7 @@ interface FeedbackFillProps {
   className?: string
 }
 
-const FeedbackFill = ({ width = 20, height = 20, className = 'text-gray-600' }: FeedbackFillProps) => {
+const FeedbackFill = ({ width = 18, height = 18, className = 'text-gray-600' }: FeedbackFillProps) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

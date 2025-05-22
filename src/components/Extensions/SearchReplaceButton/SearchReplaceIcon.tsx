@@ -1,6 +1,11 @@
-const SearchReplaceIcon = () => {
+interface SearchReplaceIconProps {
+  width?: number
+  height?: number
+}
+
+const SearchReplaceIcon = ({ width = 18, height = 18 }: SearchReplaceIconProps) => {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width={20} height={20} viewBox='0 0 24 24'>
+    <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24'>
       <path
         fill='none'
         stroke='#686868'

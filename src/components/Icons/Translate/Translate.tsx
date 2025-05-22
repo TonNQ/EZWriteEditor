@@ -4,7 +4,7 @@ interface TranslateProps {
   className?: string
 }
 
-const Translate = ({ width = 24, height = 24, className }: TranslateProps) => {
+const Translate = ({ width = 18, height = 18, className }: TranslateProps) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

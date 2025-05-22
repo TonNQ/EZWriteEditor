@@ -16,9 +16,9 @@ const BaseButton = ({ onClick, isActive, disabled, children, customClass }: Base
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={cn(
-        'flex h-[32px] min-w-[32px] cursor-pointer items-center justify-center rounded-sm p-1 hover:bg-neutral-100',
+        'flex h-[28px] min-w-[28px] cursor-pointer items-center justify-center rounded-sm p-1 hover:bg-neutral-200',
         {
-          'bg-neutral-200 hover:bg-neutral-200': isActive,
+          'bg-blue-200/60 hover:bg-blue-200/70': isActive,
           'cursor-default opacity-20': disabled
         },
         customClass || ''

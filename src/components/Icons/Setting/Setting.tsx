@@ -3,7 +3,7 @@ interface SettingProps {
   height?: number
 }
 
-const Setting = ({ width = 20, height = 20 }: SettingProps) => {
+const Setting = ({ width = 18, height = 18 }: SettingProps) => {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24'>
       <path

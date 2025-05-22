@@ -9,6 +9,7 @@ import { getInitialFromName, getRandomDarkColor } from '../../utils/helpers'
 import ChevronDown from '../Icons/ChevronDown'
 import Dictionary from '../Icons/Dictionary'
 import File from '../Icons/File'
+import Folder from '../Icons/Folder'
 import LogOut from '../Icons/LogOut'
 import Setting from '../Icons/Setting'
 import User from '../Icons/User'
@@ -25,6 +26,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const tabs = [
+    { id: 'file', label: 'File của bạn', icon: Folder },
     { id: 'compose', label: 'Soạn thảo', icon: File },
     { id: 'dictionary', label: 'Từ điển', icon: Dictionary }
   ]
@@ -62,11 +64,11 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   }
 
   return (
-    <div className='z-100 flex h-[52px] items-center justify-between border-b border-gray-200 bg-white px-2 shadow-xs'>
+    <div className='z-100 flex h-[48px] items-center justify-between border-b border-gray-200 bg-gray-50 px-2 shadow-xs'>
       <div className='flex h-full'>
         {tabs.map((tab) => {
           const Icon = tab.icon
-          const isActive = activeTab === tab.id
+          const isActive = activeTab.startsWith(tab.id)
 
           return (
             <button
@@ -78,7 +80,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
               }`}
               onClick={() => onTabChange(tab.id)}
             >
-              <Icon className={isActive ? 'text-blue-500' : 'text-gray-600'} />
+              <Icon width={20} height={20} className={isActive ? 'text-blue-500' : 'text-gray-600'} />
               {tab.label}
             </button>
           )
@@ -87,7 +89,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
 
       <div className='flex items-center gap-2 pr-4' ref={dropdownRef}>
         <button
-          className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-gray-50'
+          className='flex cursor-pointer items-center gap-2 rounded-md p-1 hover:bg-gray-50'
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           {/* Avatar */}

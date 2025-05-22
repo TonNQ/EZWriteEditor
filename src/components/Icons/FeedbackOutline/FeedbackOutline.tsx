@@ -5,7 +5,7 @@ interface FeedbackOutlineProps {
   onClick?: () => void
 }
 
-const FeedbackOutline = ({ width = 20, height = 20, className = 'text-gray-600', onClick }: FeedbackOutlineProps) => {
+const FeedbackOutline = ({ width = 18, height = 18, className = 'text-gray-600', onClick }: FeedbackOutlineProps) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
