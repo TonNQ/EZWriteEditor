@@ -38,11 +38,24 @@ import FontSize from '../../extensions/FontSize'
 import KeepHeadingOnEnter from '../../extensions/KeepHeadingOnEnter'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
-import { setTitle } from '../../store/editor/editor.slice'
+import { setIsShowHistory, setTitle } from '../../store/editor/editor.slice'
 import { resetAllStore } from '../../store/resetStore'
 import './styles.css'
+import VersionHistory from './VersionHistory'
+import MainEditorContent from './MainEditorContent'
 
-const MenuBar = ({ editor }: { editor: Editor | null }) => {
+interface MenuBarProps {
+  editor: Editor | null
+}
+
+interface MainEditorProps {
+  editor: Editor | null
+  isOpenSuggestion: boolean
+  isOpenTranslation: boolean
+  isOpenTextToSpeech: boolean
+}
+
+const MenuBar = ({ editor }: MenuBarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(true)
   const dispatch = useDispatch()
   const title = useSelector((state: RootState) => state.editor.title)
@@ -69,7 +82,12 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
             />
           </div>
           <div className='flex items-center'>
-            <History width={24} height={24} className='text-gray-500 hover:cursor-pointer hover:text-gray-600' />
+            <History
+              width={24}
+              height={24}
+              className='text-gray-500 hover:cursor-pointer hover:text-gray-600'
+              onClick={() => dispatch(setIsShowHistory(true))}
+            />
           </div>
         </div>
       )}
@@ -140,12 +158,45 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   )
 }
 
+const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech }: MainEditorProps) => {
+  return (
+    <>
+      <MenuBar editor={editor} />
+      <div className='mx-auto w-full max-w-[100rem] flex-1 overflow-auto p-4'>
+        <div className='flex h-full gap-4'>
+          <MainEditorContent editor={editor} />
+          {(isOpenSuggestion || isOpenTranslation || isOpenTextToSpeech) && (
+            <div className='flex max-h-[calc(100vh-132px)] w-80 flex-col gap-4'>
+              {isOpenSuggestion && (
+                <div className='sticky top-0 h-fit'>
+                  <Suggestions editor={editor} />
+                </div>
+              )}
+              {isOpenTranslation && (
+                <div className='sticky top-0 h-fit'>
+                  <Translation />
+                </div>
+              )}
+              {isOpenTextToSpeech && (
+                <div className='sticky top-0 h-fit'>
+                  <TextToSpeechComp editor={editor} />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
 export default function TipTapEditor() {
   const { id } = useParams()
   const dispatch = useDispatch()
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
   const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
   const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
+  const isShowHistory = useSelector((state: RootState) => state.editor.isShowHistory)
 
   const extensions = [
     Underline,
@@ -195,35 +246,16 @@ export default function TipTapEditor() {
 
   return (
     <div className='flex h-full w-full flex-col bg-gray-50'>
-      <MenuBar editor={editor} />
-      <div className='mx-auto w-full max-w-[100rem] flex-1 overflow-auto p-4'>
-        <div className='flex min-h-full gap-4'>
-          <div className='flex-1'>
-            <div className='h-full rounded-lg border border-gray-200 bg-white px-8 py-4 shadow-sm'>
-              <EditorContent editor={editor} className='prose max-w-none' />
-            </div>
-          </div>
-          {(isOpenSuggestion || isOpenTranslation) && (
-            <div className='flex max-h-[calc(100vh-132px)] w-80 flex-col gap-4'>
-              {isOpenSuggestion && (
-                <div className='sticky top-0 h-fit'>
-                  <Suggestions editor={editor} />
-                </div>
-              )}
-              {isOpenTranslation && (
-                <div className='sticky top-0 h-fit'>
-                  <Translation />
-                </div>
-              )}
-              {isOpenTextToSpeech && (
-                <div className='sticky top-0 h-fit'>
-                  <TextToSpeechComp editor={editor} />
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+      {isShowHistory ? (
+        <VersionHistory />
+      ) : (
+        <MainEditor
+          editor={editor}
+          isOpenSuggestion={isOpenSuggestion}
+          isOpenTranslation={isOpenTranslation}
+          isOpenTextToSpeech={isOpenTextToSpeech}
+        />
+      )}
     </div>
   )
 }
