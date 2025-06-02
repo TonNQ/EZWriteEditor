@@ -159,26 +159,28 @@ const MenuBar = ({ editor }: MenuBarProps) => {
 }
 
 const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech }: MainEditorProps) => {
+  const hasSidebar = isOpenSuggestion || isOpenTranslation || isOpenTextToSpeech
+
   return (
     <>
       <MenuBar editor={editor} />
-      <div className='mx-auto w-full max-w-[100rem] flex-1 overflow-auto p-4'>
-        <div className='flex h-full gap-4'>
+      <div className='w-full flex-1 overflow-auto p-4 text-center'>
+        <div className={`flex h-full gap-4 ${hasSidebar ? 'justify-center' : ''}`}>
           <MainEditorContent editor={editor} />
-          {(isOpenSuggestion || isOpenTranslation || isOpenTextToSpeech) && (
-            <div className='flex max-h-[calc(100vh-132px)] w-80 flex-col gap-4'>
+          {hasSidebar && (
+            <div className='sticky flex w-[max(350px,calc(50vw-350px))] max-w-[600px] min-w-[350px] flex-col gap-4'>
               {isOpenSuggestion && (
-                <div className='sticky top-0 h-fit'>
+                <div className='h-fit'>
                   <Suggestions editor={editor} />
                 </div>
               )}
               {isOpenTranslation && (
-                <div className='sticky top-0 h-fit'>
+                <div className='h-fit'>
                   <Translation />
                 </div>
               )}
               {isOpenTextToSpeech && (
-                <div className='sticky top-0 h-fit'>
+                <div className='h-fit'>
                   <TextToSpeechComp editor={editor} />
                 </div>
               )}
