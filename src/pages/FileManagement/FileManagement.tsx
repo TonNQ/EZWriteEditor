@@ -40,7 +40,7 @@ const FileManagement = () => {
 
   const navigateToNewFile = () => {
     resetAllStore()
-    navigate(path.composeNewFile)
+    navigate(path.compose)
   }
 
   const filteredFiles = markdownFiles.filter((file) => file.title.toLowerCase().includes(searchQuery.toLowerCase()))
