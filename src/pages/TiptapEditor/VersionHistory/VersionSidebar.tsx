@@ -1,19 +1,13 @@
 import { useRef, useState, useEffect } from 'react'
 import { ChevronDown, MoreVertical } from 'lucide-react'
-
-interface VersionEntry {
-  id: string
-  timestamp: string
-  author: string
-  isCurrent: boolean
-  description?: string
-}
+import { MarkdownVersion } from '../../../types/markdownFile.type'
+import { formatDateTimeDisplay } from '../../../utils/datetime'
 
 interface VersionSidebarProps {
-  versions: VersionEntry[]
-  selectedVersion: string
+  versions: MarkdownVersion[]
+  selectedVersion: MarkdownVersion | undefined
   showChanges: boolean
-  onVersionSelect: (id: string) => void
+  onVersionSelect: (version: MarkdownVersion) => void
   onShowChangesToggle: (show: boolean) => void
 }
 
@@ -24,9 +18,10 @@ const VersionSidebar = ({
   onVersionSelect,
   onShowChangesToggle
 }: VersionSidebarProps) => {
+  console.log('versions', versions)
   // State for dropdowns
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false)
-  const [actionDropdownOpen, setActionDropdownOpen] = useState<string | null>(null)
+  const [actionDropdownOpen, setActionDropdownOpen] = useState<number | null>(null)
 
   // Refs for click outside detection
   const filterDropdownRef = useRef<HTMLDivElement>(null)
@@ -62,7 +57,7 @@ const VersionSidebar = ({
   }
 
   // Toggle action dropdown for a specific version
-  const toggleActionDropdown = (id: string) => {
+  const toggleActionDropdown = (id: number) => {
     setActionDropdownOpen((prev) => (prev === id ? null : id))
   }
 
@@ -124,98 +119,101 @@ const VersionSidebar = ({
 
       <div className='flex-1 overflow-auto'>
         <div className='p-2'>
-          {versions.map((version) => (
-            <div
-              key={version.id}
-              className={`mb-2 cursor-pointer rounded-lg p-3 transition-colors ${
-                selectedVersion === version.id ? 'border border-blue-200 bg-blue-50' : 'hover:bg-gray-50'
-              }`}
-              onClick={() => onVersionSelect(version.id)}
-            >
-              <div className='flex items-start justify-between'>
-                <div className='flex-1'>
-                  <div className='mb-1 flex items-center gap-2'>
-                    <span className='text-sm font-medium'>{version.timestamp}</span>
-                    {version.isCurrent && (
-                      <span className='rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700'>
-                        Phiên bản hiện tại
-                      </span>
+          {versions.map((version, idx) => {
+            const {
+              id: versionId,
+              created_at: createdAt,
+              commit_message: commitMessage,
+              version_name: versionName
+            } = version
+            const isCurrentVersion = selectedVersion?.id === versionId
+
+            return (
+              <div
+                key={versionId}
+                className={`mb-2 cursor-pointer rounded-lg p-3 transition-colors ${
+                  isCurrentVersion ? 'border border-blue-200 bg-blue-50' : 'hover:bg-gray-50'
+                }`}
+                onClick={() => onVersionSelect(version)}
+              >
+                <div className='flex items-start justify-between'>
+                  <div className='flex-1'>
+                    <div className='mb-1 flex items-center gap-2'>
+                      <span className='text-sm font-medium'>{versionName || formatDateTimeDisplay(createdAt)}</span>
+                      {isCurrentVersion && (
+                        <span className='rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700'>
+                          Phiên bản hiện tại
+                        </span>
+                      )}
+                      {!isCurrentVersion && idx === 0 && (
+                        <span className='rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700'>
+                          Phiên bản gốc
+                        </span>
+                      )}
+                    </div>
+                    {/* <div className='mb-1 text-left text-xs text-gray-600'>
+                      <span className='mr-1 inline-block h-2 w-2 rounded-full bg-green-500'></span>
+                      {version.author}
+                    </div> */}
+                    {commitMessage && <div className='text-left text-xs text-gray-500'>{commitMessage}</div>}
+                  </div>
+
+                  {/* Custom action dropdown */}
+                  <div
+                    className='relative'
+                    ref={(el) => {
+                      if (el) {
+                        actionDropdownRefs.current[versionId] = el
+                      }
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleActionDropdown(versionId)
+                      }}
+                      className='rounded-md p-1 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none'
+                      aria-haspopup='true'
+                      aria-expanded={actionDropdownOpen === versionId}
+                    >
+                      <MoreVertical className='h-4 w-4' />
+                    </button>
+
+                    {actionDropdownOpen === versionId && (
+                      <div className='absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white py-1 shadow-lg'>
+                        <ul role='menu' aria-orientation='vertical'>
+                          <li>
+                            <button
+                              className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                              role='menuitem'
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setActionDropdownOpen(null)
+                              }}
+                            >
+                              Đặt tên phiên bản này
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                              role='menuitem'
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setActionDropdownOpen(null)
+                              }}
+                            >
+                              Tạo bản sao
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
                     )}
                   </div>
-                  <div className='mb-1 text-left text-xs text-gray-600'>
-                    <span className='mr-1 inline-block h-2 w-2 rounded-full bg-green-500'></span>
-                    {version.author}
-                  </div>
-                  {version.description && <div className='text-left text-xs text-gray-500'>{version.description}</div>}
-                </div>
-
-                {/* Custom action dropdown */}
-                <div
-                  className='relative'
-                  ref={(el) => {
-                    if (el) {
-                      actionDropdownRefs.current[version.id] = el
-                    }
-                  }}
-                >
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      toggleActionDropdown(version.id)
-                    }}
-                    className='rounded-md p-1 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none'
-                    aria-haspopup='true'
-                    aria-expanded={actionDropdownOpen === version.id}
-                  >
-                    <MoreVertical className='h-4 w-4' />
-                  </button>
-
-                  {actionDropdownOpen === version.id && (
-                    <div className='absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white py-1 shadow-lg'>
-                      <ul role='menu' aria-orientation='vertical'>
-                        <li>
-                          <button
-                            className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                            role='menuitem'
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setActionDropdownOpen(null)
-                            }}
-                          >
-                            Xem bản gốc
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                            role='menuitem'
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setActionDropdownOpen(null)
-                            }}
-                          >
-                            Đặt tên phiên bản này
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className='w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                            role='menuitem'
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setActionDropdownOpen(null)
-                            }}
-                          >
-                            Tạo bản sao
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
 

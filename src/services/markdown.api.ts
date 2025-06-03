@@ -6,6 +6,7 @@ import {
   CreateMarkdownFileBody,
   MarkdownFile,
   MarkdownVersion,
+  MarkdownVersionResponse,
   UpdateMarkdownFileBody,
   UpdateMarkdownVersionBody
 } from '../types/markdownFile.type'
@@ -137,16 +138,16 @@ const getAllVersionsOfMarkdownFile = async (
   signal?: AbortSignal
 ): Promise<ApiResponse<MarkdownVersion[]>> => {
   try {
-    const response = (await http.get<MarkdownVersion[]>({
+    const response = (await http.get<MarkdownVersionResponse>({
       url: `/api/markdown/files/${id}/versions/`,
 
       key: 'get-all-versions-of-markdown-file',
       signal
-    })) as ApiResponse<MarkdownVersion[]>
+    })) as ApiResponse<MarkdownVersionResponse>
 
     return {
       status: response.status || HttpStatusCode.Ok,
-      data: response.data ?? {}
+      data: response.data.versions ?? []
     }
   } catch (error) {
     console.error('Get all versions of markdown file API error:', error)

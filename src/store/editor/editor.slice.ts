@@ -4,7 +4,7 @@ import { EditorLanguage, EditorState } from './types'
 // initial state
 const initialState: EditorState = {
   language: 'en',
-  title: 'Untitled',
+  title: '',
   isShowHistory: false
 }
 

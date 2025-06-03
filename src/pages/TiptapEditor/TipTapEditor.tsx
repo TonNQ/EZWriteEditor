@@ -1,11 +1,4 @@
-import SearchAndReplace from '@sereneinserenade/tiptap-search-and-replace'
-import { Color } from '@tiptap/extension-color'
-import ListItem from '@tiptap/extension-list-item'
-import TextAlign from '@tiptap/extension-text-align'
-import TextStyle from '@tiptap/extension-text-style'
-import Underline from '@tiptap/extension-underline'
-import { type Editor, EditorContent, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import { type Editor, useEditor } from '@tiptap/react'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -34,8 +27,6 @@ import Suggestions from '../../components/Suggestions/Suggestions'
 import TextToSpeechComp from '../../components/TextToSpeechComp'
 import Translation from '../../components/Translation'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
-import FontSize from '../../extensions/FontSize'
-import KeepHeadingOnEnter from '../../extensions/KeepHeadingOnEnter'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
 import { setIsShowHistory, setTitle } from '../../store/editor/editor.slice'
@@ -43,6 +34,8 @@ import { resetAllStore } from '../../store/resetStore'
 import './styles.css'
 import VersionHistory from './VersionHistory'
 import MainEditorContent from './MainEditorContent'
+import { editorExtensions } from '../../utils/extensions'
+import { cn } from '../../libs/tailwind/utils'
 
 interface MenuBarProps {
   editor: Editor | null
@@ -75,7 +68,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
           <div className='flex items-center'>
             <Document width={28} height={28} />
             <input
-              value={title}
+              value={title || ''}
               onChange={handleTitleChange}
               placeholder='Untitled'
               className='ml-2 w-full border-none bg-transparent text-base font-medium text-gray-500 placeholder-gray-400 outline-none'
@@ -131,62 +124,45 @@ const MenuBar = ({ editor }: MenuBarProps) => {
         </div>
       </div>
     </div>
-    // <div className='z-50 h-[48px] w-full border-b border-gray-200 bg-white shadow-sm'>
-    //   <div className='mx-auto h-full max-w-5xl px-4'>
-    //   <div className='flex h-full items-center justify-between space-x-4'>
-    //   <div className='flex items-center space-x-1'>
-    //     <ImportDocxButton editor={editor} />
-    //     <SaveFileButton editor={editor} />
-    //     <BoldButton editor={editor} />
-    //     <ItalicButton editor={editor} />
-    //     <UnderlineButton editor={editor} />
-    //     <StrikeButton editor={editor} />
-    //     <div className='mx-2 h-6 w-px bg-gray-200' />
-    //     <HeadingButton editor={editor} />
-    //     <FontSizeButton editor={editor} />
-    //     <div className='mx-2 h-6 w-px bg-gray-200' />
-    //     <HistoryButton editor={editor} />
-    //     <SearchReplaceButton editor={editor} />
-    //     <TextAlignButton editor={editor} />
-    //     <PrintButton editor={editor} />
-    //     <SuggestionButton />
-    //     <TranslateButton />
-    //   </div>
-    // </div>
-    //   </div>
-    // </div>
   )
 }
 
 const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech }: MainEditorProps) => {
-  const hasSidebar = isOpenSuggestion || isOpenTranslation || isOpenTextToSpeech
+  const numberOfExtensions = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech].filter(Boolean).length
+  const hasSidebar = numberOfExtensions >= 1
+  const isSidebarScrollable = numberOfExtensions > 1
 
   return (
     <>
       <MenuBar editor={editor} />
-      <div className='w-full flex-1 overflow-auto p-4 text-center'>
-        <div className={`flex h-full gap-4 ${hasSidebar ? 'justify-center' : ''}`}>
-          <MainEditorContent editor={editor} />
-          {hasSidebar && (
-            <div className='sticky flex w-[max(350px,calc(50vw-350px))] max-w-[600px] min-w-[350px] flex-col gap-4'>
-              {isOpenSuggestion && (
-                <div className='h-fit'>
-                  <Suggestions editor={editor} />
-                </div>
-              )}
-              {isOpenTranslation && (
-                <div className='h-fit'>
-                  <Translation />
-                </div>
-              )}
-              {isOpenTextToSpeech && (
-                <div className='h-fit'>
-                  <TextToSpeechComp editor={editor} />
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+      <div className='flex h-full w-full flex-1 gap-4 overflow-auto p-4 text-center'>
+        <MainEditorContent editor={editor} />
+        {hasSidebar && (
+          <div
+            className={cn(
+              'sticky top-0 flex w-[max(350px,calc(50vw-350px))] max-w-[600px] min-w-[350px] flex-col gap-4 px-2',
+              {
+                'overflow-y-auto': isSidebarScrollable
+              }
+            )}
+          >
+            {isOpenSuggestion && (
+              <div className='h-fit'>
+                <Suggestions editor={editor} />
+              </div>
+            )}
+            {isOpenTranslation && (
+              <div className='h-fit'>
+                <Translation />
+              </div>
+            )}
+            {isOpenTextToSpeech && (
+              <div className='h-fit'>
+                <TextToSpeechComp editor={editor} />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   )
@@ -200,25 +176,8 @@ export default function TipTapEditor() {
   const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
   const isShowHistory = useSelector((state: RootState) => state.editor.isShowHistory)
 
-  const extensions = [
-    Underline,
-    TextStyle.configure({ mergeNestedSpanStyles: true }),
-    FontSize,
-    Color.configure({ types: [TextStyle.name, ListItem.name] }),
-    StarterKit.configure({
-      bulletList: { keepMarks: true, keepAttributes: false },
-      orderedList: { keepMarks: true, keepAttributes: false }
-    }),
-    KeepHeadingOnEnter,
-    SearchAndReplace.configure(),
-    TextAlign.configure({
-      types: ['heading', 'paragraph'],
-      defaultAlignment: 'left'
-    })
-  ]
-
   const editor = useEditor({
-    extensions,
+    extensions: editorExtensions,
     content: ''
   })
 

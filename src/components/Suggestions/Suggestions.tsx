@@ -232,8 +232,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   return (
     <div
       className={cn('w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
-        'max-h-[calc(33vh-44px)]': isOpenTranslation && isOpenTextToSpeech,
-        'max-h-[calc(50vh-76px)]': isOpenTranslation !== isOpenTextToSpeech,
+        'max-h-[calc(50vh-76px)]': isOpenTranslation || isOpenTextToSpeech,
         'max-h-[calc(100vh-132px)]': !isOpenTranslation && !isOpenTextToSpeech
       })}
     >
