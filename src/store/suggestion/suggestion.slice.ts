@@ -20,13 +20,25 @@ const suggestionSlice = createSlice({
       state.isOpenSuggestion = action.payload
     },
     setSearchResults(state, action: PayloadAction<{ results: Sentence[]; isLoading?: boolean }>) {
-      state.searchResults = action.payload.results
+      state.searchResults = action.payload.results.map((result) => ({
+        ...result,
+        isSearchResult: true
+      }))
       if (typeof action.payload.isLoading === 'boolean') {
         state.isLoadingSearch = action.payload.isLoading
       }
     },
     setSuggestResults(state, action: PayloadAction<{ results: string[]; isLoading?: boolean }>) {
-      state.suggestResults = action.payload.results
+      state.suggestResults = action.payload.results.map((result) => ({
+        sentence_id: '',
+        content: result,
+        isVoted: false,
+        userRating: 0,
+        rating: 0,
+        numOfRate: 0,
+        isUserAdded: false,
+        isSearchResult: false
+      }))
       if (typeof action.payload.isLoading === 'boolean') {
         state.isLoadingSuggest = action.payload.isLoading
       }
@@ -43,6 +55,15 @@ const suggestionSlice = createSlice({
         state.searchResults[index] = action.payload
       }
     },
+    updateSentenceInSuggestResults(state, action: PayloadAction<Partial<Sentence>>) {
+      const index = state.suggestResults.findIndex((s) => s.sentence_id === action.payload.sentence_id || s.content === action.payload.content)
+      if (index !== -1) {
+        state.suggestResults[index] = {
+          ...state.suggestResults[index],
+          ...action.payload
+        }
+      }
+    },
     resetSuggestionState(state) {
       Object.assign(state, initialState)
     }
@@ -56,6 +77,7 @@ export const {
   setIsLoadingSearch,
   setIsLoadingSuggest,
   updateSentenceInSearchResults,
+  updateSentenceInSuggestResults,
   resetSuggestionState
 } = suggestionSlice.actions
 

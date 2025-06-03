@@ -6,4 +6,9 @@ export interface Sentence {
   rating: number
   numOfRate: number
   isUserAdded: boolean
+  isSearchResult: boolean
+}
+
+export interface AddSentenceResponse {
+  documentId: string
 }

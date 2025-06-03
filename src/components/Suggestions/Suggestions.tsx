@@ -10,7 +10,8 @@ import {
   setIsLoadingSearch as setStoreIsLoadingSearch,
   setIsLoadingSuggest as setStoreIsLoadingSuggest,
   setSearchResults as setStoreSearchResults,
-  setSuggestResults as setStoreSuggestResults
+  setSuggestResults as setStoreSuggestResults,
+  updateSentenceInSuggestResults
 } from '../../store/suggestion/suggestion.slice'
 import { getLastClosestSentences } from '../../utils/sentence'
 import Suggestion from '../Icons/Suggestion'
@@ -53,7 +54,6 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
       dispatch(setStoreIsLoadingSearch(true))
       dispatch(setStoreSearchResults({ results: [] }))
-      dispatch(setStoreSuggestResults({ results: [] }))
       try {
         const { data } = await sentencesInstance.search(
           {
@@ -161,10 +161,14 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         e.preventDefault()
 
         const firstSuggestion =
-          suggestResults.length > 0 ? suggestResults[0] : searchResults.length > 0 ? searchResults[0].content : null
+          suggestResults.length > 0
+            ? suggestResults[0].content
+            : searchResults.length > 0
+              ? searchResults[0].content
+              : null
 
         if (firstSuggestion) {
-          handleApply(firstSuggestion)
+          handleApply({ suggestion: firstSuggestion, isSearch: suggestResults.length === 0 })
         }
       }
     }
@@ -173,7 +177,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [suggestResults, searchResults, isApplying, hasApplied])
 
-  const handleApply = async (suggestion: string) => {
+  const handleApply = async ({ suggestion, isSearch }: { suggestion: string; isSearch: boolean }) => {
     if (!editor || isApplying || hasApplied) return
 
     setIsApplying(true)
@@ -216,6 +220,15 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
         // Append the suggestion to the end
         editor.chain().focus().insertContent(` ${suggestion}`).run()
       }
+      if (!isSearch) {
+        const response = await sentencesInstance.addSentence(suggestion)
+        dispatch(
+          updateSentenceInSuggestResults({
+            sentence_id: response.data.documentId,
+            isUserAdded: true
+          })
+        )
+      }
     } catch (error) {
       console.error('Error applying suggestion:', error)
     } finally {
@@ -225,7 +238,6 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
 
   // Reset hasApplied when userInput changes
   useEffect(() => {
-    console.log('userInput', userInput)
     setHasApplied(false)
   }, [userInput])
 
@@ -259,7 +271,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
           <SuggestedSentence
             key={`suggest-${index}`}
             sentence={suggestion}
-            onApply={() => handleApply(suggestion)}
+            onApply={() => handleApply({ suggestion: suggestion.content, isSearch: false })}
             disabled={isApplying || hasApplied}
             isSearch={false}
           />
@@ -269,7 +281,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
           <SuggestedSentence
             key={`search-${sentence.sentence_id}`}
             sentence={sentence}
-            onApply={() => handleApply(sentence.content)}
+            onApply={() => handleApply({ suggestion: sentence.content, isSearch: true })}
             disabled={isApplying || hasApplied}
             isSearch={true}
           />
