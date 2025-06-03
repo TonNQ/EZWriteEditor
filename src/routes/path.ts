@@ -4,8 +4,7 @@ export const path = {
   register: '/register',
   file: '/file',
   dictionary: '/dictionary',
-  compose: '/compose',
-  composeNewFile: '/compose/new-file',
+  composeNewFile: '/editor/new-file',
   editor: '/editor/:id'
 }
 

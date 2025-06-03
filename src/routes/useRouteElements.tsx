@@ -11,12 +11,18 @@ import { RootState } from '../store'
 import { path } from './path'
 
 const ProtectedRoute: React.FC = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+  const { isAuthenticated, authInfoLoaded } = useSelector((state: RootState) => state.auth)
+  if (!authInfoLoaded) {
+    return null
+  }
   return isAuthenticated ? <Outlet /> : <Navigate to={path.login} />
 }
 
 const RejectedRoute: React.FC = () => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+  const { isAuthenticated, authInfoLoaded } = useSelector((state: RootState) => state.auth)
+  if (!authInfoLoaded) {
+    return null
+  }
   return !isAuthenticated ? <Outlet /> : <Navigate to={path.home} />
 }
 
@@ -39,14 +45,6 @@ const useRouteElements = () => {
           element: (
             <MainLayout>
               <FileManagement />
-            </MainLayout>
-          )
-        },
-        {
-          path: path.compose,
-          element: (
-            <MainLayout>
-              <TipTapEditor />
             </MainLayout>
           )
         },
