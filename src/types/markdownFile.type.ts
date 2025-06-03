@@ -9,6 +9,15 @@ export interface MarkdownFile {
   content?: string
 }
 
+export interface MarkdownVersionResponse {
+  id: number 
+  title: string 
+  description: string 
+  view_url: string 
+  edit_url: string
+  versions: MarkdownVersion[]
+}
+
 export interface MarkdownVersion {
   id: number
   version_number: number
@@ -16,6 +25,7 @@ export interface MarkdownVersion {
   commit_message: string
   content?: string
   download_url: string
+  version_name?: string
 }
 
 export interface CreateMarkdownFileBody {

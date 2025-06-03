@@ -4,7 +4,8 @@ import { EditorLanguage, EditorState } from './types'
 // initial state
 const initialState: EditorState = {
   language: 'en',
-  title: 'Untitled'
+  title: '',
+  isShowHistory: false
 }
 
 // editorSlice
@@ -18,12 +19,15 @@ const editorSlice = createSlice({
     setTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload
     },
+    setIsShowHistory: (state, action: PayloadAction<boolean>) => {
+      state.isShowHistory = action.payload
+    },
     resetEditorState(state) {
       Object.assign(state, initialState)
     }
   }
 })
 
-export const { setLanguage, setTitle, resetEditorState } = editorSlice.actions
+export const { setLanguage, setTitle, setIsShowHistory, resetEditorState } = editorSlice.actions
 
 export default editorSlice.reducer

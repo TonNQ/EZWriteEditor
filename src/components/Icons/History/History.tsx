@@ -2,11 +2,12 @@ interface HistoryProps {
   width?: number
   height?: number
   className?: string
+  onClick?: () => void
 }
 
-const History = ({ width = 18, height = 18, className = 'text-gray-500' }: HistoryProps) => {
+const History = ({ width = 18, height = 18, className = 'text-gray-500', onClick }: HistoryProps) => {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24' className={className}>
+    <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24' className={className} onClick={onClick}>
       <path
         fill='currentColor'
         fillRule='evenodd'
