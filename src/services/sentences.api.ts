@@ -1,7 +1,8 @@
 import { HttpStatusCode } from 'axios'
 import { ApiResponse } from '../types/common.type'
-import { Sentence } from '../types/sentence.type'
+import { AddSentenceResponse, Sentence } from '../types/sentence.type'
 import http from '../utils/api'
+import { ELASTIC_SEARCH_INDEX } from '../constants/common'
 
 interface SearchParams {
   index?: string
@@ -46,7 +47,7 @@ const suggestApi = async (params: SuggestParams, signal?: AbortSignal): Promise<
 
     return {
       status: response.status || HttpStatusCode.Ok,
-      data: response.data.results
+      data: response.data.results ?? []
     }
   } catch (error) {
     console.error('Suggest API error:', error)
@@ -54,9 +55,32 @@ const suggestApi = async (params: SuggestParams, signal?: AbortSignal): Promise<
   }
 }
 
+const addSentence = async (content: string, signal?: AbortSignal): Promise<ApiResponse<AddSentenceResponse>> => {
+  try {
+    const response = await http.post<AddSentenceResponse>({
+      url: '/api/add-document/',
+      key: 'add-document',
+      body: {
+        index_name: ELASTIC_SEARCH_INDEX,
+        content
+      },
+      signal
+    })
+
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data ?? {}
+    }
+  } catch (error) {
+    console.error('Add sentence API error:', error)
+    return error as ApiResponse<AddSentenceResponse>
+  }
+}
+
 const sentencesInstance = {
   search: searchApi,
-  suggest: suggestApi
+  suggest: suggestApi,
+  addSentence
 }
 
 export default sentencesInstance

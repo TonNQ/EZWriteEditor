@@ -5,13 +5,14 @@ import { toast } from 'react-toastify'
 import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
 import { cn } from '../../libs/tailwind/utils'
 import feedbackInstance from '../../services/feedback.api'
-import { updateSentenceInSearchResults } from '../../store/suggestion/suggestion.slice'
+import { updateSentenceInSearchResults, updateSentenceInSuggestResults } from '../../store/suggestion/suggestion.slice'
 import { Sentence } from '../../types/sentence.type'
 import CheckFill from '../Icons/CheckFill'
 import FeedbackOutline from '../Icons/FeedbackOutline'
+import sentencesInstance from '../../services/sentences.api'
 
 interface SuggestedSentenceProps {
-  sentence: string | Sentence
+  sentence: Sentence
   onApply: () => void
   disabled?: boolean
   isSearch?: boolean
@@ -48,8 +49,8 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
   const handleFeedbackClick = () => {
     if (!disabled) {
       setShowFeedbackPopup(true)
-      if (isSearch && (sentence as Sentence).isVoted) {
-        setSelectedRating((sentence as Sentence).userRating)
+      if (isSearch && sentence.isVoted) {
+        setSelectedRating(sentence.userRating)
       }
     }
   }
@@ -59,12 +60,35 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
   }
 
   const handleSubmit = async () => {
-    if (!selectedRating || !isSearch) return
+    if (!selectedRating) return
+
+    const handleAddSentence = async () => {
+      try {
+        const response = await sentencesInstance.addSentence(sentence.content)
+        if (response.status === HttpStatusCode.Created || response.status === HttpStatusCode.Ok) {
+          const sentenceId = response.data.documentId
+          dispatch(
+            updateSentenceInSuggestResults({
+              sentence_id: sentenceId,
+              isUserAdded: true
+            })
+          )
+          return sentenceId
+        } else {
+          throw new Error('Failed to add sentence')
+        }
+      } catch (error) {
+        console.error('Error adding sentence:', error)
+        toast.error('Failed to add sentence. Please try again.')
+        return null
+      }
+    }
 
     try {
       let response
-      const sentenceId = (sentence as Sentence).sentence_id
-      if ((sentence as Sentence).isVoted) {
+      const sentenceId = isSearch ? sentence.sentence_id : ((await handleAddSentence()) ?? '')
+
+      if (sentence.isVoted) {
         response = await feedbackInstance.updateVote({
           sentence_id: sentenceId,
           index_name: ELASTIC_SEARCH_INDEX,
@@ -81,12 +105,14 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
       if (response.status === HttpStatusCode.Created || response.status === HttpStatusCode.Ok) {
         toast.success('Thank you for your feedback!')
         const updatedSentence: Sentence = {
-          ...(sentence as Sentence),
+          ...sentence,
           ...(response.data as Partial<Sentence>),
           userRating: selectedRating,
           isVoted: true
         }
-        dispatch(updateSentenceInSearchResults(updatedSentence))
+        dispatch(
+          isSearch ? updateSentenceInSearchResults(updatedSentence) : updateSentenceInSuggestResults(updatedSentence)
+        )
       } else {
         toast.error('Failed to submit feedback. Please try again.')
       }
@@ -105,18 +131,18 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
   }
 
   const handleRemoveVote = async () => {
-    if (!isSearch || !(sentence as Sentence).isVoted) return
+    if (!isSearch || !sentence.isVoted) return
 
     try {
       const response = await feedbackInstance.removeVote({
-        sentence_id: (sentence as Sentence).sentence_id,
+        sentence_id: sentence.sentence_id,
         index_name: ELASTIC_SEARCH_INDEX
       })
 
       if (response.status === HttpStatusCode.Ok || response.status === HttpStatusCode.NoContent) {
         toast.success('Your vote has been removed.')
         const updatedSentence: Sentence = {
-          ...(sentence as Sentence),
+          ...sentence,
           ...(response.data as Partial<Sentence>),
           isVoted: false,
           userRating: 0
@@ -196,7 +222,7 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
     }
   }
 
-  const ratingTextColor = (sentence as Sentence).isVoted ? getRatingTextColor((sentence as Sentence).userRating) : ''
+  const ratingTextColor = sentence.isVoted ? getRatingTextColor(sentence.userRating) : ''
 
   return (
     <div
@@ -204,110 +230,99 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
         'bg-blue-50 hover:bg-blue-100': !isSearch
       })}
     >
-      <p className='text-left text-xs text-gray-700'>
-        {isSearch ? (sentence as Sentence).content : (sentence as string)}
-      </p>
+      <p className='text-left text-xs text-gray-700'>{sentence.content}</p>
       <div className='ml-4 flex items-center'>
-        {isSearch && (sentence as Sentence).rating > 0 && (
-          <div
-            className={cn(
-              'rounded-full px-2 py-1 text-xs text-white',
-              getRatingBackgroundColor((sentence as Sentence).rating)
-            )}
-          >
-            {(sentence as Sentence).rating}
+        {sentence.rating > 0 && (
+          <div className={cn('rounded-full px-2 py-1 text-xs text-white', getRatingBackgroundColor(sentence.rating))}>
+            {sentence.rating}
           </div>
         )}
-        {isSearch && (
-          <div className='relative' ref={iconRef}>
-            <FeedbackOutline
-              width={20}
-              height={20}
-              className={cn('rounded-full', {
-                'cursor-not-allowed text-gray-400': disabled,
-                'cursor-pointer text-blue-400 hover:text-blue-500': !disabled,
-                [ratingTextColor]: (sentence as Sentence).isVoted
-              })}
-              onClick={handleFeedbackClick}
-            />
+        <div className='relative' ref={iconRef}>
+          <FeedbackOutline
+            width={20}
+            height={20}
+            className={cn('rounded-full', {
+              'cursor-not-allowed text-gray-400': disabled,
+              'cursor-pointer text-blue-400 hover:text-blue-500': !disabled,
+              [ratingTextColor]: sentence.isVoted
+            })}
+            onClick={handleFeedbackClick}
+          />
 
-            {/* Feedback Popup */}
-            {showFeedbackPopup && (
-              <div
-                ref={popupRef}
-                className='absolute right-0 bottom-full z-100 mb-2 w-56 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg'
-              >
-                <div className='mb-2'>
-                  <p className='mb-2 text-xs font-medium text-gray-700'>Rate this suggestion</p>
-                  <div className='flex justify-between'>
-                    <span className='text-xs text-gray-400'>Very Poor</span>
-                    <span className='text-xs text-gray-400'>Excellent</span>
-                  </div>
-                  <div className='mt-2 flex justify-between'>
-                    {[1, 2, 3, 4, 5].map((rating) => (
-                      <div
-                        key={rating}
-                        className='relative'
-                        onMouseEnter={() => setHoveredRating(rating)}
-                        onMouseLeave={() => setHoveredRating(null)}
-                      >
-                        <button
-                          className={cn(
-                            'h-6 w-9 cursor-pointer rounded-2xl opacity-70 transition-all hover:opacity-100',
-                            getRatingColor(rating),
-                            {
-                              'opacity-100': selectedRating === rating,
-                              'opacity-30': selectedRating !== null && selectedRating !== rating
-                            }
-                          )}
-                          onClick={() => handleRatingClick(rating)}
-                        />
-
-                        {/* Tooltip */}
-                        {hoveredRating === rating && (
-                          <div className='absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white'>
-                            {getRatingLabel(rating)}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
+          {/* Feedback Popup */}
+          {showFeedbackPopup && (
+            <div
+              ref={popupRef}
+              className='absolute right-0 bottom-full z-100 mb-2 w-56 rounded-lg border border-gray-200 bg-white px-3 py-2 shadow-lg'
+            >
+              <div className='mb-2'>
+                <p className='mb-2 text-xs font-medium text-gray-700'>Rate this suggestion</p>
                 <div className='flex justify-between'>
-                  <button
-                    className='cursor-pointer rounded px-3 py-1 text-xs text-gray-600 hover:bg-gray-100'
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                  <div className='flex items-center space-x-2'>
-                    {(sentence as Sentence).isVoted && isSearch && (
-                      <button
-                        className='cursor-pointer rounded px-3 py-1 text-xs text-red-600 hover:bg-red-100'
-                        onClick={handleRemoveVote}
-                      >
-                        Remove
-                      </button>
-                    )}
-                    <button
-                      className={cn(
-                        'cursor-pointer rounded px-3 py-1 text-xs text-white',
-                        selectedRating ? 'bg-blue-500 hover:bg-blue-600' : 'cursor-not-allowed bg-gray-300'
-                      )}
-                      onClick={handleSubmit}
-                      disabled={
-                        !selectedRating && !(isSearch && (sentence as Sentence).isVoted && selectedRating === null)
-                      }
+                  <span className='text-xs text-gray-400'>Very Poor</span>
+                  <span className='text-xs text-gray-400'>Excellent</span>
+                </div>
+                <div className='mt-2 flex justify-between'>
+                  {[1, 2, 3, 4, 5].map((rating) => (
+                    <div
+                      key={rating}
+                      className='relative'
+                      onMouseEnter={() => setHoveredRating(rating)}
+                      onMouseLeave={() => setHoveredRating(null)}
                     >
-                      {isSearch && (sentence as Sentence).isVoted ? 'Update' : 'Submit'}
-                    </button>
-                  </div>
+                      <button
+                        className={cn(
+                          'h-6 w-9 cursor-pointer rounded-2xl opacity-70 transition-all hover:opacity-100',
+                          getRatingColor(rating),
+                          {
+                            'opacity-100': selectedRating === rating,
+                            'opacity-30': selectedRating !== null && selectedRating !== rating
+                          }
+                        )}
+                        onClick={() => handleRatingClick(rating)}
+                      />
+
+                      {/* Tooltip */}
+                      {hoveredRating === rating && (
+                        <div className='absolute bottom-full left-1/2 mb-1 -translate-x-1/2 rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white'>
+                          {getRatingLabel(rating)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
-        )}
+
+              <div className='flex justify-between'>
+                <button
+                  className='cursor-pointer rounded px-3 py-1 text-xs text-gray-600 hover:bg-gray-100'
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+                <div className='flex items-center space-x-2'>
+                  {sentence.isVoted && isSearch && (
+                    <button
+                      className='cursor-pointer rounded px-3 py-1 text-xs text-red-600 hover:bg-red-100'
+                      onClick={handleRemoveVote}
+                    >
+                      Remove
+                    </button>
+                  )}
+                  <button
+                    className={cn(
+                      'cursor-pointer rounded px-3 py-1 text-xs text-white',
+                      selectedRating ? 'bg-blue-500 hover:bg-blue-600' : 'cursor-not-allowed bg-gray-300'
+                    )}
+                    onClick={handleSubmit}
+                    disabled={!selectedRating && !(isSearch && sentence.isVoted && selectedRating === null)}
+                  >
+                    {isSearch && sentence.isVoted ? 'Update' : 'Submit'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
         <CheckFill
           onClick={onApply}
           width={20}
