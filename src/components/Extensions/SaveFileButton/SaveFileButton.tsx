@@ -37,7 +37,7 @@ const SaveFileButton = ({ editor }: SaveFileButtonProps) => {
 
     try {
       const html = editor.getHTML()
-      const isNewFile = location.pathname === path.home || location.pathname === path.composeNewFile
+      const isNewFile = location.pathname === path.home || location.pathname === path.compose
 
       if (isNewFile) {
         await markdownInstance.createMarkdownFile({

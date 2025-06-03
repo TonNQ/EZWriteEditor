@@ -27,7 +27,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
 
   const tabs = [
     { id: 'file', label: 'File của bạn', icon: Folder },
-    { id: 'compose', label: 'Soạn thảo', icon: File },
+    { id: 'editor', label: 'Soạn thảo', icon: File },
     { id: 'dictionary', label: 'Từ điển', icon: Dictionary }
   ]
 
