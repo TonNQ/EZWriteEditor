@@ -26,9 +26,9 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const tabs = [
-    { id: 'file', label: 'File của bạn', icon: Folder },
-    { id: 'editor', label: 'Soạn thảo', icon: File },
-    { id: 'dictionary', label: 'Từ điển', icon: Dictionary }
+    { id: 'file', label: 'File của bạn', icon: Folder, extensions: [''] },
+    { id: 'editor', label: 'Soạn thảo', icon: File, extensions: [] },
+    { id: 'dictionary', label: 'Từ điển', icon: Dictionary, extensions: [] }
   ]
 
   // Mock user data - in a real app, this would come from authentication
@@ -68,7 +68,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
       <div className='flex h-full'>
         {tabs.map((tab) => {
           const Icon = tab.icon
-          const isActive = activeTab.startsWith(tab.id)
+          const isActive = activeTab.startsWith(tab.id) || tab.extensions.includes(activeTab)
 
           return (
             <button

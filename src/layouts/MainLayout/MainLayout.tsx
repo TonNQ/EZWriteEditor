@@ -8,7 +8,7 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const currentPath = location.pathname.replace('/', '') || 'compose'
+  const currentPath = location.pathname.replace('/', '')
 
   const handleTabChange = (tab: string) => {
     navigate(`/${tab}`)
