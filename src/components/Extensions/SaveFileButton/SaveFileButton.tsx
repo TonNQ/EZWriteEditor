@@ -2,14 +2,15 @@
 
 import type { Editor } from '@tiptap/react'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { v4 as uuidv4 } from 'uuid'
 import { SUCCESS_MESSAGE } from '../../../constants/message'
 import { path } from '../../../routes/path'
 import markdownInstance from '../../../services/markdown.api'
 import type { RootState } from '../../../store'
+import { setFileInformation } from '../../../store/editor/editor.slice'
+import { SaveFileFormData } from '../../../types/markdownFile.type'
 import SaveFile from '../../Icons/SaveFile'
 import Popup from '../../Popup/Popup'
 import SaveFileForm from '../../SaveFileForm/SaveFileForm'
@@ -25,6 +26,7 @@ const SaveFileButton = ({ editor }: SaveFileButtonProps) => {
   const location = useLocation()
   const title = useSelector((state: RootState) => state.editor.title)
   const { id } = useParams()
+  const dispatch = useDispatch()
 
   if (!editor) return null
 
@@ -32,7 +34,7 @@ const SaveFileButton = ({ editor }: SaveFileButtonProps) => {
     setIsPopupOpen(true)
   }
 
-  const handleSave = async (formData: { title: string; description: string; versionName: string }) => {
+  const handleSave = async (formData: SaveFileFormData) => {
     setIsLoading(true)
 
     try {
@@ -40,22 +42,27 @@ const SaveFileButton = ({ editor }: SaveFileButtonProps) => {
       const isNewFile = location.pathname === path.home || location.pathname === path.compose
 
       if (isNewFile) {
-        await markdownInstance.createMarkdownFile({
+        const response = await markdownInstance.createMarkdownFile({
           title: formData.title,
           description: formData.description || formData.title,
           content: html
         })
+        dispatch(
+          setFileInformation({
+            title: response.data.title,
+            description: response.data.description
+          })
+        )
         toast.success(SUCCESS_MESSAGE.SAVE_MARKDOWN_FILE)
       } else if (id) {
-        const commitId = formData.versionName || uuidv4()
-
         const updateMarkdownFilePromise = markdownInstance.updateMarkdownFile(id, {
           title: formData.title,
           description: formData.description || formData.title
         })
 
         const createVersionOfMarkdownFilePromise = markdownInstance.createVersionOfMarkdownFile(id, {
-          commit_message: commitId,
+          version_name: formData.versionName,
+          commit_message: formData.commitMessage,
           content: html
         })
 

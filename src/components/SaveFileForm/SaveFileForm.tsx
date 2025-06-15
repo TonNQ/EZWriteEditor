@@ -1,18 +1,20 @@
 import type React from 'react'
 import { useState } from 'react'
+import type { SaveFileFormData } from '../../types/markdownFile.type'
 
 interface SaveFileFormProps {
   initialTitle: string
-  onSave: (data: { title: string; description: string; versionName: string }) => void
+  onSave: (data: SaveFileFormData) => void
   onCancel: () => void
   isLoading?: boolean
 }
 
 const SaveFileForm = ({ initialTitle, onSave, onCancel, isLoading = false }: SaveFileFormProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SaveFileFormData>({
     title: initialTitle || '',
     description: '',
-    versionName: ''
+    versionName: '',
+    commitMessage: ''
   })
   const [errors, setErrors] = useState<{ title?: string }>({})
 
@@ -62,7 +64,7 @@ const SaveFileForm = ({ initialTitle, onSave, onCancel, isLoading = false }: Sav
           placeholder='Enter file title'
           disabled={isLoading}
         />
-        {errors.title && <p className='mt-1 text-sm text-red-500'>{errors.title}</p>}
+        {errors.title && <p className='mt-1 text-left text-xs font-semibold text-red-500'>{errors.title}</p>}
       </div>
 
       {/* Description Field */}
@@ -97,20 +99,36 @@ const SaveFileForm = ({ initialTitle, onSave, onCancel, isLoading = false }: Sav
         />
       </div>
 
+      {/* Version Description Field */}
+      <div>
+        <label htmlFor='versionDescription' className='mb-1 block text-left text-sm font-medium text-gray-700'>
+          Version description
+        </label>
+        <textarea
+          id='commitMessage'
+          value={formData.commitMessage}
+          onChange={(e) => handleInputChange('commitMessage', e.target.value)}
+          rows={3}
+          className='w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none'
+          placeholder='Enter version description (optional)'
+          disabled={isLoading}
+        />
+      </div>
+
       {/* Buttons */}
       <div className='flex justify-end space-x-3 pt-4'>
         <button
           type='button'
           onClick={onCancel}
           disabled={isLoading}
-          className='rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-1 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+          className='rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:cursor-pointer hover:bg-gray-50 focus:ring-1 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
         >
           Cancel
         </button>
         <button
           type='submit'
           disabled={isLoading}
-          className='rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-1 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+          className='rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:cursor-pointer hover:bg-blue-700 focus:ring-1 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
         >
           {isLoading ? 'Saving...' : 'Save'}
         </button>

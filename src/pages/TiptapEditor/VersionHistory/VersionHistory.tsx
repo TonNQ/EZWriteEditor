@@ -1,15 +1,15 @@
-import { useDispatch } from 'react-redux'
-import { setIsShowHistory } from '../../../store/editor/editor.slice'
-import VersionHeader from './VersionHeader'
-import MainEditorContent from '../MainEditorContent'
 import { useEditor, type Editor } from '@tiptap/react'
-import { useEffect, useState } from 'react'
-import VersionSidebar from './VersionSidebar'
+import { useCallback, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import markdownInstance from '../../../services/markdown.api'
+import { setIsShowHistory } from '../../../store/editor/editor.slice'
 import { MarkdownVersion } from '../../../types/markdownFile.type'
 import { formatDateTimeDisplay } from '../../../utils/datetime'
 import { editorExtensions } from '../../../utils/extensions'
+import MainEditorContent from '../MainEditorContent'
+import VersionHeader from './VersionHeader'
+import VersionSidebar from './VersionSidebar'
 
 const useMarkdownVersions = (fileId?: string) => {
   const editor = useEditor({
@@ -39,29 +39,29 @@ const useMarkdownVersions = (fileId?: string) => {
     }
   }
 
-  useEffect(() => {
+  const fetchVersions = useCallback(async () => {
     if (!fileId) return
 
-    const fetchVersions = async () => {
-      setLoadingVersions(true)
-      setErrorVersions(null)
+    setLoadingVersions(true)
+    setErrorVersions(null)
 
-      try {
-        const response = await markdownInstance.getAllVersionsOfMarkdownFile(fileId)
-        setVersions(response.data || [])
-        setSelectedVersion(response.data[0])
-      } catch (err) {
-        console.error('Error fetching versions:', err)
-        setErrorVersions('Failed to load versions. Please try again.')
-        setVersions([])
-        setSelectedVersion(undefined)
-      } finally {
-        setLoadingVersions(false)
-      }
+    try {
+      const response = await markdownInstance.getAllVersionsOfMarkdownFile(fileId)
+      setVersions(response.data || [])
+      setSelectedVersion(response.data[0])
+    } catch (err) {
+      console.error('Error fetching versions:', err)
+      setErrorVersions('Failed to load versions. Please try again.')
+      setVersions([])
+      setSelectedVersion(undefined)
+    } finally {
+      setLoadingVersions(false)
     }
-
-    fetchVersions()
   }, [fileId])
+
+  useEffect(() => {
+    fetchVersions()
+  }, [fetchVersions])
 
   useEffect(() => {
     if (!editor || !selectedVersion) return
@@ -90,7 +90,8 @@ const useMarkdownVersions = (fileId?: string) => {
     errorVersionContent,
     selectedVersion,
     setSelectedVersion,
-    editor
+    editor,
+    refreshVersions: fetchVersions
   }
 }
 
@@ -106,7 +107,8 @@ const VersionHistory = () => {
     errorVersionContent,
     selectedVersion,
     setSelectedVersion,
-    editor
+    editor,
+    refreshVersions
   } = useMarkdownVersions(fileId)
 
   const handleBack = () => {
@@ -140,6 +142,7 @@ const VersionHistory = () => {
           showChanges={showChanges}
           onVersionSelect={handleVersionSelect}
           onShowChangesToggle={handleShowChangesToggle}
+          onVersionUpdate={refreshVersions}
         />
       </div>
     </>

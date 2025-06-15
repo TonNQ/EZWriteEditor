@@ -7,13 +7,14 @@ export interface MarkdownFile {
   latest_version: MarkdownVersion
   version_count: number
   content?: string
+  is_owner?: boolean
 }
 
 export interface MarkdownVersionResponse {
-  id: number 
-  title: string 
-  description: string 
-  view_url: string 
+  id: number
+  title: string
+  description: string
+  view_url: string
   edit_url: string
   versions: MarkdownVersion[]
 }
@@ -41,5 +42,13 @@ export interface UpdateMarkdownFileBody {
 
 export interface UpdateMarkdownVersionBody {
   content: string
+  version_name: string
   commit_message: string
+}
+
+export interface SaveFileFormData {
+  title: string
+  description: string
+  versionName: string
+  commitMessage: string
 }
