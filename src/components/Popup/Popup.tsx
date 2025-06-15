@@ -21,7 +21,7 @@ const Popup = ({ isOpen, onClose, title, children }: PopupProps) => {
         {/* Header */}
         <div className='flex items-center justify-between border-b border-gray-200 px-6 py-4'>
           <h2 className='text-lg font-semibold text-gray-700'>{title}</h2>
-          <Close onClick={onClose} width={24} height={24} />
+          <Close onClick={onClose} width={24} height={24} className='hover:cursor-pointer' />
         </div>
 
         {/* Content */}
