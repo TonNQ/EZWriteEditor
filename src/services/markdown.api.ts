@@ -1,6 +1,4 @@
 import { HttpStatusCode } from 'axios'
-import { toast } from 'react-toastify'
-import { SUCCESS_MESSAGE } from '../constants/message'
 import { ApiResponse } from '../types/common.type'
 import {
   CreateMarkdownFileBody,
@@ -41,7 +39,6 @@ const createMarkdownFile = async (
       body,
       signal
     })) as ApiResponse<MarkdownFile>
-    toast.success(SUCCESS_MESSAGE.SAVE_MARKDOWN_FILE)
 
     return {
       status: response.status || HttpStatusCode.Ok,
@@ -228,6 +225,28 @@ const restoreVersionOfMarkdownFile = async (
   }
 }
 
+const updateVersionOfMarkdownFile = async (
+  fileId: string,
+  body: Partial<MarkdownVersion>,
+  signal?: AbortSignal
+): Promise<ApiResponse<MarkdownVersion>> => {
+  try {
+    const response = await http.post<MarkdownVersion>({
+      key: 'update-version-of-markdown-file',
+      url: `/api/markdown/files/${fileId}/update_version_metadata/`,
+      body,
+      signal
+    })
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data ?? {}
+    }
+  } catch (error) {
+    console.error('Update version of markdown file API error:', error)
+    return error as ApiResponse<MarkdownVersion>
+  }
+}
+
 const markdownInstance = {
   createMarkdownFile,
   getAllMarkdownFiles,
@@ -238,7 +257,8 @@ const markdownInstance = {
   getAllVersionsOfMarkdownFile,
   createVersionOfMarkdownFile,
   getVersionContentOfMarkdownFile,
-  restoreVersionOfMarkdownFile
+  restoreVersionOfMarkdownFile,
+  updateVersionOfMarkdownFile
 }
 
 export default markdownInstance

@@ -27,15 +27,15 @@ import Suggestions from '../../components/Suggestions/Suggestions'
 import TextToSpeechComp from '../../components/TextToSpeechComp'
 import Translation from '../../components/Translation'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
+import { cn } from '../../libs/tailwind/utils'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
 import { setIsShowHistory, setTitle } from '../../store/editor/editor.slice'
 import { resetAllStore } from '../../store/resetStore'
+import { editorExtensions } from '../../utils/extensions'
+import MainEditorContent from './MainEditorContent'
 import './styles.css'
 import VersionHistory from './VersionHistory'
-import MainEditorContent from './MainEditorContent'
-import { editorExtensions } from '../../utils/extensions'
-import { cn } from '../../libs/tailwind/utils'
 
 interface MenuBarProps {
   editor: Editor | null
@@ -65,7 +65,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
     <div className='flex flex-col bg-gray-50 px-4 py-2'>
       {isOpen && (
         <div className='flex w-full flex-row items-center justify-between'>
-          <div className='flex items-center'>
+          <div className='flex flex-1 items-center'>
             <Document width={28} height={28} />
             <input
               value={title || ''}

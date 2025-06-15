@@ -7,7 +7,6 @@ import { AppDispatch } from '../../store'
 import { logoutThunk } from '../../store/auth/auth.slice'
 import { getInitialFromName, getRandomDarkColor } from '../../utils/helpers'
 import ChevronDown from '../Icons/ChevronDown'
-import Dictionary from '../Icons/Dictionary'
 import File from '../Icons/File'
 import Folder from '../Icons/Folder'
 import LogOut from '../Icons/LogOut'
@@ -26,9 +25,9 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const tabs = [
-    { id: 'file', label: 'File của bạn', icon: Folder },
-    { id: 'editor', label: 'Soạn thảo', icon: File },
-    { id: 'dictionary', label: 'Từ điển', icon: Dictionary }
+    { id: 'file', label: 'My Files', icon: Folder },
+    { id: 'editor', label: 'Editor', icon: File }
+    // { id: 'dictionary', label: 'Dictionary', icon: Dictionary }
   ]
 
   // Mock user data - in a real app, this would come from authentication

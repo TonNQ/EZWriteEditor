@@ -31,29 +31,70 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
       </div>
 
       <div className='mb-6 space-y-4'>
-        <div>
-          <h3 className='mb-1 text-sm font-medium text-gray-500'>Title</h3>
-          <p className='text-gray-900'>{file.title}</p>
+        {/* Basic Information */}
+        <div className='space-y-4'>
+          <div>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Title</h3>
+            <p className='text-left break-all text-gray-900'>{file.title}</p>
+          </div>
+
+          <div>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Description</h3>
+            <p className='text-left break-all text-gray-900'>{file.description}</p>
+          </div>
         </div>
 
-        <div>
-          <h3 className='mb-1 text-sm font-medium text-gray-500'>Description</h3>
-          <p className='text-gray-900'>{file.description}</p>
+        {/* Version Information */}
+        <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+          <h3 className='mb-3 text-left text-sm font-medium text-gray-700'>Latest Version</h3>
+          <div className='space-y-3'>
+            <div className='flex flex-col'>
+              <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Version Number</h4>
+              <p className='text-left text-sm text-gray-900'>{file.latest_version.version_number}</p>
+            </div>
+
+            <div className='flex flex-col'>
+              <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Created At</h4>
+              <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.latest_version.created_at))}</p>
+            </div>
+
+            {file.latest_version.version_name && (
+              <div className='flex flex-col'>
+                <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Version Name</h4>
+                <p className='text-left text-sm text-gray-900'>{file.latest_version.version_name}</p>
+              </div>
+            )}
+
+            {file.latest_version.commit_message && (
+              <div className='flex flex-col'>
+                <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Commit Message</h4>
+                <p className='text-left text-sm break-all text-gray-900'>{file.latest_version.commit_message}</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div>
-          <h3 className='mb-1 text-sm font-medium text-gray-500'>Created</h3>
-          <p className='text-gray-900'>{formatDate(new Date(file.created_at))}</p>
-        </div>
+        {/* File Statistics */}
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Created</h3>
+            <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.created_at))}</p>
+          </div>
 
-        <div>
-          <h3 className='mb-1 text-sm font-medium text-gray-500'>Last Modified</h3>
-          <p className='text-gray-900'>{formatDate(new Date(file.updated_at))}</p>
-        </div>
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Last Modified</h3>
+            <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.updated_at))}</p>
+          </div>
 
-        <div>
-          <h3 className='mb-1 text-sm font-medium text-gray-500'>Versions</h3>
-          <p className='text-gray-900'>{file.version_count}</p>
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Total Versions</h3>
+            <p className='text-left text-sm text-gray-900'>{file.version_count}</p>
+          </div>
+
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Status</h3>
+            <p className='text-left text-sm text-gray-900'>{file.is_owner ? 'Owner' : 'Shared'}</p>
+          </div>
         </div>
       </div>
 
