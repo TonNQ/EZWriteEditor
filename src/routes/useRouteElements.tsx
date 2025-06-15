@@ -36,7 +36,7 @@ const useRouteElements = () => {
           path: path.home,
           element: (
             <MainLayout>
-              <TipTapEditor />
+              <FileManagement />
             </MainLayout>
           )
         },
