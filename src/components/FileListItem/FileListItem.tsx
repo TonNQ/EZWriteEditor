@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { MarkdownFile } from '../../types/markdownFile.type'
 import { formatDate } from '../../utils/helpers'
+import BaseButton from '../Extensions/BaseButton'
 import Delete from '../Icons/Delete'
 import File from '../Icons/File'
+import MoreVertical from '../Icons/MoreVertical'
+import Share from '../Icons/Share'
 
 interface FileListItemProps {
   file: MarkdownFile
   isSelected: boolean
   onSelect: (file: MarkdownFile) => void
   onDelete: (fileId: number) => void
+  onEdit: (file: MarkdownFile) => void
+  onShare: (file: MarkdownFile) => void
 }
 
-const FileListItem = ({ file, isSelected, onSelect, onDelete }: FileListItemProps) => {
+const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }: FileListItemProps) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
@@ -39,31 +44,53 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete }: FileListItemProp
       </div>
       <div className='col-span-3 text-left text-sm text-gray-500'>{formatDate(new Date(file.updated_at))}</div>
       <div className='col-span-2 text-left text-sm text-gray-500'>{file.version_count}</div>
-      <div className='col-span-1 text-right'>
-        {/* <Button
-          variant='ghost'
-          size='sm'
+      <div className='relative col-span-1 text-right'>
+        <BaseButton
+          customClass='p-1 hover:bg-gray-100 rounded-full'
           onClick={(e) => {
             e.stopPropagation()
             setMenuOpen(!menuOpen)
           }}
         >
-          <MoreVertical className='h-5 w-5 text-gray-500' />
-        </Button> */}
+          <MoreVertical width={20} height={20} />
+        </BaseButton>
         {menuOpen && (
           <div
             ref={menuRef}
-            className='ring-opacity-5 absolute right-4 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black'
+            className='absolute top-full right-0 z-50 mt-2 min-w-[150px] overflow-visible rounded-xl border border-gray-200 bg-white py-2 shadow-xl'
+            onClick={(e) => e.stopPropagation()}
           >
             <button
-              className='flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100'
-              onClick={(e) => {
+              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100'
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation()
+                onEdit(file)
+                setMenuOpen(false)
+              }}
+            >
+              <File />
+              Edit
+            </button>
+            <button
+              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100'
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.stopPropagation()
+                onShare(file)
+                setMenuOpen(false)
+              }}
+            >
+              <Share width={18} height={18} />
+              Share
+            </button>
+            <button
+              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-600 transition hover:bg-red-50'
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation()
                 onDelete(file.id)
                 setMenuOpen(false)
               }}
             >
-              <Delete className='mr-2 h-4 w-4' />
+              <Delete className='h-4 w-4' />
               Delete
             </button>
           </div>

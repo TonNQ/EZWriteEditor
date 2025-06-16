@@ -5,7 +5,9 @@ import BaseButton from '../../components/Extensions/BaseButton'
 import FileDetails from '../../components/FileDetails'
 import FileList from '../../components/FileList'
 import Search from '../../components/Icons/Search/Search'
-import { path } from '../../routes/path'
+import SharePopup from '../../components/Popup/SharePopup'
+import { getEditorPage, path } from '../../routes/path'
+import markdownInstance from '../../services/markdown.api'
 import { AppDispatch, RootState } from '../../store'
 import { deleteMarkdownFile, fetchMarkdownFiles } from '../../store/markdownFiles/markdownFiles.slice'
 import { resetAllStore } from '../../store/resetStore'
@@ -19,10 +21,30 @@ const FileManagement = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, _setSortBy] = useState<'name' | 'date' | 'size'>('date')
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'all' | 'my_shares' | 'shared_with_me'>('all')
+  const [files, setFiles] = useState<MarkdownFile[]>([])
+  const [sharePopupOpen, setSharePopupOpen] = useState(false)
+  const [shareFile, setShareFile] = useState<MarkdownFile | null>(null)
 
   useEffect(() => {
     dispatch(fetchMarkdownFiles())
   }, [dispatch])
+
+  useEffect(() => {
+    const fetchFiles = async () => {
+      if (activeTab === 'all') {
+        const res = await markdownInstance.getAllMarkdownFiles()
+        setFiles(res.data)
+      } else if (activeTab === 'my_shares') {
+        const res = await markdownInstance.getMySharedMarkdownFiles()
+        setFiles(res.data as any)
+      } else if (activeTab === 'shared_with_me') {
+        const res = await markdownInstance.getMarkdownFilesSharedWithMe()
+        setFiles(res.data)
+      }
+    }
+    fetchFiles()
+  }, [activeTab])
 
   const handleFileSelect = (file: MarkdownFile) => {
     setSelectedFile(file)
@@ -65,7 +87,26 @@ const FileManagement = () => {
         <div className='mb-6 flex items-center justify-between'>
           <h1 className='text-2xl font-bold'>My Files</h1>
         </div>
-
+        <div className='mb-4 flex space-x-4'>
+          <button
+            className={`rounded px-4 py-2 ${activeTab === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+            onClick={() => setActiveTab('all')}
+          >
+            All Files
+          </button>
+          <button
+            className={`rounded px-4 py-2 ${activeTab === 'my_shares' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+            onClick={() => setActiveTab('my_shares')}
+          >
+            My Shares
+          </button>
+          <button
+            className={`rounded px-4 py-2 ${activeTab === 'shared_with_me' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+            onClick={() => setActiveTab('shared_with_me')}
+          >
+            Shared With Me
+          </button>
+        </div>
         <div className='mb-6 flex h-[42px] items-center space-x-4'>
           <div className='align-center relative flex h-full flex-1 flex-row rounded-md border border-gray-300 px-3 py-2'>
             <Search width={24} height={24} />
@@ -83,15 +124,19 @@ const FileManagement = () => {
             Create new file
           </BaseButton>
         </div>
-
         <FileList
-          files={sortedFiles}
+          files={files.filter((file) => file.title.toLowerCase().includes(searchQuery.toLowerCase()))}
           onFileSelect={handleFileSelect}
           onFileDelete={handleFileDelete}
+          onEdit={(file) => navigate(getEditorPage(file.id.toString()))}
+          onShare={(file) => {
+            setShareFile(file)
+            setSharePopupOpen(true)
+          }}
           selectedFileId={selectedFile?.id}
         />
+        <SharePopup file={shareFile} isOpen={sharePopupOpen} onClose={() => setSharePopupOpen(false)} />
       </div>
-
       {isDetailsOpen && selectedFile && (
         <div className='h-full w-1/4 border-l border-gray-200 shadow-md'>
           <FileDetails
