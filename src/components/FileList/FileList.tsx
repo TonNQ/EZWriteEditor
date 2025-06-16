@@ -6,10 +6,12 @@ interface FileListProps {
   files: MarkdownFile[]
   onFileSelect: (file: MarkdownFile) => void
   onFileDelete: (fileId: number) => void
+  onEdit: (file: MarkdownFile) => void
+  onShare: (file: MarkdownFile) => void
   selectedFileId?: number
 }
 
-export function FileList({ files, onFileSelect, onFileDelete, selectedFileId }: FileListProps) {
+export function FileList({ files, onFileSelect, onFileDelete, onEdit, onShare, selectedFileId }: FileListProps) {
   if (files.length === 0) {
     return (
       <div className='flex h-64 flex-col items-center justify-center text-gray-500'>
@@ -21,7 +23,7 @@ export function FileList({ files, onFileSelect, onFileDelete, selectedFileId }: 
   }
 
   return (
-    <div className='overflow-hidden rounded-lg border border-gray-300'>
+    <div className='rounded-lg border border-gray-300'>
       <div className='grid grid-cols-12 bg-gray-200 p-3 text-sm font-medium text-gray-500'>
         <div className='col-span-6 text-left'>Name</div>
         <div className='col-span-3 text-left'>Last Modified</div>
@@ -36,6 +38,8 @@ export function FileList({ files, onFileSelect, onFileDelete, selectedFileId }: 
             isSelected={selectedFileId === file.id}
             onSelect={onFileSelect}
             onDelete={onFileDelete}
+            onEdit={onEdit}
+            onShare={onShare}
           />
         ))}
       </div>

@@ -52,3 +52,20 @@ export interface SaveFileFormData {
   versionName: string
   commitMessage: string
 }
+
+export interface MarkdownFileShare {
+  id: number
+  document: number
+  shared_with_email: string
+  document_title: string
+  created_at: string
+  can_edit: boolean
+}
+
+export interface ShareWithEmailBody {
+  shared_with_email: string
+}
+
+export interface MarkdownFileWithShares extends MarkdownFile {
+  shares?: MarkdownFileShare[]
+}
