@@ -84,14 +84,14 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
         <div className='mb-6 text-left'>
           <label className='mb-3 block text-sm font-medium text-gray-700'>
             <Mail className='mr-2 inline h-4 w-4' />
-            Chia sẻ với người khác
+            Share with others
           </label>
           <div className='flex space-x-2'>
             <div className='relative flex-1'>
               <input
                 type='email'
                 className='w-full rounded-lg border border-gray-300 px-4 py-3 placeholder-gray-400 transition-all duration-200 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500'
-                placeholder='Nhập địa chỉ email...'
+                placeholder='Enter email address...'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -106,7 +106,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
               {loading ? (
                 <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
               ) : (
-                <span>Chia sẻ</span>
+                <span>Share</span>
               )}
             </button>
           </div>
@@ -123,10 +123,10 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
           <div className='mb-3 flex items-center justify-between'>
             <h3 className='flex items-center text-sm font-medium text-gray-700'>
               <Users className='mr-2 h-4 w-4' />
-              Người có quyền truy cập
+              Users with access
             </h3>
             {shares.length > 0 && (
-              <span className='rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500'>{shares.length} người</span>
+              <span className='rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500'>{shares.length} users</span>
             )}
           </div>
 
@@ -134,13 +134,13 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
             {loading ? (
               <div className='flex items-center justify-center py-4'>
                 <div className='h-5 w-5 animate-spin rounded-full border-2 border-gray-400 border-t-transparent' />
-                <span className='ml-2 text-sm text-gray-500'>Đang tải...</span>
+                <span className='ml-2 text-sm text-gray-500'>Loading...</span>
               </div>
             ) : shares.length === 0 ? (
               <div className='py-6 text-center'>
                 <Users className='mx-auto mb-2 h-8 w-8 text-gray-300' />
-                <p className='text-sm text-gray-500'>Chưa có ai được chia sẻ</p>
-                <p className='mt-1 text-xs text-gray-400'>Thêm email ở trên để chia sẻ file này</p>
+                <p className='text-sm text-gray-500'>No one has been shared yet</p>
+                <p className='mt-1 text-xs text-gray-400'>Add an email above to share this file</p>
               </div>
             ) : (
               <div className='space-y-2'>
@@ -155,7 +155,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
                       onClick={() => handleUnshare(share.shared_with_email || share.owner_email)}
                       disabled={loading}
                     >
-                      Gỡ
+                      Remove
                     </BaseButton>
                   </li>
                 ))}
@@ -168,7 +168,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
         <div className='mb-6 text-left'>
           <label className='mb-3 block text-sm font-medium text-gray-700'>
             <Link className='mr-2 inline h-4 w-4' />
-            Liên kết chia sẻ
+            Share link
           </label>
           <div className='flex space-x-2'>
             <div className='flex-1 truncate rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600'>
@@ -185,17 +185,17 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
               {copySuccess ? (
                 <>
                   <Check className='h-4 w-4' />
-                  <span>Đã sao chép!</span>
+                  <span>Copied!</span>
                 </>
               ) : (
                 <>
                   <Copy width={16} height={16} />
-                  <span>Sao chép</span>
+                  <span>Copy</span>
                 </>
               )}
             </button>
           </div>
-          <p className='mt-2 text-xs text-gray-500'>Bất kỳ ai có liên kết này đều có thể xem file</p>
+          <p className='mt-2 text-xs text-gray-500'>Anyone with this link can view the file</p>
         </div>
 
         {/* Footer */}
@@ -204,7 +204,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
             onClick={onClose}
             className='rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
           >
-            Hoàn tất
+            Done
           </button>
         </div>
       </div>
