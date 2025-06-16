@@ -143,7 +143,7 @@ const VersionSidebar = ({
               aria-haspopup='true'
               aria-expanded={filterDropdownOpen}
             >
-              <span>{currentFilter === 'all' ? 'Tất cả phiên bản' : 'Phiên bản được đặt tên'}</span>
+              <span>{currentFilter === 'all' ? 'All versions' : 'Named versions'}</span>
               <ChevronDown className={`h-4 w-4 transition-transform ${filterDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -156,7 +156,7 @@ const VersionSidebar = ({
                       role='menuitem'
                       onClick={() => handleFilterSelect('all')}
                     >
-                      Tất cả phiên bản
+                      All versions
                     </button>
                   </li>
                   <li>
@@ -165,7 +165,7 @@ const VersionSidebar = ({
                       role='menuitem'
                       onClick={() => handleFilterSelect('named')}
                     >
-                      Phiên bản được đặt tên
+                      Named versions
                     </button>
                   </li>
                 </ul>
@@ -199,12 +199,12 @@ const VersionSidebar = ({
                         <span className='text-sm font-medium'>{versionName || formatDateTimeDisplay(createdAt)}</span>
                         {isCurrentVersion && (
                           <span className='rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700'>
-                            Phiên bản hiện tại
+                            Current version
                           </span>
                         )}
                         {!isCurrentVersion && idx === 0 && (
                           <span className='rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700'>
-                            Phiên bản gốc
+                            Original version
                           </span>
                         )}
                       </div>
@@ -252,7 +252,7 @@ const VersionSidebar = ({
                                   handleVersionNameClick(version)
                                 }}
                               >
-                                Đổi tên phiên bản này
+                                Rename this version
                               </button>
                             </li>
                             <li>
@@ -264,7 +264,7 @@ const VersionSidebar = ({
                                   handleRestoreClick(version)
                                 }}
                               >
-                                Khôi phục phiên bản này
+                                Restore this version
                               </button>
                             </li>
                           </ul>
@@ -290,7 +290,7 @@ const VersionSidebar = ({
                 className='h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500'
               />
               <label htmlFor='show-changes' className='ml-2 cursor-pointer text-sm font-medium text-gray-700'>
-                Hiển thị thay đổi
+                Show changes
               </label>
             </div>
           </div>
@@ -305,7 +305,7 @@ const VersionSidebar = ({
             setIsVersionNamePopupOpen(false)
             setSelectedVersionForNaming(null)
           }}
-          title='Đặt tên phiên bản'
+          title='Name version'
         >
           <VersionNameForm
             version={selectedVersionForNaming}
@@ -326,11 +326,11 @@ const VersionSidebar = ({
           setIsRestorePopupOpen(false)
           setSelectedVersionForRestore(null)
         }}
-        title='Xác nhận khôi phục'
+        title='Confirm restore'
       >
         <div className='space-y-4'>
           <p className='text-left text-sm text-gray-700'>
-            Bạn có chắc chắn muốn khôi phục phiên bản này không? Một phiên bản mới để khôi phục sẽ được tạo ra.
+            Are you sure you want to restore this version? A new version will be created for restoration.
           </p>
           <div className='flex justify-end space-x-3 pt-4'>
             <button

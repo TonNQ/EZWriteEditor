@@ -26,7 +26,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
 
   const tabs = [
     { id: 'file', label: 'My Files', icon: Folder, extensions: [''] },
-    { id: 'editor', label: 'Editor', icon: File, extensions: [] },
+    { id: 'editor', label: 'Editor', icon: File, extensions: [] }
   ]
 
   // Mock user data - in a real app, this would come from authentication
@@ -111,16 +111,16 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
         {isDropdownOpen && (
           <div className='absolute top-12 right-6 z-100 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-neutral-200 focus:outline-none'>
             <div className='px-4 py-3'>
-              <p className='text-sm font-medium'>Tài khoản của tôi</p>
+              <p className='text-sm font-medium'>My account</p>
             </div>
             <div className='py-1'>
               <button className='flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
                 <User />
-                Hồ sơ
+                Profile
               </button>
               <button className='flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'>
                 <Setting />
-                Cài đặt
+                Settings
               </button>
             </div>
             <div className='py-1'>
@@ -129,7 +129,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
                 className='flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100'
               >
                 <LogOut />
-                Đăng xuất
+                Logout
               </button>
             </div>
           </div>

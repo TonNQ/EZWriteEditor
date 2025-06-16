@@ -13,8 +13,8 @@ type LanguageOption = {
 }
 
 const languageOptions: LanguageOption[] = [
-  { label: 'Tiếng Anh', value: 'en' },
-  { label: 'Tiếng Việt', value: 'vi' }
+  { label: 'English', value: 'en' },
+  { label: 'Vietnamese', value: 'vi' }
 ]
 
 const LanguageButton = () => {
