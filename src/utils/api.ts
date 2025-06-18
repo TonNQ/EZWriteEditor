@@ -142,7 +142,9 @@ class Http {
     try {
       const response = await axios.post<ApiResponse<RefreshTokenResponse>>(
         `${BASE_URL}/auth/api/token/refresh/`,
-        {},
+        {
+          refresh: this.refreshToken
+        },
         {
           headers: {
             'Content-Type': 'application/json'
@@ -150,9 +152,11 @@ class Http {
         }
       )
 
+      const newRefreshToken = response.data.data.refresh || this.refreshToken
+      
       return {
         accessToken: response.data.data.access,
-        refreshToken: this.refreshToken // Keep the existing refresh token since it's managed by cookies
+        refreshToken: newRefreshToken
       }
     } catch (error) {
       console.log('Refresh token API error:', error)
@@ -179,6 +183,7 @@ class Http {
     this.accessToken = ''
     this.refreshToken = ''
     localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     // Redirect to login page or show login modal
     // window.location.href = '/login'
   }
@@ -231,6 +236,13 @@ class Http {
   public setTokens(token: string) {
     this.accessToken = token
     localStorage.setItem('access_token', token)
+  }
+
+  public setAuthTokens(accessToken: string, refreshToken: string) {
+    this.accessToken = accessToken
+    this.refreshToken = refreshToken
+    localStorage.setItem('access_token', accessToken)
+    localStorage.setItem('refresh_token', refreshToken)
   }
 
   async get<T>({
