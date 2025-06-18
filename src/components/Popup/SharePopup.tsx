@@ -23,27 +23,27 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
   const [copySuccess, setCopySuccess] = useState(false)
 
   useEffect(() => {
-    if (file && isOpen) {
+    if (file && isOpen && file.is_owner) {
       fetchShares()
     }
     // eslint-disable-next-line
   }, [file, isOpen])
 
   const fetchShares = async () => {
-    if (!file) return
+    if (!file || !file.is_owner) return
     setLoading(true)
     setError('')
     const res = await markdownInstance.getMarkdownFileShares(file.id.toString())
     if (res.status === 200 && res.data) {
       setShares(res.data.shares)
     } else {
-      setError(res.message || 'Lỗi khi lấy danh sách chia sẻ')
+      setError(res.message || 'Failed to load shared users. Please try again later.')
     }
     setLoading(false)
   }
 
   const handleShare = async () => {
-    if (!file || !email) return
+    if (!file || !email || !file.is_owner) return
     setLoading(true)
     setError('')
     const res = await markdownInstance.shareMarkdownFile(file.id.toString(), { shared_with_email: email })
@@ -51,20 +51,20 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
       setEmail('')
       fetchShares()
     } else {
-      setError(res.message || 'Lỗi khi chia sẻ')
+      setError(res.message || 'Failed to share the file. Please check the email and try again.')
     }
     setLoading(false)
   }
 
   const handleUnshare = async (sharedEmail: string) => {
-    if (!file) return
+    if (!file || !file.is_owner) return
     setLoading(true)
     setError('')
     const res = await markdownInstance.unshareMarkdownFile(file.id.toString(), sharedEmail)
     if (res.status === 200) {
       fetchShares()
     } else {
-      setError(res.message || 'Lỗi khi xóa chia sẻ')
+      setError(res.message || 'Failed to remove access. Please try again later.')
     }
     setLoading(false)
   }
@@ -80,43 +80,45 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
   return (
     <Popup isOpen={isOpen} onClose={onClose} title='Share file'>
       <div className='mx-auto w-full max-w-md'>
-        {/* Share with email section */}
-        <div className='mb-6 text-left'>
-          <label className='mb-3 block text-sm font-medium text-gray-700'>
-            <Mail className='mr-2 inline h-4 w-4' />
-            Share with others
-          </label>
-          <div className='flex space-x-2'>
-            <div className='relative flex-1'>
-              <input
-                type='email'
-                className='w-full rounded-lg border border-gray-300 px-4 py-3 placeholder-gray-400 transition-all duration-200 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500'
-                placeholder='Enter email address...'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                onKeyPress={(e) => e.key === 'Enter' && handleShare()}
-              />
+        {/* Share with email section - only show for owners */}
+        {file?.is_owner && (
+          <div className='mb-6 text-left'>
+            <label className='mb-3 block text-sm font-medium text-gray-700'>
+              <Mail className='mr-2 inline h-4 w-4' />
+              Share with others
+            </label>
+            <div className='flex space-x-2'>
+              <div className='relative flex-1'>
+                <input
+                  type='email'
+                  className='w-full rounded-lg border border-gray-300 px-4 py-3 placeholder-gray-400 transition-all duration-200 outline-none focus:border-transparent focus:ring-2 focus:ring-blue-500'
+                  placeholder='Enter email address...'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  onKeyPress={(e) => e.key === 'Enter' && handleShare()}
+                />
+              </div>
+              <button
+                onClick={handleShare}
+                disabled={loading || !email.trim()}
+                className='flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                {loading ? (
+                  <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
+                ) : (
+                  <span>Share</span>
+                )}
+              </button>
             </div>
-            <button
-              onClick={handleShare}
-              disabled={loading || !email.trim()}
-              className='flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-            >
-              {loading ? (
-                <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
-              ) : (
-                <span>Share</span>
-              )}
-            </button>
+            {error && (
+              <div className='mt-2 flex items-center space-x-2 rounded-lg border border-red-200 bg-red-50 p-3'>
+                <X className='h-4 w-4 flex-shrink-0 text-red-500' />
+                <span className='text-sm text-red-700'>{error}</span>
+              </div>
+            )}
           </div>
-          {error && (
-            <div className='mt-2 flex items-center space-x-2 rounded-lg border border-red-200 bg-red-50 p-3'>
-              <X className='h-4 w-4 flex-shrink-0 text-red-500' />
-              <span className='text-sm text-red-700'>{error}</span>
-            </div>
-          )}
-        </div>
+        )}
 
         {/* Shared users section */}
         <div className='mb-6'>
@@ -125,13 +127,19 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
               <Users className='mr-2 h-4 w-4' />
               Users with access
             </h3>
-            {shares.length > 0 && (
+            {file?.is_owner && shares.length > 0 && (
               <span className='rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500'>{shares.length} users</span>
             )}
           </div>
 
           <div className='max-h-48 overflow-y-auto rounded-lg bg-gray-50 p-4'>
-            {loading ? (
+            {!file?.is_owner ? (
+              <div className='py-6 text-center'>
+                <Users className='mx-auto mb-2 h-8 w-8 text-gray-300' />
+                <p className='text-sm text-gray-500'>Access restricted</p>
+                <p className='mt-1 text-xs text-gray-400'>Only the file owner can view the list of users with access</p>
+              </div>
+            ) : loading ? (
               <div className='flex items-center justify-center py-4'>
                 <div className='h-5 w-5 animate-spin rounded-full border-2 border-gray-400 border-t-transparent' />
                 <span className='ml-2 text-sm text-gray-500'>Loading...</span>
@@ -195,7 +203,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
               )}
             </button>
           </div>
-          <p className='mt-2 text-xs text-gray-500'>Anyone with this link can view the file</p>
+          <p className='mt-2 text-xs text-gray-500'>Share this link with people who have access to this file</p>
         </div>
 
         {/* Footer */}

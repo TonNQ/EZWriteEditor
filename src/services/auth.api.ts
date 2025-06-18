@@ -17,6 +17,7 @@ export interface RegisterBody {
 
 export interface AuthResponse {
   access: string
+  refresh: string
   user: User
 }
 
