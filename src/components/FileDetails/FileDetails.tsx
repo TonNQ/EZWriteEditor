@@ -44,6 +44,29 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
           </div>
         </div>
 
+        {/* File Statistics */}
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Created</h3>
+            <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.created_at))}</p>
+          </div>
+
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Last Modified</h3>
+            <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.updated_at))}</p>
+          </div>
+
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Total Versions</h3>
+            <p className='text-left text-sm text-gray-900'>{file.version_count}</p>
+          </div>
+
+          <div className='flex flex-col'>
+            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Status</h3>
+            <p className='text-left text-sm text-gray-900'>{file.is_owner ? 'Owner' : 'Shared'}</p>
+          </div>
+        </div>
+
         {/* Version Information */}
         <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
           <h3 className='mb-3 text-left text-sm font-medium text-gray-700'>Latest Version</h3>
@@ -71,29 +94,6 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
                 <p className='text-left text-sm break-all text-gray-900'>{file.latest_version.commit_message}</p>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* File Statistics */}
-        <div className='grid grid-cols-2 gap-4'>
-          <div className='flex flex-col'>
-            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Created</h3>
-            <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.created_at))}</p>
-          </div>
-
-          <div className='flex flex-col'>
-            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Last Modified</h3>
-            <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.updated_at))}</p>
-          </div>
-
-          <div className='flex flex-col'>
-            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Total Versions</h3>
-            <p className='text-left text-sm text-gray-900'>{file.version_count}</p>
-          </div>
-
-          <div className='flex flex-col'>
-            <h3 className='mb-1 text-left text-sm font-medium text-gray-500'>Status</h3>
-            <p className='text-left text-sm text-gray-900'>{file.is_owner ? 'Owner' : 'Shared'}</p>
           </div>
         </div>
       </div>

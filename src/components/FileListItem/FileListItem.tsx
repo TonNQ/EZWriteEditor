@@ -61,7 +61,7 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100'
+              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-700 transition hover:cursor-pointer hover:bg-gray-100'
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation()
                 onEdit(file)
@@ -72,7 +72,7 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
               Edit
             </button>
             <button
-              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-100'
+              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-700 transition hover:cursor-pointer hover:bg-gray-100'
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation()
                 onShare(file)
@@ -83,7 +83,7 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
               Share
             </button>
             <button
-              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-600 transition hover:bg-red-50'
+              className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-600 transition hover:cursor-pointer hover:bg-red-50'
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation()
                 onDelete(file.id)
