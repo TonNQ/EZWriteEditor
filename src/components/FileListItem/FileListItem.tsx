@@ -38,17 +38,21 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
       className={`grid cursor-pointer grid-cols-12 items-center p-3 hover:bg-gray-50 ${isSelected ? 'bg-blue-50' : ''}`}
       onClick={() => onSelect(file)}
     >
-      <div className='col-span-6 flex items-center space-x-3'>
+      <div className='col-span-3 flex items-center space-x-3'>
         <File className='text-gray-400' />
         <span className='truncate'>{file.title}</span>
       </div>
-      <div className='col-span-3 text-left text-sm text-gray-500'>{formatDate(new Date(file.updated_at))}</div>
-      <div className='col-span-2 text-left text-sm text-gray-500'>{file.version_count}</div>
+      <div className='col-span-5 text-left text-sm text-gray-600'>
+        <span className='block truncate' title={file.description}>
+          {file.description || 'No description'}
+        </span>
+      </div>
+      <div className='col-span-2 text-left text-sm text-gray-500'>{formatDate(new Date(file.updated_at))}</div>
+      <div className='col-span-1 text-left text-sm text-gray-500'>{file.version_count}</div>
       <div className='relative col-span-1 text-right'>
         <BaseButton
           customClass='p-1 hover:bg-gray-100 rounded-full'
-          onClick={(e) => {
-            e.stopPropagation()
+          onClick={() => {
             setMenuOpen(!menuOpen)
           }}
         >

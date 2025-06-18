@@ -25,9 +25,10 @@ export function FileList({ files, onFileSelect, onFileDelete, onEdit, onShare, s
   return (
     <div className='rounded-lg border border-gray-300'>
       <div className='grid grid-cols-12 bg-gray-200 p-3 text-sm font-medium text-gray-500'>
-        <div className='col-span-6 text-left'>Name</div>
-        <div className='col-span-3 text-left'>Last Modified</div>
-        <div className='col-span-2 text-left'>Versions</div>
+        <div className='col-span-3 text-left'>Name</div>
+        <div className='col-span-5 text-left'>Description</div>
+        <div className='col-span-2 text-left'>Last Modified</div>
+        <div className='col-span-1 text-left'>Versions</div>
         <div className='col-span-1 text-left'></div>
       </div>
       <div className='divide-y divide-gray-300'>
