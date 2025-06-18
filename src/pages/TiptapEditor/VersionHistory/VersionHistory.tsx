@@ -101,10 +101,6 @@ const VersionHistory = () => {
   const { id: fileId } = useParams()
   const {
     versions,
-    loadingVersions,
-    errorVersions,
-    loadingVersionContent,
-    errorVersionContent,
     selectedVersion,
     setSelectedVersion,
     editor,

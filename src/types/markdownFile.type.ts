@@ -27,6 +27,7 @@ export interface MarkdownVersion {
   content?: string
   download_url: string
   version_name?: string
+  version_id?: string | number
 }
 
 export interface CreateMarkdownFileBody {

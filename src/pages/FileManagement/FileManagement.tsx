@@ -1,12 +1,11 @@
+import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { ChevronDown } from 'lucide-react'
 import BaseButton from '../../components/Extensions/BaseButton'
 import FileDetails from '../../components/FileDetails'
 import FileList from '../../components/FileList'
 import Search from '../../components/Icons/Search/Search'
-import SharePopup from '../../components/Popup/SharePopup'
 import SortAlphabeticalAsc from '../../components/Icons/SortAlphabeticalAsc'
 import SortAlphabeticalDesc from '../../components/Icons/SortAlphabeticalDesc'
 import SortDateAsc from '../../components/Icons/SortDateAsc'
@@ -14,6 +13,7 @@ import SortDateDesc from '../../components/Icons/SortDateDesc'
 import SortDefault from '../../components/Icons/SortDefault'
 import SortNumberAsc from '../../components/Icons/SortNumberAsc'
 import SortNumberDesc from '../../components/Icons/SortNumberDesc'
+import SharePopup from '../../components/Popup/SharePopup'
 import { getEditorPage, path } from '../../routes/path'
 import markdownInstance from '../../services/markdown.api'
 import { AppDispatch, RootState } from '../../store'
@@ -49,7 +49,7 @@ type SortOption = {
 const FileManagement = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const { files: markdownFiles, error } = useSelector((state: RootState) => state.markdownFiles)
+  const { error } = useSelector((state: RootState) => state.markdownFiles)
   const [selectedFile, setSelectedFile] = useState<MarkdownFile | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortOption, setSortOption] = useState<SortOption>({
