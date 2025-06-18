@@ -32,6 +32,17 @@ export const registerThunk = createAsyncThunk<ApiResponse<AuthResponse>, Registe
         if (response.data.access) {
           localStorage.setItem('access_token', response.data.access)
         }
+        
+        // Save refresh token to localStorage
+        if (response.data.refresh) {
+          localStorage.setItem('refresh_token', response.data.refresh)
+        }
+        
+        // Set both tokens in http instance
+        if (response.data.access && response.data.refresh) {
+          http.setAuthTokens(response.data.access, response.data.refresh)
+        }
+        
         return response
       }
 
@@ -55,11 +66,23 @@ export const loginThunk = createAsyncThunk<ApiResponse<AuthResponse>, LoginBody>
       // Check for successful response (200 OK)
       if (response.status === HttpStatusCode.Ok && response.data) {
         const accessToken = response.data.access
+        const refreshToken = response.data.refresh
+        
         // Save access token to localStorage
         if (accessToken) {
           localStorage.setItem('access_token', accessToken)
-          http.setTokens(accessToken)
         }
+        
+        // Save refresh token to localStorage
+        if (refreshToken) {
+          localStorage.setItem('refresh_token', refreshToken)
+        }
+        
+        // Set both tokens in http instance
+        if (accessToken && refreshToken) {
+          http.setAuthTokens(accessToken, refreshToken)
+        }
+        
         const user = response.data.user 
         if (user) {
           localStorage.setItem('profile', JSON.stringify(user))
@@ -84,6 +107,9 @@ export const logoutThunk = createAsyncThunk('auth/logout', async (_, { rejectWit
     const response = await authInstance.logout()
     if (response.status === HttpStatusCode.Ok) {
       localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      // Clear tokens in http instance
+      http.setAuthTokens('', '')
       return response
     }
     return rejectWithValue(response.errors || 'Logout failed')
@@ -111,7 +137,15 @@ const authSlice = createSlice({
     },
     checkAuthOnLoad(state) {
       const accessToken = localStorage.getItem('access_token')
-      state.isAuthenticated = !!accessToken
+      const refreshToken = localStorage.getItem('refresh_token')
+      
+      if (accessToken && refreshToken) {
+        http.setAuthTokens(accessToken, refreshToken)
+        state.isAuthenticated = true
+      } else {
+        state.isAuthenticated = false
+      }
+      
       state.authInfoLoaded = true
     }
   },

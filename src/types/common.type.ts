@@ -14,4 +14,5 @@ export interface AuthTokens {
 
 export interface RefreshTokenResponse {
   access: string
+  refresh?: string
 }
