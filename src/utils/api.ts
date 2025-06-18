@@ -32,6 +32,8 @@ export const handleApiError = (error: unknown): ApiResponse<any> => {
 
 interface GetConfig extends AxiosRequestConfig {
   standardResponse?: boolean
+  baseURL?: string
+  skipNgrokWarning?: boolean
 }
 
 class Http {
@@ -153,7 +155,7 @@ class Http {
       )
 
       const newRefreshToken = response.data.data.refresh || this.refreshToken
-      
+
       return {
         accessToken: response.data.data.access,
         refreshToken: newRefreshToken
@@ -253,7 +255,8 @@ class Http {
     ...config
   }: { url: string; key: string; params?: Record<string, any> } & GetConfig): Promise<ApiResponse<T> | T> {
     const fullUrl = this.buildUrl(url, params)
-    const response = await this.instance.get<T>(fullUrl, this.createRequestConfig(key, config))
+    const axiosInstance = this.getAxiosInstance(config)
+    const response = await axiosInstance.get<T>(fullUrl, this.createRequestConfig(key, config))
 
     if (standardResponse) {
       return response.data as ApiResponse<T>
@@ -267,11 +270,10 @@ class Http {
     body,
     params,
     ...config
-  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<
-    ApiResponse<T>
-  > {
+  }: { url: string; key: string; body?: any; params?: Record<string, any> } & GetConfig): Promise<ApiResponse<T>> {
     const fullUrl = this.buildUrl(url, params)
-    const response = await this.instance.post<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
+    const axiosInstance = this.getAxiosInstance(config)
+    const response = await axiosInstance.post<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
     return response.data
   }
 
@@ -281,11 +283,10 @@ class Http {
     body,
     params,
     ...config
-  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<
-    ApiResponse<T>
-  > {
+  }: { url: string; key: string; body?: any; params?: Record<string, any> } & GetConfig): Promise<ApiResponse<T>> {
     const fullUrl = this.buildUrl(url, params)
-    const response = await this.instance.put<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
+    const axiosInstance = this.getAxiosInstance(config)
+    const response = await axiosInstance.put<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
     return response.data
   }
 
@@ -295,11 +296,10 @@ class Http {
     body,
     params,
     ...config
-  }: { url: string; key: string; body?: any; params?: Record<string, any> } & AxiosRequestConfig): Promise<
-    ApiResponse<T>
-  > {
+  }: { url: string; key: string; body?: any; params?: Record<string, any> } & GetConfig): Promise<ApiResponse<T>> {
     const fullUrl = this.buildUrl(url, params)
-    const response = await this.instance.patch<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
+    const axiosInstance = this.getAxiosInstance(config)
+    const response = await axiosInstance.patch<ApiResponse<T>>(fullUrl, body, this.createRequestConfig(key, config))
     return response.data
   }
 
@@ -308,10 +308,51 @@ class Http {
     key,
     params,
     ...config
-  }: { url: string; key: string; params?: Record<string, any> } & AxiosRequestConfig): Promise<ApiResponse<T>> {
+  }: { url: string; key: string; params?: Record<string, any> } & GetConfig): Promise<ApiResponse<T>> {
     const fullUrl = this.buildUrl(url, params)
-    const response = await this.instance.delete<ApiResponse<T>>(fullUrl, this.createRequestConfig(key, config))
+    const axiosInstance = this.getAxiosInstance(config)
+    const response = await axiosInstance.delete<ApiResponse<T>>(fullUrl, this.createRequestConfig(key, config))
     return response.data
+  }
+
+  // Helper method to create axios instance with custom baseURL
+  private createInstanceWithBaseURL(baseURL?: string, skipNgrokWarning?: boolean): AxiosInstance {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    }
+
+    if (skipNgrokWarning) {
+      headers['ngrok-skip-browser-warning'] = 'true'
+    }
+
+    if (!baseURL) return this.instance
+
+    return axios.create({
+      baseURL,
+      timeout: 30000,
+      headers
+    })
+  }
+
+  // Helper method to get the appropriate axios instance
+  private getAxiosInstance(config?: GetConfig): AxiosInstance {
+    if (config?.baseURL || config?.skipNgrokWarning) {
+      const customInstance = this.createInstanceWithBaseURL(config.baseURL, config.skipNgrokWarning)
+      // Add request interceptor for custom instance
+      customInstance.interceptors.request.use(
+        (config) => {
+          if (this.accessToken) {
+            config.headers.Authorization = `Bearer ${this.accessToken}`
+          }
+          return config
+        },
+        (error) => {
+          return Promise.reject(error)
+        }
+      )
+      return customInstance
+    }
+    return this.instance
   }
 }
 

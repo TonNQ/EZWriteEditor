@@ -1,8 +1,8 @@
 import { HttpStatusCode } from 'axios'
+import { ELASTIC_SEARCH_INDEX } from '../constants/common'
 import { ApiResponse } from '../types/common.type'
 import { AddSentenceResponse, Sentence } from '../types/sentence.type'
 import http from '../utils/api'
-import { ELASTIC_SEARCH_INDEX } from '../constants/common'
 
 interface SearchParams {
   index?: string
@@ -14,6 +14,8 @@ interface SuggestParams {
   user_input: string
   lang?: string
 }
+
+const SUGGEST_BASE_URL = import.meta.env.VITE_API_SUGGEST_URL || import.meta.env.VITE_API_URL
 
 const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<ApiResponse<Sentence[]>> => {
   try {
@@ -41,7 +43,9 @@ const suggestApi = async (params: SuggestParams, signal?: AbortSignal): Promise<
       url: '/api/suggest/',
       key: 'suggest',
       params,
-      signal
+      signal,
+      baseURL: SUGGEST_BASE_URL,
+      skipNgrokWarning: true
     })) as ApiResponse<{ results: string[] }>
     console.log('data', response.data)
 
