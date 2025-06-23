@@ -62,7 +62,7 @@ const TabBar = ({ activeTab, onTabChange }: TabBarProps) => {
   }
 
   return (
-    <div className='z-100 flex h-[48px] items-center justify-between border-b border-gray-200 bg-gray-50 px-2 shadow-xs'>
+    <div className='z-100 flex h-[48px] items-center justify-between border-b border-gray-200 bg-white px-2 shadow-xs'>
       <div className='flex h-full'>
         {tabs.map((tab) => {
           const Icon = tab.icon

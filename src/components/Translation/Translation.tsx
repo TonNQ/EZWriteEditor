@@ -74,12 +74,7 @@ const Translation = () => {
   }
 
   return (
-    <div
-      className={cn('w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
-        'max-h-[calc(50vh-76px)]': isOpenSuggestion || isOpenTextToSpeech,
-        'max-h-[calc(100vh-132px)]': !isOpenSuggestion && !isOpenTextToSpeech
-      })}
-    >
+    <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
         <Translate className='text-yellow-500' />
         <h2 className='text-base font-semibold text-gray-800'>Translation</h2>
@@ -115,7 +110,7 @@ const Translation = () => {
           onChange={handleInputChange}
           placeholder={`Enter ${direction === 'en-vi' ? 'English' : 'Vietnamese'} text...`}
           className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
-          rows={2}
+          rows={10}
         />
       </div>
 
@@ -140,7 +135,7 @@ const Translation = () => {
           readOnly
           placeholder={`${direction === 'en-vi' ? 'Vietnamese' : 'English'} translation will appear here...`}
           className='w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm'
-          rows={2}
+          rows={10}
         />
       </div>
     </div>

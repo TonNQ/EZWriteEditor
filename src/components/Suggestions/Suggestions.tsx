@@ -242,12 +242,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   }, [userInput])
 
   return (
-    <div
-      className={cn('w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
-        'max-h-[calc(50vh-76px)]': isOpenTranslation || isOpenTextToSpeech,
-        'max-h-[calc(100vh-132px)]': !isOpenTranslation && !isOpenTextToSpeech
-      })}
-    >
+    <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
         <Suggestion />
         <h2 className='text-base font-semibold text-gray-800'>Suggestions</h2>

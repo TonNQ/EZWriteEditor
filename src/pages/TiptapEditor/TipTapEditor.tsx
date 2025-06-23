@@ -23,11 +23,8 @@ import ChevronDown from '../../components/Icons/ChevronDown'
 import ChevronUp from '../../components/Icons/ChevronUp'
 import Document from '../../components/Icons/Document'
 import History from '../../components/Icons/History'
-import Suggestions from '../../components/Suggestions/Suggestions'
-import TextToSpeechComp from '../../components/TextToSpeechComp'
-import Translation from '../../components/Translation'
+import Sidebar from '../../components/Sidebar'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
-import { cn } from '../../libs/tailwind/utils'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
 import { setIsShowHistory, setTitle } from '../../store/editor/editor.slice'
@@ -62,7 +59,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   }
 
   return (
-    <div className='flex flex-col bg-gray-50 px-4 py-2'>
+    <div className='flex flex-col border-b border-gray-200 bg-white px-4 py-2'>
       {isOpen && (
         <div className='flex w-full flex-row items-center justify-between'>
           <div className='flex flex-1 items-center'>
@@ -128,41 +125,14 @@ const MenuBar = ({ editor }: MenuBarProps) => {
 }
 
 const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech }: MainEditorProps) => {
-  const numberOfExtensions = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech].filter(Boolean).length
-  const hasSidebar = numberOfExtensions >= 1
-  const isSidebarScrollable = numberOfExtensions > 1
+  const hasSidebar = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech].some(Boolean)
 
   return (
     <>
       <MenuBar editor={editor} />
-      <div className='flex h-full w-full flex-1 gap-4 overflow-auto p-4 text-center'>
+      <div className='flex h-full w-full flex-1 overflow-hidden'>
         <MainEditorContent editor={editor} />
-        {hasSidebar && (
-          <div
-            className={cn(
-              'sticky top-0 flex w-[max(350px,calc(50vw-350px))] max-w-[600px] min-w-[350px] flex-col gap-4 px-2',
-              {
-                'overflow-y-auto': isSidebarScrollable
-              }
-            )}
-          >
-            {isOpenSuggestion && (
-              <div className='h-fit'>
-                <Suggestions editor={editor} />
-              </div>
-            )}
-            {isOpenTranslation && (
-              <div className='h-fit'>
-                <Translation />
-              </div>
-            )}
-            {isOpenTextToSpeech && (
-              <div className='h-fit'>
-                <TextToSpeechComp editor={editor} />
-              </div>
-            )}
-          </div>
-        )}
+        {hasSidebar && <Sidebar editor={editor} />}
       </div>
     </>
   )

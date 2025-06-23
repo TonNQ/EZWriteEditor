@@ -88,12 +88,7 @@ const TextToSpeechComp = ({ editor }: TextToSpeechCompProps) => {
   }, [audioUrl])
 
   return (
-    <div
-      className={cn('w-full overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-sm', {
-        'max-h-[calc(50vh-76px)]': isOpenSuggestion || isOpenTranslation,
-        'max-h-[calc(100vh-132px)]': !isOpenSuggestion && !isOpenTranslation
-      })}
-    >
+    <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
         <TextToSpeech className='text-yellow-500' width={24} height={24} />
         <h2 className='text-base font-semibold text-gray-800'>Text to speech</h2>
