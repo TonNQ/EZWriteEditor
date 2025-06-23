@@ -6,6 +6,7 @@ import { SuggestionState } from './types'
 const initialState: SuggestionState = {
   isOpenSuggestion: false,
   openAISuggestResults: [],
+  isOpenExplanation: false,
   searchResults: [],
   suggestResults: [],
   isLoadingSearch: false,
@@ -22,6 +23,9 @@ const suggestionSlice = createSlice({
     },
     setOpenAISuggestResults(state, action: PayloadAction<string[]>) {
       state.openAISuggestResults = action.payload
+    },
+    setIsOpenExplanation(state, action: PayloadAction<boolean>) {
+      state.isOpenExplanation = action.payload
     },
     setSearchResults(state, action: PayloadAction<{ results: Sentence[]; isLoading?: boolean }>) {
       state.searchResults = action.payload.results
@@ -73,6 +77,7 @@ const suggestionSlice = createSlice({
 export const {
   setIsOpenSuggestion,
   setOpenAISuggestResults,
+  setIsOpenExplanation,
   setSearchResults,
   setSuggestResults,
   setIsLoadingSearch,

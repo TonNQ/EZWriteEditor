@@ -274,7 +274,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   return (
     <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
-        <Suggestion />
+        <Suggestion width={20} height={20} />
         <h2 className='text-base font-semibold text-gray-800'>Suggestions</h2>
       </div>
 

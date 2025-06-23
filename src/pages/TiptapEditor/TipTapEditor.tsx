@@ -24,6 +24,7 @@ import ChevronUp from '../../components/Icons/ChevronUp'
 import Document from '../../components/Icons/Document'
 import History from '../../components/Icons/History'
 import Sidebar from '../../components/Sidebar'
+import ExplanationButton from '../../components/Extensions/ExplanationButton'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
@@ -43,6 +44,7 @@ interface MainEditorProps {
   isOpenSuggestion: boolean
   isOpenTranslation: boolean
   isOpenTextToSpeech: boolean
+  isOpenExplanation: boolean
 }
 
 const MenuBar = ({ editor }: MenuBarProps) => {
@@ -104,6 +106,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
           <LanguageButton />
           <VerticalSeparate />
           <SuggestionButton />
+          <ExplanationButton />
           <TranslateButton />
           <TextToSpeechButton />
         </div>
@@ -124,8 +127,14 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   )
 }
 
-const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech }: MainEditorProps) => {
-  const hasSidebar = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech].some(Boolean)
+const MainEditor = ({
+  editor,
+  isOpenSuggestion,
+  isOpenTranslation,
+  isOpenTextToSpeech,
+  isOpenExplanation
+}: MainEditorProps) => {
+  const hasSidebar = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech, isOpenExplanation].some(Boolean)
 
   return (
     <>
@@ -144,6 +153,7 @@ export default function TipTapEditor() {
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
   const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
   const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
+  const isOpenExplanation = useSelector((state: RootState) => state.suggestion.isOpenExplanation)
   const isShowHistory = useSelector((state: RootState) => state.editor.isShowHistory)
 
   const editor = useEditor({
@@ -185,6 +195,7 @@ export default function TipTapEditor() {
           isOpenSuggestion={isOpenSuggestion}
           isOpenTranslation={isOpenTranslation}
           isOpenTextToSpeech={isOpenTextToSpeech}
+          isOpenExplanation={isOpenExplanation}
         />
       )}
     </div>

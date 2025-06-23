@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import useDebounce from '../../hooks/useDebounce'
-import { cn } from '../../libs/tailwind/utils'
 import translateInstance from '../../services/translation.api'
-import { RootState } from '../../store'
 import Translate from '../Icons/Translate'
 
 const Translation = () => {
-  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
-  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
   const [direction, setDirection] = useState<'en-vi' | 'vi-en'>('en-vi')
   const [inputText, setInputText] = useState('')
   const [outputText, setOutputText] = useState('')
@@ -76,7 +71,7 @@ const Translation = () => {
   return (
     <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
-        <Translate className='text-yellow-500' />
+        <Translate className='text-yellow-500' width={20} height={20} />
         <h2 className='text-base font-semibold text-gray-800'>Translation</h2>
       </div>
 

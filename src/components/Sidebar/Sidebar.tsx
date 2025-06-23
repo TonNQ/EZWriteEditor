@@ -6,6 +6,8 @@ import { RootState } from '../../store'
 import Suggestions from '../Suggestions/Suggestions'
 import TextToSpeechComp from '../TextToSpeechComp'
 import Translation from '../Translation'
+import Explanation from '../AnalysisPanel'
+import AnalysisPanel from '../AnalysisPanel'
 
 interface Tab {
   key: string
@@ -22,6 +24,7 @@ const Sidebar = ({ editor }: SidebarProps) => {
   const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
   const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
   const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
+  const isOpenExplanation = useSelector((state: RootState) => state.suggestion.isOpenExplanation)
 
   const tabs: Tab[] = useMemo(() => {
     const availableTabs: Tab[] = []
@@ -30,6 +33,13 @@ const Sidebar = ({ editor }: SidebarProps) => {
         key: 'suggestions',
         title: 'Suggestions',
         component: <Suggestions editor={editor} />
+      })
+    }
+    if (isOpenExplanation) {
+      availableTabs.push({
+        key: 'analysis-panel',
+        title: 'Analysis',
+        component: <AnalysisPanel />
       })
     }
     if (isOpenTranslation) {
@@ -47,7 +57,7 @@ const Sidebar = ({ editor }: SidebarProps) => {
       })
     }
     return availableTabs
-  }, [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech, editor])
+  }, [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech, isOpenExplanation, editor])
 
   useEffect(() => {
     const activeTabExists = tabs.some((tab) => tab.key === activeTab)
@@ -59,15 +69,15 @@ const Sidebar = ({ editor }: SidebarProps) => {
   const activeComponent = useMemo(() => tabs.find((tab) => tab.key === activeTab)?.component, [tabs, activeTab])
 
   return (
-    <div className='shadow-mdsticky top-0 block w-[max(350px,calc(50vw-350px))] max-w-[600px] min-w-[350px] border-l border-l-gray-200 bg-white'>
+    <div className='shadow-mdsticky top-0 block w-[max(425px,calc(50vw-425px))] max-w-[600px] min-w-[425px] border-l border-l-gray-200 bg-white'>
       <div className='block w-full p-4'>
-        <div className='flex w-fit rounded-xl bg-gray-100'>
-          <div className='flex gap-x-1 px-2 py-1'>
+        <div className='flex w-fit rounded-sm bg-gray-100'>
+          <div className='flex gap-x-1 p-1'>
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={cn('rounded-lg px-2 py-[6px] text-xs font-medium hover:cursor-pointer', {
+                className={cn('rounded-sm px-2 py-[6px] text-xs font-medium hover:cursor-pointer', {
                   'bg-white': activeTab === tab.key,
                   'text-gray-400 hover:bg-gray-50': activeTab !== tab.key
                 })}
@@ -78,7 +88,7 @@ const Sidebar = ({ editor }: SidebarProps) => {
           </div>
         </div>
       </div>
-      <div className='h-full overflow-hidden px-4'>{activeComponent}</div>
+      <div className='h-[calc(100%-68px)] overflow-auto px-4 pb-4'>{activeComponent}</div>
     </div>
   )
 }
