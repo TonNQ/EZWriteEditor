@@ -14,6 +14,7 @@ const ItalicButton = ({ editor }: ItalicButtonProps) => {
       onClick={() => editor.chain().focus().toggleItalic().run()}
       disabled={!editor.can().chain().focus().toggleItalic().run()}
       isActive={editor.isActive('italic')}
+      tooltip='Italic'
     >
       <ItalicIcon />
     </BaseButton>

@@ -32,7 +32,7 @@ const PrintButton = ({ editor }: PrintButtonProps) => {
   }
 
   return (
-    <BaseButton onClick={handlePrint}>
+    <BaseButton onClick={handlePrint} tooltip='Print'>
       <Print width={20} height={20} className='text-gray-default' />
     </BaseButton>
   )

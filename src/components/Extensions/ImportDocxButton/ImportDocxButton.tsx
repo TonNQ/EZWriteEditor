@@ -36,7 +36,7 @@ const ImportDocxButton = ({ editor }: ImportDocxButtonProps) => {
   }
 
   return (
-    <BaseButton onClick={handleClick}>
+    <BaseButton onClick={handleClick} tooltip='Import DOCX'>
       <Import />
     </BaseButton>
   )

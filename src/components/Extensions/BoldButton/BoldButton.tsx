@@ -14,6 +14,7 @@ const BoldButton = ({ editor }: BoldButtonProps) => {
       onClick={() => editor.chain().focus().toggleBold().run()}
       disabled={!editor.can().chain().focus().toggleBold().run()}
       isActive={editor.isActive('bold')}
+      tooltip='Bold'
     >
       <BoldIcon />
     </BaseButton>

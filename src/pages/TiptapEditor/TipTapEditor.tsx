@@ -95,11 +95,11 @@ const MenuBar = ({ editor }: MenuBarProps) => {
         <div className='flex items-center gap-1'>
           <VerticalSeparate />
           {isOpen ? (
-            <BaseButton onClick={() => setIsOpen(!isOpen)}>
+            <BaseButton onClick={() => setIsOpen(!isOpen)} tooltip='Collapse'>
               <ChevronUp width={18} height={18} />
             </BaseButton>
           ) : (
-            <BaseButton onClick={() => setIsOpen(!isOpen)}>
+            <BaseButton onClick={() => setIsOpen(!isOpen)} tooltip='Expand'>
               <ChevronDown width={18} height={18} />
             </BaseButton>
           )}
