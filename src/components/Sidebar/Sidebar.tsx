@@ -71,7 +71,7 @@ const Sidebar = ({ editor }: SidebarProps) => {
   return (
     <div className='shadow-mdsticky top-0 block w-[max(425px,calc(50vw-425px))] max-w-[600px] min-w-[425px] border-l border-l-gray-200 bg-white'>
       <div className='block w-full p-4'>
-        <div className='flex w-fit rounded-sm bg-gray-100'>
+        <div className='inline-flex w-fit rounded-sm bg-gray-100'>
           <div className='flex gap-x-1 p-1'>
             {tabs.map((tab) => (
               <button

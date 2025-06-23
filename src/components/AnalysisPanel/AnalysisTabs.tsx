@@ -46,8 +46,8 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
   return (
     <div className='w-full'>
       {/* Tab Navigation */}
-      <div className='inline-flex h-10 w-full items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500'>
-        {['overview', 'paraphrase', 'vocab', 'grammar', 'content'].map((tab) => (
+      <div className='inline-flex h-10 w-fit items-center justify-center rounded-md bg-gray-100 px-2 py-1 text-gray-500'>
+        {['overview', 'paraphrase', 'vocabulary', 'grammar', 'content'].map((tab) => (
           <button
             key={tab}
             className={`inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
@@ -140,7 +140,7 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
         )}
 
         {/* Vocabulary Analysis Tab */}
-        {activeTab === 'vocab' && analysis && (
+        {activeTab === 'vocabulary' && analysis && (
           <div className='space-y-4'>
             <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
               <div className='px-6 py-4 pb-3'>
