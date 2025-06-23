@@ -16,9 +16,16 @@ interface SuggestedSentenceProps {
   onApply: () => void
   disabled?: boolean
   isSearch?: boolean
+  isOpenAISuggest?: boolean
 }
 
-const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = true }: SuggestedSentenceProps) => {
+const SuggestedSentence = ({
+  sentence,
+  onApply,
+  disabled = false,
+  isSearch = true,
+  isOpenAISuggest = false
+}: SuggestedSentenceProps) => {
   const dispatch = useDispatch()
   const [showFeedbackPopup, setShowFeedbackPopup] = useState(false)
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
@@ -227,7 +234,8 @@ const SuggestedSentence = ({ sentence, onApply, disabled = false, isSearch = tru
   return (
     <div
       className={cn('flex items-center justify-between rounded-lg border border-gray-200 p-2 hover:bg-gray-50', {
-        'bg-blue-50 hover:bg-blue-100': !isSearch
+        'bg-blue-50 hover:bg-blue-100': !isSearch && !isOpenAISuggest,
+        'bg-blue-100 hover:bg-blue-200': !isSearch && isOpenAISuggest
       })}
     >
       <p className='text-left text-xs text-gray-700'>{sentence.content}</p>
