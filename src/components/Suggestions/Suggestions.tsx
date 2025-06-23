@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
 import useDebounce from '../../hooks/useDebounce'
-import { cn } from '../../libs/tailwind/utils'
 import sentencesInstance from '../../services/sentences.api'
 import { RootState } from '../../store'
 import {
@@ -11,6 +10,7 @@ import {
   setIsLoadingSuggest as setStoreIsLoadingSuggest,
   setSearchResults as setStoreSearchResults,
   setSuggestResults as setStoreSuggestResults,
+  setOpenAISuggestResults as setStoreOpenAISuggestResults,
   updateSentenceInSuggestResults
 } from '../../store/suggestion/suggestion.slice'
 import { getLastClosestSentences } from '../../utils/sentence'
@@ -23,10 +23,8 @@ interface SuggestionsProps {
 
 const Suggestions = ({ editor }: SuggestionsProps) => {
   const dispatch = useDispatch()
-  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
-  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
   const currentLanguage = useSelector((state: RootState) => state.editor.language)
-  const { searchResults, suggestResults, isLoadingSearch, isLoadingSuggest } = useSelector(
+  const { openAISuggestResults, searchResults, suggestResults, isLoadingSearch, isLoadingSuggest } = useSelector(
     (state: RootState) => state.suggestion
   )
 
@@ -34,6 +32,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   const [isApplying, setIsApplying] = useState(false)
   const [hasApplied, setHasApplied] = useState(false)
   const [currentIncompleteSentence, setCurrentIncompleteSentence] = useState('')
+  const [isLoadingOpenAISuggest, setIsLoadingOpenAISuggest] = useState(false)
 
   const searchAbortControllerRef = useRef<AbortController | null>(null)
   const suggestAbortControllerRef = useRef<AbortController | null>(null)
@@ -108,6 +107,30 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
     [dispatch, currentLanguage]
   )
 
+  const fetchOpenAISuggestResults = useCallback(
+    async (input: string) => {
+      if (!input) {
+        dispatch(setStoreOpenAISuggestResults([]))
+        return
+      }
+      setIsLoadingOpenAISuggest(true)
+      try {
+        const { data } = await sentencesInstance.getOpenAISuggestion({
+          user_input: input,
+          lang: currentLanguage,
+          num_suggestions: 1
+        })
+        dispatch(setStoreOpenAISuggestResults(data))
+      } catch (error) {
+        console.error('Error fetching OpenAI suggestions:', error)
+        dispatch(setStoreOpenAISuggestResults([]))
+      } finally {
+        setIsLoadingOpenAISuggest(false)
+      }
+    },
+    [dispatch, currentLanguage]
+  )
+
   // Fetch search results first (faster API)
   useEffect(() => {
     if (debouncedUserInput && !isApplying && !hasApplied) {
@@ -121,6 +144,13 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
       fetchSuggestResults(getLastClosestSentences(debouncedUserInput))
     }
   }, [debouncedUserInput, isApplying, hasApplied, fetchSuggestResults])
+
+  // Fetch OpenAI suggest results song song
+  useEffect(() => {
+    if (debouncedUserInput && !isApplying && !hasApplied) {
+      fetchOpenAISuggestResults(getLastClosestSentences(debouncedUserInput))
+    }
+  }, [debouncedUserInput, isApplying, hasApplied, fetchOpenAISuggestResults])
 
   const updateUserInput = useCallback(() => {
     if (!editor) return
@@ -249,7 +279,7 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
       </div>
 
       <div className='space-y-1'>
-        {/* Hiển thị loading nếu đang loading cả 2 và chưa có gì */}
+        {/* Loading và các loại suggest/search khác giữ nguyên */}
         {isLoadingSearch && searchResults.length === 0 && (
           <p className='text-xs text-gray-500'>Loading search suggestions...</p>
         )}
@@ -258,9 +288,32 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
           <p className='text-xs text-gray-500'>Loading additional suggestions...</p>
         )}
 
+        {isLoadingOpenAISuggest && <p className='text-xs text-gray-500'>Loading AI suggestions...</p>}
+
         {(suggestResults.length > 0 || searchResults.length > 0) && !isLoadingSearch && !isLoadingSuggest && (
           <p className='mb-4 text-xs text-gray-500'>Press Tab to apply the first suggestion</p>
         )}
+
+        {/* Hiển thị openAISuggestResults đầu tiên */}
+        {openAISuggestResults.map((suggestion, index) => (
+          <SuggestedSentence
+            key={`openai-suggest-${index}`}
+            sentence={{
+              sentence_id: '',
+              content: suggestion,
+              isVoted: false,
+              userRating: 0,
+              rating: 0,
+              numOfRate: 0,
+              isUserAdded: false,
+              isSearchResult: false
+            }}
+            onApply={() => handleApply({ suggestion, isSearch: false })}
+            disabled={isApplying || hasApplied}
+            isSearch={false}
+            isOpenAISuggest={true}
+          />
+        ))}
 
         {suggestResults.map((suggestion, index) => (
           <SuggestedSentence
@@ -282,9 +335,12 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
           />
         ))}
 
-        {!isLoadingSearch && !isLoadingSuggest && suggestResults.length === 0 && searchResults.length === 0 && (
-          <p className='text-sm text-gray-500'>No suggestions available</p>
-        )}
+        {!isLoadingSearch &&
+          !isLoadingSuggest &&
+          suggestResults.length === 0 &&
+          searchResults.length === 0 &&
+          openAISuggestResults.length === 0 &&
+          !isLoadingOpenAISuggest && <p className='text-sm text-gray-500'>No suggestions available</p>}
       </div>
     </div>
   )

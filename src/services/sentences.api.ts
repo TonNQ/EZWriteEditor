@@ -15,6 +15,11 @@ interface SuggestParams {
   lang?: string
 }
 
+interface OpenAISuggestParams extends SuggestParams {
+  model?: 'gpt-3.5-turbo' | 'gpt-4o' | 'gpt-4o-mini'
+  num_suggestions?: number
+}
+
 const SUGGEST_BASE_URL = import.meta.env.VITE_API_SUGGEST_URL || import.meta.env.VITE_API_URL
 
 const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<ApiResponse<Sentence[]>> => {
@@ -81,10 +86,30 @@ const addSentence = async (content: string, signal?: AbortSignal): Promise<ApiRe
   }
 }
 
+const getOpenAISuggestion = async (params: OpenAISuggestParams, signal?: AbortSignal): Promise<ApiResponse<string[]>> => {
+  try {
+    const response = (await http.get<{ results: string[] }>({
+      url: '/api/openai-suggest/',
+      key: 'openai-suggest',
+      params,
+      signal
+    })) as ApiResponse<{ results: string[] }>
+
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data.results ?? []
+    }
+  } catch (error) {
+    console.error('Get openai suggestion API error:', error)
+    return error as ApiResponse<string[]>
+  }
+}
+
 const sentencesInstance = {
   search: searchApi,
   suggest: suggestApi,
-  addSentence
+  addSentence,
+  getOpenAISuggestion
 }
 
 export default sentencesInstance

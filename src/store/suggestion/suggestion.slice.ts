@@ -5,6 +5,7 @@ import { SuggestionState } from './types'
 // initial state
 const initialState: SuggestionState = {
   isOpenSuggestion: false,
+  openAISuggestResults: [],
   searchResults: [],
   suggestResults: [],
   isLoadingSearch: false,
@@ -19,11 +20,11 @@ const suggestionSlice = createSlice({
     setIsOpenSuggestion(state, action: PayloadAction<boolean>) {
       state.isOpenSuggestion = action.payload
     },
+    setOpenAISuggestResults(state, action: PayloadAction<string[]>) {
+      state.openAISuggestResults = action.payload
+    },
     setSearchResults(state, action: PayloadAction<{ results: Sentence[]; isLoading?: boolean }>) {
-      state.searchResults = action.payload.results.map((result) => ({
-        ...result,
-        isSearchResult: true
-      }))
+      state.searchResults = action.payload.results
       if (typeof action.payload.isLoading === 'boolean') {
         state.isLoadingSearch = action.payload.isLoading
       }
@@ -49,29 +50,29 @@ const suggestionSlice = createSlice({
     setIsLoadingSuggest(state, action: PayloadAction<boolean>) {
       state.isLoadingSuggest = action.payload
     },
-    updateSentenceInSearchResults(state, action: PayloadAction<Sentence>) {
-      const index = state.searchResults.findIndex((s) => s.sentence_id === action.payload.sentence_id)
-      if (index !== -1) {
-        state.searchResults[index] = action.payload
-      }
+    updateSentenceInSearchResults(state, action: PayloadAction<Partial<Sentence>>) {
+      state.searchResults = state.searchResults.map((sentence) =>
+        sentence.sentence_id === action.payload.sentence_id ? { ...sentence, ...action.payload } : sentence
+      )
     },
     updateSentenceInSuggestResults(state, action: PayloadAction<Partial<Sentence>>) {
-      const index = state.suggestResults.findIndex((s) => s.sentence_id === action.payload.sentence_id || s.content === action.payload.content)
-      if (index !== -1) {
-        state.suggestResults[index] = {
-          ...state.suggestResults[index],
-          ...action.payload
-        }
-      }
+      state.suggestResults = state.suggestResults.map((sentence) =>
+        sentence.sentence_id === action.payload.sentence_id ? { ...sentence, ...action.payload } : sentence
+      )
     },
     resetSuggestionState(state) {
-      Object.assign(state, initialState)
+      state.openAISuggestResults = []
+      state.searchResults = []
+      state.suggestResults = []
+      state.isLoadingSearch = false
+      state.isLoadingSuggest = false
     }
   }
 })
 
 export const {
   setIsOpenSuggestion,
+  setOpenAISuggestResults,
   setSearchResults,
   setSuggestResults,
   setIsLoadingSearch,
