@@ -6,6 +6,7 @@ import Delete from '../Icons/Delete'
 import File from '../Icons/File'
 import MoreVertical from '../Icons/MoreVertical'
 import Share from '../Icons/Share'
+import Popup from '../Popup/Popup'
 
 interface FileListItemProps {
   file: MarkdownFile
@@ -18,6 +19,7 @@ interface FileListItemProps {
 
 const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }: FileListItemProps) => {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showDeletePopup, setShowDeletePopup] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -52,7 +54,8 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
       <div className='relative col-span-1 text-right'>
         <BaseButton
           customClass='p-1 hover:bg-gray-100 rounded-full'
-          onClick={() => {
+          onClick={(e) => {
+            e?.stopPropagation()
             setMenuOpen(!menuOpen)
           }}
         >
@@ -90,8 +93,8 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
               className='flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-600 transition hover:cursor-pointer hover:bg-red-50'
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation()
-                onDelete(file.id)
                 setMenuOpen(false)
+                setShowDeletePopup(true)
               }}
             >
               <Delete className='h-4 w-4' />
@@ -99,6 +102,30 @@ const FileListItem = ({ file, isSelected, onSelect, onDelete, onEdit, onShare }:
             </button>
           </div>
         )}
+        <Popup isOpen={showDeletePopup} onClose={() => setShowDeletePopup(false)} title='Delete File?'>
+          <div className='cursor-default space-y-4'>
+            <div className='text-left text-gray-700'>
+              Are you sure you want to delete <b>{file.title}</b>? This action cannot be undone.
+            </div>
+            <div className='flex justify-end gap-2'>
+              <button
+                className='cursor-pointer rounded px-4 py-2 text-gray-600 hover:bg-gray-100'
+                onClick={() => setShowDeletePopup(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className='cursor-pointer rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700'
+                onClick={() => {
+                  onDelete(file.id)
+                  setShowDeletePopup(false)
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </Popup>
       </div>
     </div>
   )

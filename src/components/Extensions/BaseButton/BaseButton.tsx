@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import { cn } from '../../../libs/tailwind/utils'
 
 interface BaseButtonProps {
-  onClick: () => void
+  onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void
   isActive?: boolean
   disabled?: boolean
   children: ReactNode

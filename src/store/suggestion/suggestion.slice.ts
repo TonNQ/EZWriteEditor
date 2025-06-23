@@ -4,9 +4,7 @@ import { SuggestionState } from './types'
 
 // initial state
 const initialState: SuggestionState = {
-  isOpenSuggestion: false,
   openAISuggestResults: [],
-  isOpenExplanation: false,
   searchResults: [],
   suggestResults: [],
   isLoadingSearch: false,
@@ -18,15 +16,9 @@ const suggestionSlice = createSlice({
   name: 'suggestion',
   initialState,
   reducers: {
-    setIsOpenSuggestion(state, action: PayloadAction<boolean>) {
-      state.isOpenSuggestion = action.payload
-    },
     setOpenAISuggestResults(state, action: PayloadAction<string[]>) {
       state.openAISuggestResults = action.payload
-    },
-    setIsOpenExplanation(state, action: PayloadAction<boolean>) {
-      state.isOpenExplanation = action.payload
-    },
+    },    
     setSearchResults(state, action: PayloadAction<{ results: Sentence[]; isLoading?: boolean }>) {
       state.searchResults = action.payload.results
       if (typeof action.payload.isLoading === 'boolean') {
@@ -75,9 +67,7 @@ const suggestionSlice = createSlice({
 })
 
 export const {
-  setIsOpenSuggestion,
   setOpenAISuggestResults,
-  setIsOpenExplanation,
   setSearchResults,
   setSuggestResults,
   setIsLoadingSearch,

@@ -14,17 +14,12 @@ import PrintButton from '../../components/Extensions/PrintButton'
 import SaveFileButton from '../../components/Extensions/SaveFileButton'
 import SearchReplaceButton from '../../components/Extensions/SearchReplaceButton'
 import StrikeButton from '../../components/Extensions/StrikeButton'
-import SuggestionButton from '../../components/Extensions/SuggestionButton'
 import TextAlignButton from '../../components/Extensions/TextAlignButton/TextAlignButton'
-import TextToSpeechButton from '../../components/Extensions/TextToSpeechButton'
-import TranslateButton from '../../components/Extensions/TranslateButton'
-import UnderlineButton from '../../components/Extensions/UnderlineButton'
 import ChevronDown from '../../components/Icons/ChevronDown'
 import ChevronUp from '../../components/Icons/ChevronUp'
 import Document from '../../components/Icons/Document'
 import History from '../../components/Icons/History'
 import Sidebar from '../../components/Sidebar'
-import ExplanationButton from '../../components/Extensions/ExplanationButton'
 import VerticalSeparate from '../../components/VerticalSeparate/VerticalSeparate'
 import markdownInstance from '../../services/markdown.api'
 import { RootState } from '../../store'
@@ -37,14 +32,6 @@ import VersionHistory from './VersionHistory'
 
 interface MenuBarProps {
   editor: Editor | null
-}
-
-interface MainEditorProps {
-  editor: Editor | null
-  isOpenSuggestion: boolean
-  isOpenTranslation: boolean
-  isOpenTextToSpeech: boolean
-  isOpenExplanation: boolean
 }
 
 const MenuBar = ({ editor }: MenuBarProps) => {
@@ -91,7 +78,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
           <VerticalSeparate />
           <BoldButton editor={editor} />
           <ItalicButton editor={editor} />
-          <UnderlineButton editor={editor} />
           <StrikeButton editor={editor} />
           <VerticalSeparate />
           <HeadingButton editor={editor} />
@@ -105,10 +91,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
           <VerticalSeparate />
           <LanguageButton />
           <VerticalSeparate />
-          <SuggestionButton />
-          <ExplanationButton />
-          <TranslateButton />
-          <TextToSpeechButton />
         </div>
         <div className='flex items-center gap-1'>
           <VerticalSeparate />
@@ -127,21 +109,13 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   )
 }
 
-const MainEditor = ({
-  editor,
-  isOpenSuggestion,
-  isOpenTranslation,
-  isOpenTextToSpeech,
-  isOpenExplanation
-}: MainEditorProps) => {
-  const hasSidebar = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech, isOpenExplanation].some(Boolean)
-
+const MainEditor = ({ editor }: { editor: Editor | null }) => {
   return (
     <>
       <MenuBar editor={editor} />
       <div className='flex h-full w-full flex-1 overflow-hidden'>
         <MainEditorContent editor={editor} />
-        {hasSidebar && <Sidebar editor={editor} />}
+        <Sidebar editor={editor} />
       </div>
     </>
   )
@@ -150,10 +124,6 @@ const MainEditor = ({
 export default function TipTapEditor() {
   const { id } = useParams()
   const dispatch = useDispatch()
-  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
-  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
-  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
-  const isOpenExplanation = useSelector((state: RootState) => state.suggestion.isOpenExplanation)
   const isShowHistory = useSelector((state: RootState) => state.editor.isShowHistory)
 
   const editor = useEditor({
@@ -187,17 +157,7 @@ export default function TipTapEditor() {
 
   return (
     <div className='flex h-full w-full flex-col bg-gray-50'>
-      {isShowHistory ? (
-        <VersionHistory />
-      ) : (
-        <MainEditor
-          editor={editor}
-          isOpenSuggestion={isOpenSuggestion}
-          isOpenTranslation={isOpenTranslation}
-          isOpenTextToSpeech={isOpenTextToSpeech}
-          isOpenExplanation={isOpenExplanation}
-        />
-      )}
+      {isShowHistory ? <VersionHistory /> : <MainEditor editor={editor} />}
     </div>
   )
 }

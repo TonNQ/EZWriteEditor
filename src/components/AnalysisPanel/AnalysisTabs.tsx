@@ -50,7 +50,7 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
         {['overview', 'paraphrase', 'vocabulary', 'grammar', 'content'].map((tab) => (
           <button
             key={tab}
-            className={`inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
+            className={`inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all hover:cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
               activeTab === tab ? 'bg-white text-gray-950 shadow-sm' : 'text-gray-600 hover:text-gray-900'
             }`}
             onClick={() => setActiveTab(tab)}

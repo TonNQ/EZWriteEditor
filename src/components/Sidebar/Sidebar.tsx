@@ -1,12 +1,9 @@
 import { type Editor } from '@tiptap/react'
 import { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { cn } from '../../libs/tailwind/utils'
-import { RootState } from '../../store'
 import Suggestions from '../Suggestions/Suggestions'
 import TextToSpeechComp from '../TextToSpeechComp'
 import Translation from '../Translation'
-import Explanation from '../AnalysisPanel'
 import AnalysisPanel from '../AnalysisPanel'
 
 interface Tab {
@@ -21,43 +18,32 @@ interface SidebarProps {
 
 const Sidebar = ({ editor }: SidebarProps) => {
   const [activeTab, setActiveTab] = useState<string>('')
-  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
-  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
-  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
-  const isOpenExplanation = useSelector((state: RootState) => state.suggestion.isOpenExplanation)
 
-  const tabs: Tab[] = useMemo(() => {
-    const availableTabs: Tab[] = []
-    if (isOpenSuggestion) {
-      availableTabs.push({
+  const tabs: Tab[] = useMemo(
+    () => [
+      {
         key: 'suggestions',
         title: 'Suggestions',
         component: <Suggestions editor={editor} />
-      })
-    }
-    if (isOpenExplanation) {
-      availableTabs.push({
+      },
+      {
         key: 'analysis-panel',
         title: 'Analysis',
         component: <AnalysisPanel />
-      })
-    }
-    if (isOpenTranslation) {
-      availableTabs.push({
+      },
+      {
         key: 'translation',
         title: 'Translation',
         component: <Translation />
-      })
-    }
-    if (isOpenTextToSpeech) {
-      availableTabs.push({
+      },
+      {
         key: 'text-to-speech',
         title: 'Text to Speech',
         component: <TextToSpeechComp editor={editor} />
-      })
-    }
-    return availableTabs
-  }, [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech, isOpenExplanation, editor])
+      }
+    ],
+    [editor]
+  )
 
   useEffect(() => {
     const activeTabExists = tabs.some((tab) => tab.key === activeTab)
@@ -69,18 +55,21 @@ const Sidebar = ({ editor }: SidebarProps) => {
   const activeComponent = useMemo(() => tabs.find((tab) => tab.key === activeTab)?.component, [tabs, activeTab])
 
   return (
-    <div className='shadow-mdsticky top-0 block w-[max(425px,calc(50vw-425px))] max-w-[600px] min-w-[425px] border-l border-l-gray-200 bg-white'>
+    <div className='sticky top-0 block w-[max(425px,calc(50vw-425px))] max-w-[600px] min-w-[425px] border-l border-l-gray-200 bg-white shadow-md'>
       <div className='block w-full p-4'>
-        <div className='inline-flex w-fit rounded-sm bg-gray-100'>
+        <div className='inline-flex h-10 w-fit items-center justify-center rounded-md bg-gray-100 px-2 py-1 text-gray-500'>
           <div className='flex gap-x-1 p-1'>
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={cn('rounded-sm px-2 py-[6px] text-xs font-medium hover:cursor-pointer', {
-                  'bg-white': activeTab === tab.key,
-                  'text-gray-400 hover:bg-gray-50': activeTab !== tab.key
-                })}
+                className={cn(
+                  'inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all hover:cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+                  {
+                    'bg-white text-gray-950 shadow-sm': activeTab === tab.key,
+                    'text-gray-600 hover:text-gray-900': activeTab !== tab.key
+                  }
+                )}
               >
                 {tab.title}
               </button>
