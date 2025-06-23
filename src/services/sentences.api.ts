@@ -20,6 +20,13 @@ interface OpenAISuggestParams extends SuggestParams {
   num_suggestions?: number
 }
 
+interface ExplainParams {
+  original_sentence: string
+  suggested_sentence: string
+  context: string
+  language?: 'vi' | 'en'
+}
+
 const SUGGEST_BASE_URL = import.meta.env.VITE_API_SUGGEST_URL || import.meta.env.VITE_API_URL
 
 const searchApi = async (params: SearchParams, signal?: AbortSignal): Promise<ApiResponse<Sentence[]>> => {
@@ -105,11 +112,31 @@ const getOpenAISuggestion = async (params: OpenAISuggestParams, signal?: AbortSi
   }
 }
 
+const getExplanation = async (params: ExplainParams, signal?: AbortSignal): Promise<ApiResponse<any>> => {
+  try {
+    const response = (await http.get<any>({
+      url: '/api/explain-suggestion/',
+      key: 'explain',
+      params,
+      signal,
+    })) as ApiResponse<any>
+
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data ?? ''
+    }
+  } catch (error) {
+    console.error('Get explanation API error:', error)
+    return error as ApiResponse<any>
+  }
+}
+
 const sentencesInstance = {
   search: searchApi,
   suggest: suggestApi,
   addSentence,
-  getOpenAISuggestion
+  getOpenAISuggestion,
+  getExplanation,
 }
 
 export default sentencesInstance
