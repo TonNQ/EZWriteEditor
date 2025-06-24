@@ -21,7 +21,6 @@ interface OpenAISuggestParams extends SuggestParams {
 }
 
 interface ExplainParams {
-  original_sentence: string
   suggested_sentence: string
   context: string
   language?: 'vi' | 'en'

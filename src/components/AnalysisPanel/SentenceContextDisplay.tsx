@@ -1,12 +1,11 @@
 'use client'
 
 interface SentenceContextDisplayProps {
-  originalSentence: string
-  suggestedSentence?: string
+  suggestedSentence: string
   context: string
 }
 
-export function SentenceContextDisplay({ originalSentence, suggestedSentence, context }: SentenceContextDisplayProps) {
+export function SentenceContextDisplay({ suggestedSentence, context }: SentenceContextDisplayProps) {
   return (
     <div className='space-y-3'>
       {/* Original Sentence */}
@@ -14,13 +13,13 @@ export function SentenceContextDisplay({ originalSentence, suggestedSentence, co
         <div className='px-6 py-4 pb-2'>
           <div className='flex items-center gap-2 text-xs font-medium text-gray-600'>
             <span className='inline-flex items-center rounded-full border border-gray-300 bg-white px-2.5 py-0.5 text-xs font-medium text-gray-700'>
-              Original
+              Context
             </span>
-            Sentence
+            Surrounding Text
           </div>
         </div>
         <div className='px-6 pt-0 pb-6'>
-          <div className='rounded border-l-4 border-blue-500 bg-blue-50 p-3 text-sm'>"{originalSentence}"</div>
+          <div className='rounded border-l-4 border-blue-500 bg-blue-50 p-3 text-sm'>"{context}"</div>
         </div>
       </div>
 
@@ -40,21 +39,6 @@ export function SentenceContextDisplay({ originalSentence, suggestedSentence, co
           </div>
         </div>
       )}
-
-      {/* Context */}
-      <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
-        <div className='px-6 py-4 pb-2'>
-          <div className='flex items-center gap-2 text-xs font-medium text-gray-600'>
-            <span className='inline-flex items-center rounded-full border-purple-200 bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-700'>
-              Context
-            </span>
-            Surrounding Text
-          </div>
-        </div>
-        <div className='px-6 pt-0 pb-6'>
-          <div className='rounded border-l-4 border-gray-400 bg-gray-50 p-3 text-sm leading-relaxed'>{context}</div>
-        </div>
-      </div>
     </div>
   )
 }

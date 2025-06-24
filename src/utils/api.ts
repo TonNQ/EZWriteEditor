@@ -53,7 +53,7 @@ class Http {
 
     this.instance = axios.create({
       baseURL: BASE_URL,
-      timeout: 30000,
+      timeout: 60000,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -329,7 +329,7 @@ class Http {
 
     return axios.create({
       baseURL,
-      timeout: 30000,
+      timeout: 60000,
       headers
     })
   }

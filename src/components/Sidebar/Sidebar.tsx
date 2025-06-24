@@ -1,10 +1,10 @@
 import { type Editor } from '@tiptap/react'
 import { useEffect, useMemo, useState } from 'react'
 import { cn } from '../../libs/tailwind/utils'
+import AnalysisPanel from '../AnalysisPanel'
 import Suggestions from '../Suggestions/Suggestions'
 import TextToSpeechComp from '../TextToSpeechComp'
 import Translation from '../Translation'
-import AnalysisPanel from '../AnalysisPanel'
 
 interface Tab {
   key: string
@@ -24,7 +24,7 @@ const Sidebar = ({ editor }: SidebarProps) => {
       {
         key: 'suggestions',
         title: 'Suggestions',
-        component: <Suggestions editor={editor} />
+        component: <Suggestions editor={editor} onAnalyticsClick={() => setActiveTab('analysis-panel')} />
       },
       {
         key: 'analysis-panel',

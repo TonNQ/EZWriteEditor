@@ -5,12 +5,13 @@ import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
 import useDebounce from '../../hooks/useDebounce'
 import sentencesInstance from '../../services/sentences.api'
 import { RootState } from '../../store'
+import { setContext } from '../../store/explanation/explanation.slice'
 import {
   setIsLoadingSearch as setStoreIsLoadingSearch,
   setIsLoadingSuggest as setStoreIsLoadingSuggest,
+  setOpenAISuggestResults as setStoreOpenAISuggestResults,
   setSearchResults as setStoreSearchResults,
   setSuggestResults as setStoreSuggestResults,
-  setOpenAISuggestResults as setStoreOpenAISuggestResults,
   updateSentenceInSuggestResults
 } from '../../store/suggestion/suggestion.slice'
 import { getLastClosestSentences } from '../../utils/sentence'
@@ -19,9 +20,10 @@ import SuggestedSentence from './SuggestedSentence'
 
 interface SuggestionsProps {
   editor: Editor | null
+  onAnalyticsClick?: () => void
 }
 
-const Suggestions = ({ editor }: SuggestionsProps) => {
+const Suggestions = ({ editor, onAnalyticsClick }: SuggestionsProps) => {
   const dispatch = useDispatch()
   const currentLanguage = useSelector((state: RootState) => state.editor.language)
   const { openAISuggestResults, searchResults, suggestResults, isLoadingSearch, isLoadingSuggest } = useSelector(
@@ -134,7 +136,9 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
   // Fetch search results first (faster API)
   useEffect(() => {
     if (debouncedUserInput && !isApplying && !hasApplied) {
-      fetchSearchResults(getLastClosestSentences(debouncedUserInput))
+      const context = getLastClosestSentences(debouncedUserInput)
+      dispatch(setContext(context))
+      fetchSearchResults(context)
     }
   }, [debouncedUserInput, isApplying, hasApplied, fetchSearchResults])
 
@@ -312,6 +316,8 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
             disabled={isApplying || hasApplied}
             isSearch={false}
             isOpenAISuggest={true}
+            context={debouncedUserInput}
+            onAnalyticsClick={onAnalyticsClick}
           />
         ))}
 
@@ -322,6 +328,8 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
             onApply={() => handleApply({ suggestion: suggestion.content, isSearch: false })}
             disabled={isApplying || hasApplied}
             isSearch={false}
+            context={debouncedUserInput}
+            onAnalyticsClick={onAnalyticsClick}
           />
         ))}
 
@@ -332,6 +340,8 @@ const Suggestions = ({ editor }: SuggestionsProps) => {
             onApply={() => handleApply({ suggestion: sentence.content, isSearch: true })}
             disabled={isApplying || hasApplied}
             isSearch={true}
+            context={debouncedUserInput}
+            onAnalyticsClick={onAnalyticsClick}
           />
         ))}
 

@@ -2,11 +2,19 @@ interface AnalyticsProps {
   width?: number
   height?: number
   className?: string
+  onClick?: () => void
 }
 
-const Analytics = ({ width = 18, height = 18, className = 'text-gray-500' }: AnalyticsProps) => {
+const Analytics = ({ width = 18, height = 18, className = 'text-gray-500', onClick }: AnalyticsProps) => {
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width={width} height={height} viewBox='0 0 24 24' className={className}>
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width={width}
+      height={height}
+      viewBox='0 0 24 24'
+      className={className}
+      onClick={onClick}
+    >
       <path
         fill='none'
         stroke='currentColor'

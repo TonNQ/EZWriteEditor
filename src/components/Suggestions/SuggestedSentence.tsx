@@ -5,11 +5,13 @@ import { toast } from 'react-toastify'
 import { ELASTIC_SEARCH_INDEX } from '../../constants/common'
 import { cn } from '../../libs/tailwind/utils'
 import feedbackInstance from '../../services/feedback.api'
+import sentencesInstance from '../../services/sentences.api'
+import { setSelectedSentence } from '../../store/explanation/explanation.slice'
 import { updateSentenceInSearchResults, updateSentenceInSuggestResults } from '../../store/suggestion/suggestion.slice'
 import { Sentence } from '../../types/sentence.type'
+import Analytics from '../Icons/Analytics'
 import CheckFill from '../Icons/CheckFill'
 import FeedbackOutline from '../Icons/FeedbackOutline'
-import sentencesInstance from '../../services/sentences.api'
 
 interface SuggestedSentenceProps {
   sentence: Sentence
@@ -17,6 +19,8 @@ interface SuggestedSentenceProps {
   disabled?: boolean
   isSearch?: boolean
   isOpenAISuggest?: boolean
+  context: string
+  onAnalyticsClick?: () => void
 }
 
 const SuggestedSentence = ({
@@ -24,7 +28,9 @@ const SuggestedSentence = ({
   onApply,
   disabled = false,
   isSearch = true,
-  isOpenAISuggest = false
+  isOpenAISuggest = false,
+  context,
+  onAnalyticsClick
 }: SuggestedSentenceProps) => {
   const dispatch = useDispatch()
   const [showFeedbackPopup, setShowFeedbackPopup] = useState(false)
@@ -165,6 +171,11 @@ const SuggestedSentence = ({
 
     setShowFeedbackPopup(false)
     setSelectedRating(null)
+  }
+
+  const handleAnalyticsClick = () => {
+    dispatch(setSelectedSentence(sentence.content))
+    if (onAnalyticsClick) onAnalyticsClick()
   }
 
   const getRatingLabel = (rating: number) => {
@@ -331,6 +342,12 @@ const SuggestedSentence = ({
             </div>
           )}
         </div>
+        <Analytics
+          width={20}
+          height={20}
+          className='text-yellow-600 hover:cursor-pointer hover:text-yellow-400'
+          onClick={handleAnalyticsClick}
+        />
         <CheckFill
           onClick={onApply}
           width={20}

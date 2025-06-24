@@ -1,18 +1,16 @@
 'use client'
 
+import { AlertCircle, BookOpen, CheckCircle, FileText, Lightbulb, RefreshCw, Star, Target } from 'lucide-react'
 import { useState } from 'react'
-import type { DetailedAnalysis } from '../../types/analysis.type'
-import { BookOpen, CheckCircle, FileText, Target, Lightbulb, RefreshCw, Star, AlertCircle } from 'lucide-react'
 import { SentenceContextDisplay } from './SentenceContextDisplay'
 
 interface AnalysisTabsProps {
-  originalSentence: string
   suggestedSentence: string
   context: string
-  analysis: DetailedAnalysis
+  analysis: any // nhận đúng kiểu từ API mới
 }
 
-export function AnalysisTabs({ originalSentence, suggestedSentence, context, analysis }: AnalysisTabsProps) {
+export function AnalysisTabs({ suggestedSentence, context, analysis }: AnalysisTabsProps) {
   const [activeTab, setActiveTab] = useState('overview')
 
   const getComplexityColor = (level: string) => {
@@ -47,7 +45,7 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
     <div className='w-full'>
       {/* Tab Navigation */}
       <div className='inline-flex h-10 w-fit items-center justify-center rounded-md bg-gray-100 px-2 py-1 text-gray-500'>
-        {['overview', 'paraphrase', 'vocabulary', 'grammar', 'content'].map((tab) => (
+        {['overview', 'vocabulary', 'grammar', 'content', 'paraphrase'].map((tab) => (
           <button
             key={tab}
             className={`inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all hover:cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 ${
@@ -63,84 +61,15 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
       {/* Tab Content */}
       <div className='mt-4 text-left'>
         {/* Overview Tab */}
-        {activeTab === 'overview' && analysis && (
+        {activeTab === 'overview' && (
           <SentenceContextDisplay
-            originalSentence={originalSentence}
             suggestedSentence={suggestedSentence}
             context={context}
           />
         )}
 
-        {/* Improvement Suggestions Tab */}
-        {activeTab === 'paraphrase' && analysis && (
-          <div className='space-y-4'>
-            {/* Suggested Sentences */}
-            <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
-              <div className='px-6 py-4 pb-3'>
-                <h3 className='flex items-center gap-2 text-lg text-sm leading-none font-semibold tracking-tight'>
-                  <Lightbulb className='h-4 w-4' />
-                  Improvement Suggestions
-                </h3>
-              </div>
-              <div className='space-y-4 px-6 pb-6'>
-                {analysis.improvement_suggestions.map((suggestion, index) => (
-                  <div key={index} className='space-y-2'>
-                    <div className='rounded border-l-4 border-green-500 bg-green-50 p-3'>
-                      <p className='mb-1 text-sm font-medium text-green-800'>Suggested Sentence:</p>
-                      <p className='text-sm text-green-700'>"{suggestion.revised_sentence}"</p>
-                    </div>
-                    <div className='rounded bg-blue-50 p-3'>
-                      <p className='mb-1 text-sm font-medium text-blue-800'>Analysis:</p>
-                      <p className='text-sm text-blue-700'>{suggestion.explanation}</p>
-                    </div>
-                    {index < analysis.improvement_suggestions.length - 1 && (
-                      <div className='my-3 h-px w-full shrink-0 bg-gray-200' />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Paraphrasing Options */}
-            <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
-              <div className='px-6 py-4 pb-3'>
-                <h3 className='flex items-center gap-2 text-lg text-sm leading-none font-semibold tracking-tight'>
-                  <RefreshCw className='h-4 w-4' />
-                  Paraphrasing Options
-                </h3>
-              </div>
-              <div className='space-y-3 px-6 pb-6'>
-                {analysis.paraphrasing_options.map((option, index) => (
-                  <div key={index} className='space-y-2'>
-                    <div className='flex items-center justify-between'>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getComplexityColor(
-                          option.complexity_level
-                        )}`}
-                      >
-                        {option.complexity_level}
-                      </span>
-                    </div>
-                    <div className='rounded border-l-4 border-purple-500 bg-purple-50 p-3'>
-                      <p className='mb-1 text-sm font-medium text-purple-800'>Suggested Sentence:</p>
-                      <p className='text-sm text-purple-700'>"{option.sentence}"</p>
-                    </div>
-                    <div className='rounded bg-gray-50 p-3'>
-                      <p className='mb-1 text-sm font-medium text-gray-800'>Analysis:</p>
-                      <p className='text-sm text-gray-700'>{option.explanation}</p>
-                    </div>
-                    {index < analysis.paraphrasing_options.length - 1 && (
-                      <div className='my-3 h-px w-full shrink-0 bg-gray-200' />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Vocabulary Analysis Tab */}
-        {activeTab === 'vocabulary' && analysis && (
+        {/* Vocabulary Tab */}
+        {activeTab === 'vocabulary' && (
           <div className='space-y-4'>
             <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
               <div className='px-6 py-4 pb-3'>
@@ -150,56 +79,59 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
                 </h3>
               </div>
               <div className='space-y-4 px-6 pb-6'>
-                <div className='space-y-3'>
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Level Assessment:</p>
-                    <span className='inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800'>
-                      {analysis.vocabulary_analysis.level_assessment}
-                    </span>
-                  </div>
-
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Appropriateness:</p>
-                    <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
-                      {analysis.vocabulary_analysis.appropriateness}
-                    </div>
-                  </div>
-
-                  {analysis.vocabulary_analysis.improvements.length > 0 && (
+                {analysis?.vocabulary_analysis ? (
+                  <div className='space-y-3'>
                     <div>
-                      <p className='mb-2 text-sm font-medium text-gray-800'>Improvements:</p>
-                      <ul className='space-y-2'>
-                        {analysis.vocabulary_analysis.improvements.map((improvement, index) => (
-                          <li key={index} className='flex items-start gap-2 text-sm text-gray-700'>
-                            <AlertCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-500' />
-                            {improvement}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Level Assessment:</p>
+                      <span className='inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800'>
+                        {analysis.vocabulary_analysis.level_assessment}
+                      </span>
                     </div>
-                  )}
-
-                  {analysis.vocabulary_analysis.differences.length > 0 && (
                     <div>
-                      <p className='mb-2 text-sm font-medium text-gray-800'>Key Differences:</p>
-                      <ul className='space-y-2'>
-                        {analysis.vocabulary_analysis.differences.map((difference, index) => (
-                          <li key={index} className='flex items-start gap-2 text-sm text-gray-700'>
-                            <Target className='mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500' />
-                            {difference}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Appropriateness:</p>
+                      <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
+                        {analysis.vocabulary_analysis.appropriateness}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    {Array.isArray(analysis.vocabulary_analysis.context_relevance) &&
+                      analysis.vocabulary_analysis.context_relevance.length > 0 && (
+                        <div>
+                          <p className='mb-2 text-sm font-medium text-gray-800'>Context Relevance:</p>
+                          <ul className='space-y-2'>
+                            {analysis.vocabulary_analysis.context_relevance.map((item: string, idx: number) => (
+                              <li key={idx} className='flex items-start gap-2 text-sm text-gray-700'>
+                                <Target className='mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500' />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    {Array.isArray(analysis.vocabulary_analysis.word_choice_quality) &&
+                      analysis.vocabulary_analysis.word_choice_quality.length > 0 && (
+                        <div>
+                          <p className='mb-2 text-sm font-medium text-gray-800'>Word Choice Quality:</p>
+                          <ul className='space-y-2'>
+                            {analysis.vocabulary_analysis.word_choice_quality.map((item: string, idx: number) => (
+                              <li key={idx} className='flex items-start gap-2 text-sm text-gray-700'>
+                                <AlertCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-500' />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                  </div>
+                ) : (
+                  <div className='text-gray-500'>No vocabulary analysis available.</div>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* Grammar Analysis Tab */}
-        {activeTab === 'grammar' && analysis && (
+        {/* Grammar Tab */}
+        {activeTab === 'grammar' && (
           <div className='space-y-4'>
             <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
               <div className='px-6 py-4 pb-3'>
@@ -209,44 +141,54 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
                 </h3>
               </div>
               <div className='space-y-4 px-6 pb-6'>
-                <div className='grid grid-cols-1 gap-4'>
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Original Correctness:</p>
-                    <div className='flex items-center gap-2 rounded bg-green-50 p-3 text-sm text-green-700'>
-                      <CheckCircle className='h-4 w-4' />
-                      {analysis.grammar_analysis.original_correctness}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Suggested Correctness:</p>
-                    <div className='flex items-center gap-2 rounded bg-green-50 p-3 text-sm text-green-700'>
-                      <CheckCircle className='h-4 w-4' />
-                      {analysis.grammar_analysis.suggested_correctness}
-                    </div>
-                  </div>
-
-                  {analysis.grammar_analysis.additional_suggestions.length > 0 && (
+                {analysis?.grammar_analysis ? (
+                  <div className='space-y-3'>
                     <div>
-                      <p className='mb-2 text-sm font-medium text-gray-800'>Additional Suggestions:</p>
-                      <ul className='space-y-2'>
-                        {analysis.grammar_analysis.additional_suggestions.map((suggestion, index) => (
-                          <li key={index} className='flex items-start gap-2 text-sm text-gray-700'>
-                            <Lightbulb className='mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500' />
-                            {suggestion}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Suggested Correctness:</p>
+                      <div className='flex items-center gap-2 rounded bg-green-50 p-3 text-sm text-green-700'>
+                        <CheckCircle className='h-4 w-4' />
+                        {analysis.grammar_analysis.suggested_correctness}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    {Array.isArray(analysis.grammar_analysis.sentence_structure) &&
+                      analysis.grammar_analysis.sentence_structure.length > 0 && (
+                        <div>
+                          <p className='mb-2 text-sm font-medium text-gray-800'>Sentence Structure:</p>
+                          <ul className='space-y-2'>
+                            {analysis.grammar_analysis.sentence_structure.map((item: string, idx: number) => (
+                              <li key={idx} className='flex items-start gap-2 text-sm text-gray-700'>
+                                <Lightbulb className='mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500' />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    {Array.isArray(analysis.grammar_analysis.tense_consistency) &&
+                      analysis.grammar_analysis.tense_consistency.length > 0 && (
+                        <div>
+                          <p className='mb-2 text-sm font-medium text-gray-800'>Tense Consistency:</p>
+                          <ul className='space-y-2'>
+                            {analysis.grammar_analysis.tense_consistency.map((item: string, idx: number) => (
+                              <li key={idx} className='flex items-start gap-2 text-sm text-gray-700'>
+                                <Lightbulb className='mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-500' />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                  </div>
+                ) : (
+                  <div className='text-gray-500'>No grammar analysis available.</div>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* Content Analysis Tab */}
-        {activeTab === 'content' && analysis && (
+        {/* Content Tab */}
+        {activeTab === 'content' && (
           <div className='space-y-4'>
             <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
               <div className='px-6 py-4 pb-3'>
@@ -256,52 +198,141 @@ export function AnalysisTabs({ originalSentence, suggestedSentence, context, ana
                 </h3>
               </div>
               <div className='space-y-4 px-6 pb-6'>
-                <div className='space-y-4'>
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Relevance:</p>
-                    <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
-                      {analysis.content_analysis.relevance}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Logical Flow:</p>
-                    <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
-                      {analysis.content_analysis.logical_flow}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Accuracy:</p>
-                    <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
-                      {analysis.content_analysis.accuracy}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className='mb-1 text-sm font-medium text-gray-800'>Overall Rating:</p>
-                    <div className='flex items-center gap-2'>
-                      <span className='inline-flex items-center rounded-full border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800'>
-                        {analysis.coherence_analysis.overall_rating}
-                      </span>
-                      {renderStars(analysis.coherence_analysis.overall_rating)}
-                    </div>
-                  </div>
-
-                  {analysis.coherence_analysis.readability_improvements.length > 0 && (
+                {analysis?.content_analysis ? (
+                  <div className='space-y-3'>
                     <div>
-                      <p className='mb-2 text-sm font-medium text-gray-800'>Readability Improvements:</p>
-                      <ul className='space-y-2'>
-                        {analysis.coherence_analysis.readability_improvements.map((improvement, index) => (
-                          <li key={index} className='flex items-start gap-2 text-sm text-gray-700'>
-                            <Target className='mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500' />
-                            {improvement}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Context Continuity:</p>
+                      <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
+                        {analysis.content_analysis.context_continuity}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    <div>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Logical Progression:</p>
+                      <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
+                        {analysis.content_analysis.logical_progression}
+                      </div>
+                    </div>
+                    {Array.isArray(analysis.content_analysis.topic_relevance) &&
+                      analysis.content_analysis.topic_relevance.length > 0 && (
+                        <div>
+                          <p className='mb-2 text-sm font-medium text-gray-800'>Topic Relevance:</p>
+                          <ul className='space-y-2'>
+                            {analysis.content_analysis.topic_relevance.map((item: string, idx: number) => (
+                              <li key={idx} className='flex items-start gap-2 text-sm text-gray-700'>
+                                <Target className='mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500' />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    <div>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Meaning Clarity:</p>
+                      <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
+                        {analysis.content_analysis.meaning_clarity}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className='text-gray-500'>No content analysis available.</div>
+                )}
+                {analysis?.coherence_analysis && (
+                  <div className='space-y-3'>
+                    <div>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Tone Consistency:</p>
+                      <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
+                        {analysis.coherence_analysis.tone_consistency}
+                      </div>
+                    </div>
+                    <div>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Narrative Flow:</p>
+                      <div className='rounded bg-gray-50 p-3 text-sm text-gray-700'>
+                        {analysis.coherence_analysis.narrative_flow}
+                      </div>
+                    </div>
+                    {Array.isArray(analysis.coherence_analysis.readability_assessment) &&
+                      analysis.coherence_analysis.readability_assessment.length > 0 && (
+                        <div>
+                          <p className='mb-2 text-sm font-medium text-gray-800'>Readability Assessment:</p>
+                          <ul className='space-y-2'>
+                            {analysis.coherence_analysis.readability_assessment.map((item: string, idx: number) => (
+                              <li key={idx} className='flex items-start gap-2 text-sm text-gray-700'>
+                                <Target className='mt-0.5 h-4 w-4 flex-shrink-0 text-blue-500' />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    <div>
+                      <p className='mb-1 text-sm font-medium text-gray-800'>Overall Rating:</p>
+                      <div className='flex items-center gap-2'>
+                        <span className='inline-flex items-center rounded-full border-green-200 bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800'>
+                          {analysis.coherence_analysis.overall_rating}
+                        </span>
+                        {renderStars(analysis.coherence_analysis.overall_rating)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Paraphrase Tab */}
+        {activeTab === 'paraphrase' && (
+          <div className='space-y-4'>
+            <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
+              <div className='px-6 py-4 pb-3'>
+                <h3 className='flex items-center gap-2 text-lg text-sm leading-none font-semibold tracking-tight'>
+                  <Lightbulb className='h-4 w-4' />
+                  Contextual Suggestions
+                </h3>
+              </div>
+              <div className='space-y-4 px-6 pb-6'>
+                {Array.isArray(analysis?.contextual_suggestions) && analysis.contextual_suggestions.length > 0 ? (
+                  analysis.contextual_suggestions.map((item: any, idx: number) => (
+                    <div key={idx} className='mb-4'>
+                      <div className='rounded border-l-4 border-green-500 bg-green-50 p-3'>
+                        <p className='mb-1 text-sm font-medium text-green-800'>Suggested Sentence:</p>
+                        <p className='text-sm text-green-700'>"{item.sentence}"</p>
+                      </div>
+                      <div className='rounded bg-blue-50 p-3'>
+                        <p className='mb-1 text-sm font-medium text-blue-800'>Explanation:</p>
+                        <p className='text-sm text-blue-700'>{item.explanation}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className='text-gray-500'>No contextual suggestions available.</div>
+                )}
+              </div>
+            </div>
+            <div className='rounded-lg border border-gray-200 bg-white shadow-sm'>
+              <div className='px-6 py-4 pb-3'>
+                <h3 className='flex items-center gap-2 text-lg text-sm leading-none font-semibold tracking-tight'>
+                  <RefreshCw className='h-4 w-4' />
+                  Style Variations
+                </h3>
+              </div>
+              <div className='space-y-3 px-6 pb-6'>
+                {Array.isArray(analysis?.style_variations) && analysis.style_variations.length > 0 ? (
+                  analysis.style_variations.map((item: any, idx: number) => (
+                    <div key={idx} className='mb-4'>
+                      <div className='rounded border-l-4 border-purple-500 bg-purple-50 p-3'>
+                        <p className='mb-1 text-sm font-medium text-purple-800'>Suggested Sentence:</p>
+                        <p className='text-sm text-purple-700'>"{item.sentence}"</p>
+                      </div>
+                      <div className='rounded bg-gray-50 p-3'>
+                        <p className='mb-1 text-sm font-medium text-gray-800'>Explanation:</p>
+                        <p className='text-sm text-gray-700'>{item.explanation}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className='text-gray-500'>No style variations available.</div>
+                )}
               </div>
             </div>
           </div>
