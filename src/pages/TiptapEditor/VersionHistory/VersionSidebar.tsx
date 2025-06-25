@@ -22,9 +22,7 @@ interface VersionSidebarProps {
 const VersionSidebar = ({
   versions,
   selectedVersion,
-  showChanges,
   onVersionSelect,
-  onShowChangesToggle,
   onVersionUpdate
 }: VersionSidebarProps) => {
   console.log('versions', versions)
@@ -82,11 +80,6 @@ const VersionSidebar = ({
   // Toggle action dropdown for a specific version
   const toggleActionDropdown = (id: number) => {
     setActionDropdownOpen((prev) => (prev === id ? null : id))
-  }
-
-  // Handle checkbox change
-  const handleCheckboxChange = () => {
-    onShowChangesToggle(!showChanges)
   }
 
   const handleVersionNameClick = (version: MarkdownVersion) => {
@@ -195,15 +188,17 @@ const VersionSidebar = ({
                 >
                   <div className='flex items-start justify-between'>
                     <div className='flex-1'>
-                      <div className='mb-1 flex items-center gap-2'>
-                        <span className='text-sm font-medium'>{versionName || formatDateTimeDisplay(createdAt)}</span>
+                      <div className='mb-1 flex items-start gap-2'>
+                        <span className='flex-1 text-left text-sm font-medium'>
+                          {versionName || formatDateTimeDisplay(createdAt)}
+                        </span>
                         {isCurrentVersion && (
-                          <span className='rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700'>
+                          <span className='min-w-fit rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700'>
                             Current version
                           </span>
                         )}
                         {!isCurrentVersion && idx === 0 && (
-                          <span className='rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700'>
+                          <span className='min-w-fit rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700'>
                             Original version
                           </span>
                         )}
@@ -278,9 +273,8 @@ const VersionSidebar = ({
           </div>
         </div>
 
-        <div className='border-t border-gray-200 p-4'>
+        {/* <div className='border-t border-gray-200 p-4'>
           <div className='flex items-center space-x-2'>
-            {/* Custom checkbox implementation */}
             <div className='relative flex items-center'>
               <input
                 type='checkbox'
@@ -294,7 +288,7 @@ const VersionSidebar = ({
               </label>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Version Name Popup */}

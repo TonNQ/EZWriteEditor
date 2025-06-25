@@ -117,7 +117,7 @@ const SearchReplaceButton = ({ editor }: SearchReplaceButtonProps) => {
 
   return (
     <div className='relative'>
-      <BaseButton onClick={togglePopover}>
+      <BaseButton onClick={togglePopover} tooltip='Search and Replace'>
         <SearchReplaceIcon />
       </BaseButton>
 

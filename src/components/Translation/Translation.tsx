@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import useDebounce from '../../hooks/useDebounce'
-import { cn } from '../../libs/tailwind/utils'
 import translateInstance from '../../services/translation.api'
-import { RootState } from '../../store'
 import Translate from '../Icons/Translate'
 
 const Translation = () => {
-  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
-  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
   const [direction, setDirection] = useState<'en-vi' | 'vi-en'>('en-vi')
   const [inputText, setInputText] = useState('')
   const [outputText, setOutputText] = useState('')
@@ -76,7 +71,7 @@ const Translation = () => {
   return (
     <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
-        <Translate className='text-yellow-500' />
+        <Translate className='text-yellow-500' width={20} height={20} />
         <h2 className='text-base font-semibold text-gray-800'>Translation</h2>
       </div>
 
@@ -110,7 +105,7 @@ const Translation = () => {
           onChange={handleInputChange}
           placeholder={`Enter ${direction === 'en-vi' ? 'English' : 'Vietnamese'} text...`}
           className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
-          rows={10}
+          rows={7}
         />
       </div>
 
@@ -135,7 +130,7 @@ const Translation = () => {
           readOnly
           placeholder={`${direction === 'en-vi' ? 'Vietnamese' : 'English'} translation will appear here...`}
           className='w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm'
-          rows={10}
+          rows={7}
         />
       </div>
     </div>

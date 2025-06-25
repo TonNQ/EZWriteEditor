@@ -32,7 +32,7 @@ export const TextAlignButton = ({ editor }: TextAlignButtonProps) => {
         const isActive = editor.isActive({ textAlign: align })
 
         return (
-          <BaseButton key={align} onClick={() => applyAlignment(align)} isActive={isActive}>
+          <BaseButton key={align} onClick={() => applyAlignment(align)} isActive={isActive} tooltip={align}>
             {icons[align]}
           </BaseButton>
         )

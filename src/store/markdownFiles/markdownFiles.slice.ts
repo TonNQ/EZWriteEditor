@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import markdownInstance from '../../services/markdown.api'
 import { MarkdownFilesState } from './types'
+import { MarkdownFile } from '../../types/markdownFile.type'
 
 const initialState: MarkdownFilesState = {
   files: [],
@@ -35,6 +36,9 @@ const markdownFilesSlice = createSlice({
   reducers: {
     resetMarkdownFilesState(state) {
       Object.assign(state, initialState)
+    },
+    setMarkdownFiles(state, action: PayloadAction<MarkdownFile[]>) {
+      state.files = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -45,6 +49,7 @@ const markdownFilesSlice = createSlice({
       })
       .addCase(fetchMarkdownFiles.fulfilled, (state, action) => {
         state.loading = false
+        console.log('action.payload', action.payload)
         state.files = action.payload
       })
       .addCase(fetchMarkdownFiles.rejected, (state, action) => {
@@ -57,7 +62,7 @@ const markdownFilesSlice = createSlice({
       })
       .addCase(deleteMarkdownFile.fulfilled, (state, action) => {
         state.loading = false
-        state.files = state.files.filter((file) => file.id !== action.payload.id)
+        state.files = state.files.filter((file) => file.id != action.payload.id)
       })
       .addCase(deleteMarkdownFile.rejected, (state, action) => {
         state.loading = false
@@ -66,5 +71,5 @@ const markdownFilesSlice = createSlice({
   }
 })
 
-export const { resetMarkdownFilesState } = markdownFilesSlice.actions
+export const { resetMarkdownFilesState, setMarkdownFiles } = markdownFilesSlice.actions
 export default markdownFilesSlice.reducer

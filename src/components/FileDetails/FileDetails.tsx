@@ -71,14 +71,18 @@ const FileDetails = ({ file, onClose, onDelete }: FileDetailsProps) => {
         <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
           <h3 className='mb-3 text-left text-sm font-medium text-gray-700'>Latest Version</h3>
           <div className='space-y-3'>
-            <div className='flex flex-col'>
-              <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Version Number</h4>
-              <p className='text-left text-sm text-gray-900'>{file.latest_version.version_number}</p>
-            </div>
+            <div className='grid grid-cols-2 gap-4'>
+              <div className='flex flex-col'>
+                <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Version Number</h4>
+                <p className='text-left text-sm text-gray-900'>{file.latest_version.version_number}</p>
+              </div>
 
-            <div className='flex flex-col'>
-              <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Created At</h4>
-              <p className='text-left text-sm text-gray-900'>{formatDate(new Date(file.latest_version.created_at))}</p>
+              <div className='flex flex-col'>
+                <h4 className='mb-1 text-left text-xs font-medium text-gray-500'>Created At</h4>
+                <p className='text-left text-sm text-gray-900'>
+                  {formatDate(new Date(file.latest_version.created_at))}
+                </p>
+              </div>
             </div>
 
             {file.latest_version.version_name && (

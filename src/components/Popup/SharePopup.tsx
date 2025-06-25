@@ -8,6 +8,7 @@ import type { MarkdownFile } from '../../types/markdownFile.type'
 import BaseButton from '../Extensions/BaseButton'
 import Copy from '../Icons/Copy'
 import Popup from './Popup'
+import { isValidEmail } from '../../utils/helpers'
 
 interface SharePopupProps {
   file: MarkdownFile | null
@@ -101,7 +102,7 @@ const SharePopup: React.FC<SharePopupProps> = ({ file, isOpen, onClose }) => {
               </div>
               <button
                 onClick={handleShare}
-                disabled={loading || !email.trim()}
+                disabled={loading || !isValidEmail(email)}
                 className='flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
               >
                 {loading ? (

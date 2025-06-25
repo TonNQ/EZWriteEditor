@@ -106,6 +106,7 @@ const FontSizeButton = ({ editor }: FontSizeButtonProps) => {
           customClass={cn('border-neutral-400 px-3 py-1', {
             'bg-gray-200': open
           })}
+          tooltip='Font Size'
         >
           <div className='flex items-center gap-1'>
             <span className='min-w-[64px] text-sm'>{selectedFontSize.label}</span>

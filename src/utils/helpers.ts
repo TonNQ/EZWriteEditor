@@ -1,3 +1,5 @@
+import { REGEX_EMAIL } from "../constants/validate"
+
 export const getInitialFromName = (name: string) => {
   if (!name) return ''
   const words = name.trim().split(' ')
@@ -38,4 +40,8 @@ export const formatDate = (date: Date, includeTime = false): string => {
   }
 
   return new Date(date).toLocaleDateString('en-US', options)
+}
+
+export const isValidEmail = (email: string): boolean => {
+  return REGEX_EMAIL.test(email)
 }

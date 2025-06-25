@@ -17,7 +17,7 @@ import SharePopup from '../../components/Popup/SharePopup'
 import { getEditorPage, path } from '../../routes/path'
 import markdownInstance from '../../services/markdown.api'
 import { AppDispatch, RootState } from '../../store'
-import { deleteMarkdownFile, fetchMarkdownFiles } from '../../store/markdownFiles/markdownFiles.slice'
+import { deleteMarkdownFile, fetchMarkdownFiles, setMarkdownFiles } from '../../store/markdownFiles/markdownFiles.slice'
 import { resetAllStore } from '../../store/resetStore'
 import { MarkdownFile } from '../../types/markdownFile.type'
 
@@ -95,12 +95,15 @@ const FileManagement = () => {
       if (activeTab === 'all') {
         const res = await markdownInstance.getAllMarkdownFiles()
         setFiles(res.data)
+        dispatch(setMarkdownFiles(res.data))
       } else if (activeTab === 'my_shares') {
         const res = await markdownInstance.getMySharedMarkdownFiles()
         setFiles(res.data as any)
+        dispatch(setMarkdownFiles(res.data))
       } else if (activeTab === 'shared_with_me') {
         const res = await markdownInstance.getMarkdownFilesSharedWithMe()
         setFiles(res.data)
+        dispatch(setMarkdownFiles(res.data))
       }
     }
     fetchFiles()
@@ -112,10 +115,11 @@ const FileManagement = () => {
   }
 
   const handleFileDelete = (fileId: number) => {
+    setIsDetailsOpen(false)
+    dispatch(deleteMarkdownFile(fileId.toString()))
+    setFiles(files.filter((file) => file.id !== fileId))
     if (selectedFile?.id === fileId) {
       setSelectedFile(null)
-      setIsDetailsOpen(false)
-      dispatch(deleteMarkdownFile(fileId.toString()))
     }
   }
 

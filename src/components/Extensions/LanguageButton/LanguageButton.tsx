@@ -73,6 +73,7 @@ const LanguageButton = () => {
           customClass={cn('border-neutral-400 px-3 py-1', {
             'bg-gray-100': open
           })}
+          tooltip='Language'
         >
           <div className='flex items-center gap-1'>
             <span className='min-w-[64px] text-sm'>{selectedLanguage.label}</span>

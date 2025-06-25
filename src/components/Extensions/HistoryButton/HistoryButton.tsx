@@ -15,6 +15,7 @@ const HistoryButton = ({ editor }: HistoryButtonProps) => {
       <BaseButton
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
+        tooltip='Undo'
       >
         <UndoIcon />
       </BaseButton>
@@ -22,6 +23,7 @@ const HistoryButton = ({ editor }: HistoryButtonProps) => {
       <BaseButton
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
+        tooltip='Redo'
       >
         <RedoIcon />
       </BaseButton>

@@ -1,18 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './auth/auth.slice'
 import editorReducer from './editor/editor.slice'
+import explanationReducer from './explanation/explanation.slice'
 import markdownFilesReducer from './markdownFiles/markdownFiles.slice'
 import suggestionReducer from './suggestion/suggestion.slice'
-import textToSpeechReducer from './textToSpeech/textToSpeech.slice'
-import translationReducer from './translation/translation.slice'
 
 const rootReducer = {
   auth: authReducer,
   suggestion: suggestionReducer,
-  translation: translationReducer,
   editor: editorReducer,
   markdownFiles: markdownFilesReducer,
-  textToSpeech: textToSpeechReducer
+  explanation: explanationReducer
 }
 
 export const store = configureStore({

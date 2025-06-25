@@ -1,9 +1,7 @@
 import { type Editor } from '@tiptap/react'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { cn } from '../../libs/tailwind/utils'
 import speechInstance from '../../services/speech.api'
-import { RootState } from '../../store'
 import Pause from '../Icons/Pause'
 import Play from '../Icons/Play'
 import Refresh from '../Icons/Refresh'
@@ -14,8 +12,6 @@ interface TextToSpeechCompProps {
 }
 
 const TextToSpeechComp = ({ editor }: TextToSpeechCompProps) => {
-  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
-  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -90,7 +86,7 @@ const TextToSpeechComp = ({ editor }: TextToSpeechCompProps) => {
   return (
     <div className='w-full'>
       <div className='mb-4 flex items-center space-x-2'>
-        <TextToSpeech className='text-yellow-500' width={24} height={24} />
+        <TextToSpeech className='text-yellow-500' width={20} height={20} />
         <h2 className='text-base font-semibold text-gray-800'>Text to speech</h2>
       </div>
 

@@ -14,11 +14,7 @@ import PrintButton from '../../components/Extensions/PrintButton'
 import SaveFileButton from '../../components/Extensions/SaveFileButton'
 import SearchReplaceButton from '../../components/Extensions/SearchReplaceButton'
 import StrikeButton from '../../components/Extensions/StrikeButton'
-import SuggestionButton from '../../components/Extensions/SuggestionButton'
 import TextAlignButton from '../../components/Extensions/TextAlignButton/TextAlignButton'
-import TextToSpeechButton from '../../components/Extensions/TextToSpeechButton'
-import TranslateButton from '../../components/Extensions/TranslateButton'
-import UnderlineButton from '../../components/Extensions/UnderlineButton'
 import ChevronDown from '../../components/Icons/ChevronDown'
 import ChevronUp from '../../components/Icons/ChevronUp'
 import Document from '../../components/Icons/Document'
@@ -36,13 +32,6 @@ import VersionHistory from './VersionHistory'
 
 interface MenuBarProps {
   editor: Editor | null
-}
-
-interface MainEditorProps {
-  editor: Editor | null
-  isOpenSuggestion: boolean
-  isOpenTranslation: boolean
-  isOpenTextToSpeech: boolean
 }
 
 const MenuBar = ({ editor }: MenuBarProps) => {
@@ -89,7 +78,6 @@ const MenuBar = ({ editor }: MenuBarProps) => {
           <VerticalSeparate />
           <BoldButton editor={editor} />
           <ItalicButton editor={editor} />
-          <UnderlineButton editor={editor} />
           <StrikeButton editor={editor} />
           <VerticalSeparate />
           <HeadingButton editor={editor} />
@@ -103,18 +91,15 @@ const MenuBar = ({ editor }: MenuBarProps) => {
           <VerticalSeparate />
           <LanguageButton />
           <VerticalSeparate />
-          <SuggestionButton />
-          <TranslateButton />
-          <TextToSpeechButton />
         </div>
         <div className='flex items-center gap-1'>
           <VerticalSeparate />
           {isOpen ? (
-            <BaseButton onClick={() => setIsOpen(!isOpen)}>
+            <BaseButton onClick={() => setIsOpen(!isOpen)} tooltip='Collapse'>
               <ChevronUp width={18} height={18} />
             </BaseButton>
           ) : (
-            <BaseButton onClick={() => setIsOpen(!isOpen)}>
+            <BaseButton onClick={() => setIsOpen(!isOpen)} tooltip='Expand'>
               <ChevronDown width={18} height={18} />
             </BaseButton>
           )}
@@ -124,15 +109,13 @@ const MenuBar = ({ editor }: MenuBarProps) => {
   )
 }
 
-const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech }: MainEditorProps) => {
-  const hasSidebar = [isOpenSuggestion, isOpenTranslation, isOpenTextToSpeech].some(Boolean)
-
+const MainEditor = ({ editor }: { editor: Editor | null }) => {
   return (
     <>
       <MenuBar editor={editor} />
       <div className='flex h-full w-full flex-1 overflow-hidden'>
         <MainEditorContent editor={editor} />
-        {hasSidebar && <Sidebar editor={editor} />}
+        <Sidebar editor={editor} />
       </div>
     </>
   )
@@ -141,9 +124,6 @@ const MainEditor = ({ editor, isOpenSuggestion, isOpenTranslation, isOpenTextToS
 export default function TipTapEditor() {
   const { id } = useParams()
   const dispatch = useDispatch()
-  const isOpenSuggestion = useSelector((state: RootState) => state.suggestion.isOpenSuggestion)
-  const isOpenTranslation = useSelector((state: RootState) => state.translation.isOpenTranslation)
-  const isOpenTextToSpeech = useSelector((state: RootState) => state.textToSpeech.isOpenTextToSpeech)
   const isShowHistory = useSelector((state: RootState) => state.editor.isShowHistory)
 
   const editor = useEditor({
@@ -177,16 +157,7 @@ export default function TipTapEditor() {
 
   return (
     <div className='flex h-full w-full flex-col bg-gray-50'>
-      {isShowHistory ? (
-        <VersionHistory />
-      ) : (
-        <MainEditor
-          editor={editor}
-          isOpenSuggestion={isOpenSuggestion}
-          isOpenTranslation={isOpenTranslation}
-          isOpenTextToSpeech={isOpenTextToSpeech}
-        />
-      )}
+      {isShowHistory ? <VersionHistory /> : <MainEditor editor={editor} />}
     </div>
   )
 }

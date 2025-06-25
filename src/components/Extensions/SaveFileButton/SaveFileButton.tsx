@@ -89,7 +89,7 @@ const SaveFileButton = ({ editor }: SaveFileButtonProps) => {
 
   return (
     <>
-      <BaseButton onClick={handleSaveClick}>
+      <BaseButton onClick={handleSaveClick} tooltip='Save'>
         <SaveFile />
       </BaseButton>
 

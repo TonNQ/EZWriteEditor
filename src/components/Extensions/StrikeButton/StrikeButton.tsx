@@ -14,6 +14,7 @@ const StrikeButton = ({ editor }: StrikeButtonProps) => {
       onClick={() => editor.chain().focus().toggleStrike().run()}
       disabled={!editor.can().chain().focus().toggleStrike().run()}
       isActive={editor.isActive('strike')}
+      tooltip='Strike'
     >
       <StrikeIcon />
     </BaseButton>

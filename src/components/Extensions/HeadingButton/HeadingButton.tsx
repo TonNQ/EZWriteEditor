@@ -106,6 +106,7 @@ const HeadingButton = ({ editor }: HeadingButtonProps) => {
           customClass={cn('border-neutral-400 px-3 py-1', {
             'bg-gray-200': open
           })}
+          tooltip='Heading'
         >
           <div className='flex items-center gap-1'>
             <span className='min-w-[64px] text-sm'>{selectedHeading.label}</span>
