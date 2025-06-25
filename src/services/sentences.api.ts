@@ -1,5 +1,11 @@
 import { HttpStatusCode } from 'axios'
 import { ELASTIC_SEARCH_INDEX } from '../constants/common'
+import {
+  ContentApiResponse,
+  GrammarApiResponse,
+  ParaphraseApiResponse,
+  VocabularyApiResponse
+} from '../types/analysis.type'
 import { ApiResponse } from '../types/common.type'
 import { AddSentenceResponse, Sentence } from '../types/sentence.type'
 import http from '../utils/api'
@@ -92,7 +98,10 @@ const addSentence = async (content: string, signal?: AbortSignal): Promise<ApiRe
   }
 }
 
-const getOpenAISuggestion = async (params: OpenAISuggestParams, signal?: AbortSignal): Promise<ApiResponse<string[]>> => {
+const getOpenAISuggestion = async (
+  params: OpenAISuggestParams,
+  signal?: AbortSignal
+): Promise<ApiResponse<string[]>> => {
   try {
     const response = (await http.get<{ results: string[] }>({
       url: '/api/openai-suggest/',
@@ -111,22 +120,87 @@ const getOpenAISuggestion = async (params: OpenAISuggestParams, signal?: AbortSi
   }
 }
 
-const getExplanation = async (params: ExplainParams, signal?: AbortSignal): Promise<ApiResponse<any>> => {
+const explainVocabulary = async (
+  params: ExplainParams,
+  signal?: AbortSignal
+): Promise<ApiResponse<VocabularyApiResponse>> => {
   try {
-    const response = (await http.get<any>({
-      url: '/api/explain-suggestion/',
-      key: 'explain',
+    const response = (await http.get<VocabularyApiResponse>({
+      url: '/api/explain-vocabulary/',
+      key: 'explain-vocabulary',
       params,
-      signal,
-    })) as ApiResponse<any>
-
+      signal
+    })) as ApiResponse<VocabularyApiResponse>
     return {
       status: response.status || HttpStatusCode.Ok,
-      data: response.data ?? ''
+      data: response.data ?? ({} as VocabularyApiResponse)
     }
   } catch (error) {
-    console.error('Get explanation API error:', error)
-    return error as ApiResponse<any>
+    console.error('Explain vocabulary API error:', error)
+    return error as ApiResponse<VocabularyApiResponse>
+  }
+}
+
+const explainGrammar = async (
+  params: ExplainParams,
+  signal?: AbortSignal
+): Promise<ApiResponse<GrammarApiResponse>> => {
+  try {
+    const response = (await http.get<GrammarApiResponse>({
+      url: '/api/explain-grammar/',
+      key: 'explain-grammar',
+      params,
+      signal
+    })) as ApiResponse<GrammarApiResponse>
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data ?? ({} as GrammarApiResponse)
+    }
+  } catch (error) {
+    console.error('Explain grammar API error:', error)
+    return error as ApiResponse<GrammarApiResponse>
+  }
+}
+
+const explainContent = async (
+  params: ExplainParams,
+  signal?: AbortSignal
+): Promise<ApiResponse<ContentApiResponse>> => {
+  try {
+    const response = (await http.get<ContentApiResponse>({
+      url: '/api/explain-content/',
+      key: 'explain-content',
+      params,
+      signal
+    })) as ApiResponse<ContentApiResponse>
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data ?? ({} as ContentApiResponse)
+    }
+  } catch (error) {
+    console.error('Explain content API error:', error)
+    return error as ApiResponse<ContentApiResponse>
+  }
+}
+
+const explainParaphrase = async (
+  params: ExplainParams,
+  signal?: AbortSignal
+): Promise<ApiResponse<ParaphraseApiResponse>> => {
+  try {
+    const response = (await http.get<ParaphraseApiResponse>({
+      url: '/api/explain-paraphrase/',
+      key: 'explain-paraphrase',
+      params,
+      signal
+    })) as ApiResponse<ParaphraseApiResponse>
+    return {
+      status: response.status || HttpStatusCode.Ok,
+      data: response.data ?? ({} as ParaphraseApiResponse)
+    }
+  } catch (error) {
+    console.error('Explain paraphrase API error:', error)
+    return error as ApiResponse<ParaphraseApiResponse>
   }
 }
 
@@ -135,7 +209,10 @@ const sentencesInstance = {
   suggest: suggestApi,
   addSentence,
   getOpenAISuggestion,
-  getExplanation,
+  explainVocabulary,
+  explainGrammar,
+  explainContent,
+  explainParaphrase
 }
 
 export default sentencesInstance

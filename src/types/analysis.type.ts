@@ -3,7 +3,7 @@ export interface SentenceAnalysis {
   text: string
   basicInfo: {
     wordCount: number
-    complexity: "Simple" | "Medium" | "Complex"
+    complexity: 'Simple' | 'Medium' | 'Complex'
     readingLevel: string
   }
   grammar: {
@@ -20,7 +20,7 @@ export interface SentenceAnalysis {
   }
   styleMetrics: {
     readabilityScore: number
-    sentenceVariety: "Poor" | "Good" | "Excellent"
+    sentenceVariety: 'Poor' | 'Good' | 'Excellent'
     passiveVoice: boolean
   }
   suggestions: string[]
@@ -68,6 +68,95 @@ export interface MultiLanguageAnalysis {
   vi: DetailedAnalysis
 }
 
-export type AnalysisLanguage = "en" | "vi"
+export type AnalysisLanguage = 'en' | 'vi'
 
-export type SupportedModel = "gpt-3.5-turbo" | "gpt-4o" | "gpt-4o-mini"
+export type SupportedModel = 'gpt-3.5-turbo' | 'gpt-4o' | 'gpt-4o-mini'
+
+// Types for individual explain APIs
+export interface VocabularySuggestion {
+  explanation: string
+  sentence: string
+  complexity: 'basic' | 'intermediate' | 'advanced'
+}
+
+export interface VocabularyAnalysis {
+  level_assessment: string
+  appropriateness: string
+  context_relevance: string[]
+  word_choice_quality: string[]
+  suggestions: VocabularySuggestion[]
+}
+
+export interface GrammarSuggestion {
+  explanation: string
+  sentence: string
+  complexity: 'basic' | 'intermediate' | 'advanced'
+}
+
+export interface GrammarAnalysis {
+  suggested_correctness: string
+  context_flow: string
+  sentence_structure: string[]
+  tense_consistency: string[]
+  suggestions: GrammarSuggestion[]
+}
+
+export interface ContentSuggestion {
+  explanation: string
+  sentence: string
+  complexity: 'basic' | 'intermediate' | 'advanced'
+}
+
+export interface ContentAnalysis {
+  context_continuity: string
+  logical_progression: string
+  topic_relevance: string[]
+  meaning_clarity: string
+  suggestions: ContentSuggestion[]
+}
+
+export interface StyleVariation {
+  explanation: string
+  sentence: string
+  complexity: 'basic' | 'intermediate' | 'advanced'
+}
+
+export interface ParaphraseAnalysis {
+  style_variations: StyleVariation[]
+  paraphrase_quality: string
+  diversity_assessment: string
+  complexity_range: ('basic' | 'intermediate' | 'advanced')[]
+}
+
+// API Response types
+export type VocabularyApiResponse = {
+  analysis: {
+    en: VocabularyAnalysis | null
+    vi: VocabularyAnalysis | null
+  }
+  [key: string]: any
+}
+
+export type GrammarApiResponse = {
+  analysis: {
+    en: GrammarAnalysis | null
+    vi: GrammarAnalysis | null
+  }
+  [key: string]: any
+}
+
+export type ContentApiResponse = {
+  analysis: {
+    en: ContentAnalysis | null
+    vi: ContentAnalysis | null
+  }
+  [key: string]: any
+}
+
+export type ParaphraseApiResponse = {
+  analysis: {
+    en: ParaphraseAnalysis | null
+    vi: ParaphraseAnalysis | null
+  }
+  [key: string]: any
+}

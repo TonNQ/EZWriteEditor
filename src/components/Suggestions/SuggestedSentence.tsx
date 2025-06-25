@@ -29,7 +29,6 @@ const SuggestedSentence = ({
   disabled = false,
   isSearch = true,
   isOpenAISuggest = false,
-  context,
   onAnalyticsClick
 }: SuggestedSentenceProps) => {
   const dispatch = useDispatch()

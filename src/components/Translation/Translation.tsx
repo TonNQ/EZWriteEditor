@@ -105,7 +105,7 @@ const Translation = () => {
           onChange={handleInputChange}
           placeholder={`Enter ${direction === 'en-vi' ? 'English' : 'Vietnamese'} text...`}
           className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none'
-          rows={12}
+          rows={7}
         />
       </div>
 
@@ -130,7 +130,7 @@ const Translation = () => {
           readOnly
           placeholder={`${direction === 'en-vi' ? 'Vietnamese' : 'English'} translation will appear here...`}
           className='w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm'
-          rows={12}
+          rows={7}
         />
       </div>
     </div>
